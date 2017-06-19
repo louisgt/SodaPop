@@ -1,7 +1,8 @@
 #ifndef CELL_H
 #define CELL_H
-
 #include "Gene.h"
+
+/*AUTHOR: LOUIS GAUTHIER*/
 
 class Cell 
 {
