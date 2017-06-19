@@ -6,11 +6,8 @@
 DESCRIPTION: Implementation of microorganism pupulation dynamics and evolution
 inspired from "omics" data and protein biophysics.
 
-AUTHOR: Serohijos, Adrian W.R.
-Chemistry & Chemical Biology, Harvard University
-serohij@fas.harvard.edu
-
-Version: 
+AUTHOR: LOUIS GAUTHIER
+Version: 1.0
 */
 
 int main(int argc, char *argv[])
