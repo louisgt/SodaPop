@@ -29,6 +29,7 @@
 #define POPSIZEMAX 	1000000
 #define GENECOUNTMAX 	100
 
+/*AUTHOR: LOUIS GAUTHIER*/
 
 template<class T = std::mt19937, std::size_t N = T::state_size>
 auto ProperlySeededRandomEngine () -> typename std::enable_if<!!N, T>::type {
