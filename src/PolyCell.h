@@ -3,6 +3,8 @@
 
 #include "Cell.h"
 
+/*AUTHOR: LOUIS GAUTHIER*/
+
 class PolyCell: public Cell
 {
 	protected:
