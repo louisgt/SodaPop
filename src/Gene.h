@@ -1,5 +1,6 @@
 #include "global.h"
 
+/*AUTHOR: LOUIS GAUTHIER*/
 
 class Gene 
 {
