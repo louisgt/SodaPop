@@ -1,19 +1,12 @@
 #include "../src/PolyCell.h"
 /*
 DESCRIPTION: Converts population summary to a snap file.
-
-AUTHOR: Serohijos, Adrian W.R.
-Chemistry & Chemical Biology, Harvard University
-serohij@fas.harvard.edu
-
-Version: 
 */
-
 
 int main(int argc, char *argv[]){
   if(argc != 2){
-    std::cerr <<"summ2snap <population summary> \n";
-    exit(1);
+      std::cerr <<"summ2snap <population summary> \n";
+      exit(1);
   }
 
   char buffer[200];

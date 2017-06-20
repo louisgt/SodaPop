@@ -14,41 +14,34 @@ int main(int argc, char *argv[]){
   int Total_Cell_Count;
   double frame_time, T0;
 
-  //int cell_id, gene_size;
-  //double b,d,m,u,age;
-
   //open binary file 
   std::fstream IN(argv[1], std::ios::in|std::ios::binary);
-  if ( !IN.is_open() ) {
+  if (!IN.is_open()){
     std::cerr << "Binary file could not be opened.\n";
     exit(1);
   } 
 
   std::fstream OUT(argv[2], std::ios::out);
-  if ( !OUT.is_open() ) {
-    std::cerr << "Ascii file could not be opened.\n";
-    exit(1);
+  if (!OUT.is_open()){
+      std::cerr << "Ascii file could not be opened.\n";
+      exit(1);
   }
 
   //Read header
   IN.read((char*)(&frame_time),sizeof(double));
   IN.read((char*)(&T0),sizeof(double));
   IN.read((char*)(&Total_Cell_Count),sizeof(int));
-
   OUT << frame_time << " " << T0 << " " << Total_Cell_Count <<  std::endl;
 
   //Read Cell array
   for(int i=0; i < Total_Cell_Count; i++){
     OUT << std::endl;
-    
     if( flag==0 )
-     quickread_Cell(IN,OUT);//numbers are DUMMY time parameters
+      quickread_Cell(IN,OUT);//numbers are DUMMY time parameters
     else
-     read_Cell(IN,OUT);
+      read_Cell(IN,OUT);
   }
-
   IN.close();
   OUT.close();  
-
-}//end main
+}
 
