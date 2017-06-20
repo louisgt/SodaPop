@@ -103,46 +103,43 @@ Gene::Gene(const int i, const std::string a, double c)
 Gene::Gene(std::fstream& gene_in)
 {
     std::string line;
-    while (! gene_in.eof() )
-    {
+    // Read gene file line by line
+    while (!gene_in.eof()){
         getline(gene_in,line);
         std::string word;
 
         std::istringstream iss(line, std::istringstream::in);
         iss >> word;
 
-        if (word == "Gene_NUM")
-        { 
+        if (word == "Gene_NUM"){ 
             iss>>word; 
             g_num_ = atoi(word.c_str());
         }
-        else if (word == "N_Seq")
-        { 
+        else if (word == "N_Seq"){ 
             iss>>nucseq_;
             ln_=nucseq_.length();
 
             if((ln_ % 3) != 0){
-              std::cerr << "Invalid length for nucleotide sequence: " << ln_ << std::endl;
-              exit(2);
-            }else{
-              la_=ln_/3;
-              std::string aaseq=GetProtFromNuc(nucseq_);
-
-              //check stop codons in midsequence
-              std::string::size_type loc = aaseq.find("X", 0 );
-              if( loc != std::string::npos ) {
-                std::cerr << "ERROR: DNA sequence has STOP codons in the middle"<<std::endl;
-                exit(2);
-              }           
+                  std::cerr << "Invalid length for nucleotide sequence: " << ln_ << std::endl;
+                  exit(2);
             }
+            else{
+                  la_=ln_/3;
+                  std::string aaseq=GetProtFromNuc(nucseq_);
+
+                  //check stop codons in midsequence
+                  std::string::size_type loc = aaseq.find("X", 0 );
+                  if(loc != std::string::npos){
+                        std::cerr << "ERROR: DNA sequence has STOP codons in the middle"<<std::endl;
+                        exit(2);
+                   }           
+             }
         }
-        else if ( word=="E" )
-        {
+        else if ( word=="E" ){
             iss >> word;
             e = atoi(word.c_str());
         }
-        else if (word == "CONC")
-        {
+        else if (word == "CONC"){
             iss >> word;
     	   conc = atof(word.c_str());
         }
