@@ -5,7 +5,7 @@
 class Gene 
 {
     private:
-        int g_num_;		//numeric ID pointin to primordial gene
+        int g_num_;		//numeric ID pointing to primordial gene
         int ln_;		//length nuc seq
         int la_;		//length aa seq
 
@@ -32,8 +32,8 @@ class Gene
         int Mutate_BP_Gaussian(int, int, std::fstream&);
         double Mutate_BP(int, int);
 
-        void Update_Sequences(int, int); 	//(site, BP)
-        void Update_Sequences(std::string);	//(DNA sequence)
+        void Update_Sequences(int, int);
+        void Update_Sequences(std::string);
      
         void ch_dg(const double a){ dg_ = a; }
         void ch_Na(const int a){ Na_ = a; }
@@ -51,16 +51,13 @@ class Gene
         const double dg();
 
         double CheckDG();
-
         double functional();
-
         double misfolded();
-
         double Pnat();
 };//End class Gene declaration
 
 Gene::Gene(){
-  g_num_ = 0;	//0-default gene number, no primordial gene associated
+  g_num_ = 0;
   ln_ = 0; la_ = 0;
   Na_ = 0; Ns_ = 0;
   nucseq_ = ""; 
@@ -70,8 +67,8 @@ Gene::Gene(){
   e = 0;
 }
 
+//Input: gene number, nuc. sequence, concentration
 Gene::Gene(const int i, const std::string a, double c)
-//Input: gene number, nucleo sequence, concentration
 {
     if((a.length() % 3) != 0)
     {
@@ -84,10 +81,9 @@ Gene::Gene(const int i, const std::string a, double c)
         nucseq_=a;
         ln_=a.length();
         la_=ln_/3;
-
         std::string aaseq = GetProtFromNuc(nucseq_);
 
-        //check stop codons in midsequence
+        //check for stop codons in midsequence
         std::string::size_type loc = aaseq.find("X", 0 );
         if( loc != std::string::npos )
         {
@@ -103,8 +99,8 @@ Gene::Gene(const int i, const std::string a, double c)
     }
 }
 
-Gene::Gene(std::fstream& gene_in)
 //Input: gene file
+Gene::Gene(std::fstream& gene_in)
 {
     std::string line;
     while (! gene_in.eof() )
