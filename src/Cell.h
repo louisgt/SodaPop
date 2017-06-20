@@ -7,12 +7,13 @@
 class Cell 
 {
     protected:
-        //organism ID
+        // organism barcode
         std::string barcode_;
+        // organism ID
         int ID_;
-        //initial mutation rate
+        // initial mutation rate
         double o_mrate_;
-        //current mutation rate
+        // current mutation rate
         double c_mrate_;	
         			
     public:
@@ -20,16 +21,12 @@ class Cell
         std::vector<Gene> Gene_arr_;
         //Cummulative sum of gene lengths (i.e. genome size)
         VectInt Gene_L_;
-    
-    public:
         Cell();
         Cell(std::fstream&);			    
         Cell(std::fstream&, const std::string&);  
 
         virtual void UpdateRates() = 0;
-
         virtual void dump(std::fstream&, int) = 0;
-
         virtual void PrintCell(int) = 0;       
              
         //getters
@@ -37,23 +34,18 @@ class Cell
         const double mrate(){return c_mrate_;}
         const int gene_count(){return Gene_arr_.size();}
         const int genome_size(){return Gene_L_.back();}
-        const std::string barcode(){return barcode_;}
-        
+        const std::string barcode(){return barcode_;}   
 
         //setters
         void change_ID(int a){ ID_ = a;}
         void ch_barcode(std::string s){barcode_ = s;}
-
         int total_mutations(const int&);
-
         void FillGene_L();
 };
 
 Cell::Cell():
-//input cell ID
     barcode_(getBarcode()),
     ID_(0),
-    //GENERATE BARCODE
     o_mrate_(0),
     c_mrate_(0)
 {
@@ -61,59 +53,55 @@ Cell::Cell():
   Gene_arr_.reserve(GENECOUNTMAX);
 }
 
-//with cell file
+// Construct from cell file
 Cell::Cell(std::fstream& cell_in)
 {
     char buffer[140];
     Gene_L_.reserve(GENECOUNTMAX);
     Gene_arr_.reserve(GENECOUNTMAX);
-
     ch_barcode(getBarcode());
     std::string line;
-    while (! cell_in.eof() )
+    while (!cell_in.eof())
     {
         getline(cell_in,line);
         std::string word;
         std::istringstream iss(line, std::istringstream::in);
         iss >> word;
 
-        if ( word == "org_id" )
-        {
+        if ( word == "org_id" ){
           iss >> word; 
           ID_ = atoi(word.c_str());
         }
-        else if ( word == "mrate" )
-        {
+        else if ( word == "mrate" ){
           iss >> word; 
           o_mrate_ = atof(word.c_str());
           c_mrate_ = atof(word.c_str());
         }       
-        else if ( word == "G" ){//reading gene files; 
-                                //concentration and stability of from gene files take precedence
-          iss >> word;
-          //open gene file
-          sprintf(buffer,"%s%s.gene","files/genes/",word.c_str());
-          std::fstream temp (buffer);//convert std::string to char*
-          if ( !temp.is_open() ) {
-            std::cerr << "File could not be open: " << buffer << std::endl;
-            exit(2);
-          }
-
-          Gene A(temp);
-          Gene_arr_.push_back(A);
-          std::cout << "Inserted: "<< word << std::endl;
-          
-          //Check if gene is correctly inserted
-          std::vector<Gene>::iterator i = Gene_arr_.end();
-          i--;
-          std::cout << (*i).nseq() << std::endl;   
-                
-          temp.close();
+        else if ( word == "G" ){
+        //reading gene files; 
+        //concentration and stability from gene file take precedence
+              iss >> word;
+              //open gene file
+              sprintf(buffer,"%s%s.gene","files/genes/",word.c_str());
+              std::fstream temp (buffer);
+              if (!temp.is_open()){
+                std::cerr << "File could not be open: " << buffer << std::endl;
+                exit(2);
+              }
+              Gene A(temp);
+              Gene_arr_.push_back(A);
+              std::cout << "Inserted: "<< word << std::endl;
+              
+              //Check if gene is correctly inserted
+              std::vector<Gene>::iterator i = Gene_arr_.end();
+              i--;
+              std::cout << (*i).nseq() << std::endl;        
+              temp.close();
         }
     }
 }
 
-//Reads a unit cell stored in binary 
+// Constructs from a unit cell stored in binary 
 Cell::Cell(std::fstream& IN, const std::string& genesPath)
 {
     Gene_L_.reserve(GENECOUNTMAX);
@@ -139,8 +127,7 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
     IN.read((char*)(&gene_size),sizeof(int));
     
     //read gene info
-    for(int j=0; j<gene_size; j++)
-    {
+    for(int j=0; j<gene_size; j++){
         double e, c, dg;
         int gene_nid, Ns, Na;
         std::string DNAsequence;
@@ -149,7 +136,6 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
         IN.read((char*)(&e),sizeof(double));
         IN.read((char*)(&c),sizeof(double));
         IN.read((char*)(&dg),sizeof(double));
-
         IN.read((char*)(&Ns),sizeof(int));
         IN.read((char*)(&Na),sizeof(int));
 
@@ -163,13 +149,11 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
      
         sprintf(buffer,"%s%d.gene",genesPath.c_str(),gene_nid);
         std::fstream temp (buffer);
-        if ( !temp.is_open() )
-        {
+        if (!temp.is_open()){
             std::cerr << "ERROR: Cannot open gene file " << buffer << std::endl;
             exit(2);
         }
-        Gene G(temp);
-        
+        Gene G(temp);   
         //update gene information
         G.conc = c;
         dg = exp(-dg/kT);
@@ -181,21 +165,20 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
     }
 }
 
-//Initialize the cummulative gene length array
+// Initialize the cummulative gene length array
 void Cell::FillGene_L()
 {
     int sum = 0;
-
     std::vector<Gene>::iterator i;
-    for(i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i)
-    {
+    for(i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
         sum+= (*i).length();
         Gene_L_.push_back(sum);
     }
 }
 
-//Return total mutation count
-//spec  - 0, Ns+Na
+// Return total mutation count
+// spec:
+//  - 0, Ns+Na
 //  - 1, Ns
 //  - 2. Na
 int Cell::total_mutations(const int& spec)
@@ -206,11 +189,9 @@ int Cell::total_mutations(const int& spec)
     int s = 0;
     int a = 0;
 
-    for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i)
-    {
+    for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
         int Ns = i->Ns();
         int Na = i->Na();
-
         s += Ns;
         a += Na;
         sa += (Ns+Na);
