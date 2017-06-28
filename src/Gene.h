@@ -194,7 +194,7 @@ Gene& Gene::operator=(const Gene& A)
 This version of the mutation function draws the DDG value from a gaussian distribution
 with a shifting mean to mimic sequence depletion.
 */
-int Gene::Mutate_BP_Gaussian(int i, int j)
+double Gene::Mutate_BP_Gaussian(int i, int j)
 { 
     if(i>=ln_){
         std::cerr << "ERROR: Mutation site out of bounds."<< std::endl;
