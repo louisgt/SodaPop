@@ -52,6 +52,8 @@ int main(int argc, char *argv[])
     TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",true,"null","filename");
     // fitness function
     TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"fitness");
+    // boolean switch to draw DDG values from Gaussian
+    TCLAP::SwitchArg gaussArg("r","rand-dg","Draw DDG values from Gaussian distribution", cmd, false);
     // boolean switch to enable analysis
     TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
 
@@ -82,12 +84,17 @@ int main(int argc, char *argv[])
 
     PolyCell::ff_ = fitArg.getValue();
     enableAnalysis = analysisArg.getValue();
+    PolyCell::_useGauss = gaussArg.getValue();
 
     }catch (TCLAP::ArgException &e){
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;}
     
     /********************************************/
     std::cout << "Begin ... " << std::endl;
+    if(PolyCell::_useGauss)
+    {
+        std::cout << "Helli everyone" << std::endl;
+    }
     std::cout << "Initializing DDG matrix ..." << std::endl;
     InitDDGMatrix();
     std::cout << "Loading primordial genes file ..." << std::endl;

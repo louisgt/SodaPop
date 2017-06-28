@@ -29,7 +29,7 @@ class Gene
         bool operator==(Gene&);
         Gene& operator=(const Gene&);
       
-        int Mutate_BP_Gaussian(int, int);
+        double Mutate_BP_Gaussian(int, int);
         double Mutate_BP(int, int);
 
         void Update_Sequences(std::string);
@@ -204,20 +204,18 @@ int Gene::Mutate_BP_Gaussian(int i, int j)
     double ran = RandomNumber();
        
     if(ran <= fNs){//non-synonymous mutation
-        double r = -0.13;
-        double mean = r * (-kT*log(dg_)) + 0.21;
-        double temp = Ran_Gaussian(mean, 1.7);
+        double temp = Ran_Gaussian(1.0, 1.7);
         double x = exp(-temp/kT);
 
         this->dg_ *= x;
         this->Na_ += 1;
 
-        return 1;
+        return x;
     }
     else{
         this->Ns_ += 1;
 
-        return 2;
+        return 1;
     }
 }
 
