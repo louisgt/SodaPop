@@ -9,10 +9,8 @@ LINK = $(CXX) $(CXXFLAGS)
 COMPILE = $(CXX) $(LIBS) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -c
 
 SODAPOP = sodapop
-SNAP2ASCII = snap2ascii
-SUMM2SNAP = summ2snap
-
-
+SNAP2ASCII = soda_snap
+SUMM2SNAP = soda_summ
 
 INSTALLDIR = /usr/local/bin
 
@@ -23,11 +21,11 @@ install:
 	$(CP) $(SUMM2SNAP) $(INSTALLDIR)/
 
 $(SODAPOP): sodapop.o
-	$(LINK) -o sodapop sodapop.o
+	$(LINK) -o soda_pop sodapop.o
 $(SNAP2ASCII): snap2ascii.o
-	$(LINK) -o snap2ascii snap2ascii.o
+	$(LINK) -o soda_snap snap2ascii.o
 $(SUMM2SNAP): summ2snap.o
-	$(LINK) -o summ2snap summ2snap.o
+	$(LINK) -o soda_summ summ2snap.o
 
 sodapop.o: ./src/evolve.cpp ./src/Gene.h ./src/Cell.h ./src/global.h
 	$(COMPILE) -o sodapop.o ./src/evolve.cpp
