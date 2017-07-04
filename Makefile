@@ -4,13 +4,12 @@ CC =g++
 
 IDIR =./include
 CXXFLAGS =-std=c++11 -Wall -O2 -I$(IDIR)
-EXEC =sodapop
 LINK = $(CXX) $(CXXFLAGS)
 COMPILE = $(CXX) $(LIBS) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -c
 
-SODAPOP = soda_pop
-SNAP2ASCII = soda_snap
-SUMM2SNAP = soda_summ
+SODAPOP = sodapop
+SNAP2ASCII = sodasnap
+SUMM2SNAP = sodasumm
 
 INSTALLDIR = /usr/local/bin
 
@@ -28,11 +27,11 @@ uninstall:
 	$(RM) -r $(INSTALLDIR)/$(SUMM2SNAP)
 
 $(SODAPOP): sodapop.o
-	$(LINK) -o soda_pop sodapop.o
+	$(LINK) -o sodapop sodapop.o
 $(SNAP2ASCII): snap2ascii.o
-	$(LINK) -o soda_snap snap2ascii.o
+	$(LINK) -o sodasnap snap2ascii.o
 $(SUMM2SNAP): summ2snap.o
-	$(LINK) -o soda_summ summ2snap.o
+	$(LINK) -o sodasumm summ2snap.o
 
 sodapop.o: ./src/evolve.cpp ./src/Gene.h ./src/Cell.h ./src/global.h
 	$(COMPILE) -o sodapop.o ./src/evolve.cpp
