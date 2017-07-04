@@ -47,11 +47,13 @@ int main(int argc, char *argv[])
     //files
     TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"sim","filename");
     TCLAP::ValueArg<std::string> geneArg("g","gene-list","Gene list file",true,"null","filename");
-    TCLAP::ValueArg<std::string> pddgArg("d","pddg","Primordial DDG file",true,"null","filename");
+    TCLAP::ValueArg<std::string> pddgArg("d","pddg","Primordial DDG file",false,"null","filename");
     TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",false,"null","filename");
     TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",true,"null","filename");
     // fitness function
     TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"fitness");
+    // boolean switch to draw DDG values from Gaussian
+    TCLAP::SwitchArg gaussArg("r","rand-dg","Draw DDG values from Gaussian distribution", cmd, false);
     // boolean switch to enable analysis
     TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
 
@@ -61,10 +63,10 @@ int main(int argc, char *argv[])
     cmd.add(dtArg);
     cmd.add(prefixArg);
     cmd.add(geneArg);
-    cmd.add(pddgArg);
     cmd.add(startArg);
     cmd.add(libArg);
     cmd.add(fitArg);
+    cmd.add(pddgArg);
 
     // Parse the argv array.
     cmd.parse(argc, argv);
@@ -77,9 +79,14 @@ int main(int argc, char *argv[])
     geneListFile = geneArg.getValue();
     snapFile = prefixArg.getValue();
     startSnapFile = startArg.getValue();
-    pddgFile = pddgArg.getValue();
+    if(pddgArg.isSet()){
+        pddgFile = pddgArg.getValue();
+    }
+    else
+    {
+        PolyCell::useGauss_ = gaussArg.getValue();
+    }
     genesPath = libArg.getValue();
-
     PolyCell::ff_ = fitArg.getValue();
     enableAnalysis = analysisArg.getValue();
 
@@ -88,12 +95,14 @@ int main(int argc, char *argv[])
     
     /********************************************/
     std::cout << "Begin ... " << std::endl;
-    std::cout << "Initializing DDG matrix ..." << std::endl;
-    InitDDGMatrix();
-    std::cout << "Loading primordial genes file ..." << std::endl;
-    LoadPrimordialGenes(geneListFile,genesPath);
-    std::cout << "Extracting PDDG matrix ..." << std::endl;
-    ExtractPDDGMatrix(pddgFile.c_str());
+    if(!PolyCell::useGauss_){
+        std::cout << "Initializing DDG matrix ..." << std::endl;
+        InitDDGMatrix();
+        std::cout << "Loading primordial genes file ..." << std::endl;
+        LoadPrimordialGenes(geneListFile,genesPath);
+        std::cout << "Extracting PDDG matrix ..." << std::endl;
+        ExtractPDDGMatrix(pddgFile.c_str());
+    } 
     /********************************************/
 
     std::cout << "Opening starting population snapshot ..." << std::endl;

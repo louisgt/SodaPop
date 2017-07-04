@@ -14,6 +14,7 @@ class PolyCell: public Cell
 
 	public:
         static int ff_;
+        static bool useGauss_;
 		PolyCell();
 	    PolyCell(std::fstream&);			    
 	    PolyCell(std::fstream&, const std::string&);
@@ -40,6 +41,7 @@ class PolyCell: public Cell
 
 // By default the fitness function is set to neutral
 int PolyCell::ff_ = 4;
+bool PolyCell::useGauss_ = false;
 
 PolyCell::PolyCell(){}
 PolyCell::PolyCell(std::fstream& f) : Cell(f)
@@ -157,7 +159,13 @@ double PolyCell::ranmut_Gene()
 
     int bp = (int) (3 * (uniformdevptr->doub()));
     double wi = fitness();
-    (*j).Mutate_BP(site,bp);        
+    if(useGauss_){
+        (*j).Mutate_BP_Gaussian(site,bp);
+    }
+    else{
+        (*j).Mutate_BP(site,bp);
+    }
+            
     UpdateRates();
     double wf = fitness();
     double s = wf - wi;
