@@ -16,13 +16,13 @@ INSTALLDIR = /usr/local/bin
 
 all: $(SODAPOP) $(SNAP2ASCII) $(SUMM2SNAP)
 install:
-	@echo *** Installing binaries to $(INSTALLDIR)/...
+	@echo ### Installing binaries to $(INSTALLDIR)/...
 	$(CP) $(SODAPOP) $(INSTALLDIR)/
 	$(CP) $(SNAP2ASCII) $(INSTALLDIR)/
 	$(CP) $(SUMM2SNAP) $(INSTALLDIR)/
 	
 uninstall:
-	@echo *** Uninstalling binaries from $(INSTALLDIR)/...
+	@echo ### Uninstalling binaries from $(INSTALLDIR)/...
 	$(RM) -r $(INSTALLDIR)/$(SODAPOP)
 	$(RM) -r $(INSTALLDIR)/$(SNAP2ASCII)
 	$(RM) -r $(INSTALLDIR)/$(SUMM2SNAP)
