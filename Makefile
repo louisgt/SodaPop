@@ -1,17 +1,32 @@
-COMPILER =g++
+RM =rm
+CP =cp
+CC =g++
+
 IDIR =./include
 CXXFLAGS =-std=c++11 -Wall -O2 -I$(IDIR)
-EXEC =full-model
+EXEC =sodapop
 LINK = $(CXX) $(CXXFLAGS)
 COMPILE = $(CXX) $(LIBS) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -c
 
-all: sodapop snap2ascii summ2snap
+SODAPOP = sodapop
+SNAP2ASCII = snap2ascii
+SUMM2SNAP = summ2snap
 
-sodapop: sodapop.o
+
+
+INSTALLDIR = /usr/local/bin
+
+all: $(SODAPOP) $(SNAP2ASCII) $(SUMM2SNAP)
+install:
+	$(CP) $(SODAPOP) $(INSTALLDIR)/
+	$(CP) $(SNAP2ASCII) $(INSTALLDIR)/
+	$(CP) $(SUMM2SNAP) $(INSTALLDIR)/
+
+$(SODAPOP): sodapop.o
 	$(LINK) -o sodapop sodapop.o
-snap2ascii: snap2ascii.o
+$(SNAP2ASCII): snap2ascii.o
 	$(LINK) -o snap2ascii snap2ascii.o
-summ2snap: summ2snap.o
+$(SUMM2SNAP): summ2snap.o
 	$(LINK) -o summ2snap summ2snap.o
 
 sodapop.o: ./src/evolve.cpp ./src/Gene.h ./src/Cell.h ./src/global.h
