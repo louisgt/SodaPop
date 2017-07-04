@@ -8,7 +8,7 @@ EXEC =sodapop
 LINK = $(CXX) $(CXXFLAGS)
 COMPILE = $(CXX) $(LIBS) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) -c
 
-SODAPOP = sodapop
+SODAPOP = soda_pop
 SNAP2ASCII = soda_snap
 SUMM2SNAP = soda_summ
 
@@ -19,6 +19,11 @@ install:
 	$(CP) $(SODAPOP) $(INSTALLDIR)/
 	$(CP) $(SNAP2ASCII) $(INSTALLDIR)/
 	$(CP) $(SUMM2SNAP) $(INSTALLDIR)/
+	
+uninstall:
+	$(RM) -r $(INSTALLDIR)/$(SODAPOP)
+	$(RM) -r $(INSTALLDIR)/$(SNAP2ASCII)
+	$(RM) -r $(INSTALLDIR)/$(SUMM2SNAP)
 
 $(SODAPOP): sodapop.o
 	$(LINK) -o soda_pop sodapop.o
