@@ -40,6 +40,7 @@ int main(int argc, char *argv[]){
             PolyCell A(temp);
             Cell_arr.push_back(A);
             temp.close();
+        }
     }
     // else create full population
     else{
