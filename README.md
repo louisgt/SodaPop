@@ -40,7 +40,7 @@ Coming soon.
 ## FAQ
 
 > I get the following error when I try to compile using make: 
-```bash
+```
 error: unrecognized command line option "-std=c++11"
 ```
 
