@@ -31,4 +31,5 @@ Coming soon.
 ## FAQ
 
 > Running make yields the following: ```error: unrecognized command line option "-std=c++11"```
+
 Your gcc/g++ compiler is probably outdated. Get a newer version [here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
