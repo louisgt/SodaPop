@@ -15,11 +15,17 @@ tar –zxvf [zip file]
 
 Before you proceed with the installation, you may wish to move the extracted files to a folder of your choosing. To compile the SodaPop locally, navigate to the program folder and run
 
->```make```
+>
+```bash
+make
+```
 
 This will use the provided makefile to build the binaries sodapop, sodasnap and sodasumm. If you wish to install the program to your computer, run the command
 
->```make install```
+>
+```bash
+make install
+```
 
 By default, the three components above will be added to /usr/local/bin. You can change this in the makefile by editing the content of the $INSTALLDIR variable.
 
@@ -33,7 +39,7 @@ Coming soon.
 
 ## FAQ
 
-> Running make yields the following: ```error: unrecognized command line option "-std=c++11"```
+> I get the following error when I try to compile using make: ```error: unrecognized command line option "-std=c++11"```
 
 Your gcc/g++ compiler is probably outdated. Get a newer version [here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
 
