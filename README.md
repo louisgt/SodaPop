@@ -37,15 +37,15 @@ Coming soon.
 
 Coming soon.
 
-## FAQ
+## Troubleshooting
 
-> I get the following error when I try to compile using make: 
+1. I get the following error when I try to compile using make: 
 ```
 error: unrecognized command line option "-std=c++11"
 ```
 
 Your gcc/g++ compiler is probably outdated. Get a newer version [here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
 
-> I am a Windows user. How can I build and use this software?
+2. I am a Windows user. How can I build and use this software?
 
 Download and install [Cygwin](https://www.cygwin.com/) on your computer. It will allow you to build SodaPop from source and use it as you would on a Unix system.
