@@ -1,24 +1,22 @@
 #include "../src/global.h"
 
 int main(int argc, char *argv[]){
-  if(argc == 3){
-    std::cerr <<"snap2ascii.linux <snap-binary> <out-ascii> [ 0-full | 1-minimal ]\n";
-    exit(1);
+  if(argc != 4){
+      std::cerr <<"snap2ascii.linux <snap-binary> <out-ascii> [ 0-full | 1-minimal ]\n";
+      exit(1);
   }
 
   int flag = atoi(argv[3]);
+  assert((flag==0) | (flag==1));
 
-  assert( (flag==0) | (flag==1) );
-
-  //char buffer[120];
   int Total_Cell_Count;
   double frame_time, T0;
 
   //open binary file 
   std::fstream IN(argv[1], std::ios::in|std::ios::binary);
   if (!IN.is_open()){
-    std::cerr << "Binary file could not be opened.\n";
-    exit(1);
+      std::cerr << "Binary file could not be opened.\n";
+      exit(1);
   } 
 
   std::fstream OUT(argv[2], std::ios::out);

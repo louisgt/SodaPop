@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
     double TIME = 0;
     char buffer[200];
     bool enableAnalysis = false;
+    bool createPop = false;
     
     std::string geneListFile, genesPath;
     std::string snapFile, startSnapFile, pddgFile;
@@ -54,6 +55,8 @@ int main(int argc, char *argv[])
     TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"fitness");
     // boolean switch to draw DDG values from Gaussian
     TCLAP::SwitchArg gaussArg("r","rand-dg","Draw DDG values from Gaussian distribution", cmd, false);
+    // boolean switch to create population from scratch
+    TCLAP::SwitchArg initArg("i","init","Create initial population on the fly", cmd, false);
     // boolean switch to enable analysis
     TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
 
@@ -89,6 +92,7 @@ int main(int argc, char *argv[])
     genesPath = libArg.getValue();
     PolyCell::ff_ = fitArg.getValue();
     enableAnalysis = analysisArg.getValue();
+    createPop = initArg.getValue();
 
     }catch (TCLAP::ArgException &e){
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;}
@@ -130,7 +134,7 @@ int main(int argc, char *argv[])
     // IF POPULATION IS INITIALLY MONOCLONAL
     // CREATE VECTOR WITH N IDENTICAL CELLS
     // MINOR COMPUTATIONAL PENALTY DUE TO REATTRIBUTION OF BARCODES (BELOW)
-    if(true){
+    if(createPop){
         std::cout << "Creating a population of " << N << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
         Cell_arr.reserve(N);
