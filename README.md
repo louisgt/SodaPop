@@ -30,4 +30,4 @@ Coming soon.
 
 ## FAQ
 
-?
+> Running make yields the following: ```error: unrecognized command line option "-std=c++11"```
