@@ -763,10 +763,10 @@ void LoadPrimordialGenes(const std::string& genelistfile, const std::string& gen
     assert( flag_AASeq==gc );
 }
 
-// Reads a unit cell stored in binary format using Cell::dumpCell()
-void quickread_Cell(std::fstream& IN, std::fstream& OUT)
+// Reads a unit cell stored in binary format using Cell::dumpShort()
+void qread_Cell(std::fstream& IN, std::fstream& OUT)
 {
-    char buffer[160];
+    char buffer[140];
     int na, ns;
     double f;
     std::string barcode;
@@ -776,6 +776,8 @@ void quickread_Cell(std::fstream& IN, std::fstream& OUT)
     std::vector<char> buf(l);
     IN.read(&buf[0], l);
     barcode.assign(buf.begin(), buf.end());
+
+    std::cout << barcode << std::endl;
 
     OUT << barcode;
 
@@ -833,14 +835,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
         IN.read(&buff[0], nl);  
         DNAsequence.assign(buff.begin(), buff.end());
 
-        int L = (int) nl;
-        double x = (double) Ns;
-        double y = (double) Na;
-        
-        x = (x/L)*(183/41);
-        y = (y/L)*(183/142);
-
-        sprintf(buffer,"G %12e %12e %12e %12e ", c, dg, x, y);
+        sprintf(buffer,"G %12e %12e %6d %6d ", c, dg, Na, Ns);
         OUT << buffer << std::endl;
     } 
 }

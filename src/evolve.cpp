@@ -171,10 +171,12 @@ int main(int argc, char *argv[])
     OUT2.write((char*)(&TIME),sizeof(double));
     OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
+    int l=1;
     // dump snapshot of initial population and get sum of fitnesses
     for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
         w_sum += (*k).fitness();
-        (*k).dumpCell(OUT2);
+        (*k).dump(OUT2,l);
+        l++;
     } 
     OUT2.close();   
 
@@ -286,8 +288,7 @@ int main(int argc, char *argv[])
 
              int l=1;
              for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-                 (*k).dumpCell(OUT2);
-                 //(*k).dump(OUT2,l);
+                 (*k).dump(OUT2,l);
                  l++;
              } 
              OUT2.close();

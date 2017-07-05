@@ -303,7 +303,7 @@ void Gene::Update_Sequences(const std::string DNAsequence)
 
     if(l != ln_)
     {
-        std::cerr << "ERROR: Replacing DNA sequene with a non-equal length DNA. "<< std::endl;
+        std::cerr << "ERROR: Replacing DNA sequence with a non-equal length DNA. "<< std::endl;
         exit(2);
     }       
 

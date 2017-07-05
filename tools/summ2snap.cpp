@@ -23,51 +23,35 @@ int main(int argc, char *argv[]){
     }
 
     std::string line;
-    // if only single-cell is required
-    if(flag){
+    Cell_arr.reserve(POPSIZEMAX);
+    while (!popf.eof())
+    {
         getline(popf,line);
         std::string word;
         std::istringstream iss(line, std::istringstream::in);
         iss >> word;  
         if ( word == "C" ){
             iss >> word;//cell count
+            int count = atoi(word.c_str());   
             iss >> word;//cell files
             std::fstream temp (word.c_str());//convert std::string to char
-            if (!temp.is_open()){
+            if(!temp.is_open()){
                 std::cerr << "File could not be open: "<< word <<std::endl;
                 exit(1);
             }
             PolyCell A(temp);
-            Cell_arr.push_back(A);
-            temp.close();
-        }
-    }
-    // else create full population
-    else{
-        Cell_arr.reserve(POPSIZEMAX);
-        while (!popf.eof())
-        {
-            getline(popf,line);
-            std::string word;
-            std::istringstream iss(line, std::istringstream::in);
-            iss >> word;  
-            if ( word == "C" ){
-                iss >> word;//cell count
-                int count = atoi(word.c_str());
-                
-                iss >> word;//cell files
-                std::fstream temp (word.c_str());//convert std::string to char
-                if ( !temp.is_open() ) {
-                    std::cerr << "File could not be open: "<< word <<std::endl;
-                    exit(1);
-                }
-                PolyCell A(temp);
-                for(int i=0; i<count; i++){
-                    Cell_arr.push_back(A);
-                    Cell_arr.back().ch_barcode(getBarcode());
-                }
+            if(flag)
+            {
+                A.ch_barcode(getBarcode());
+                Cell_arr.push_back(A);
                 temp.close();
+                break;
             }
+            for(int i=0; i<count; i++){
+                Cell_arr.push_back(A);
+                Cell_arr.back().ch_barcode(getBarcode());
+            }
+            temp.close();
         }
     }
     popf.close();

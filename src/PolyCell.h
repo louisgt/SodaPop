@@ -23,7 +23,7 @@ class PolyCell: public Cell
 	    double ranmut_Gene();
 	    void change_exprlevel();
 	    void dump(std::fstream&, int);
-        void dumpCell(std::fstream&);
+        void dumpShort(std::fstream&);
 	    void PrintCell(int);
 	    void FillGene_L();
         void ch_Fitness(double f){fitness_ = f;}
@@ -222,7 +222,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
 }
 
 // Dump cell summary to binary file
-void PolyCell::dumpCell(std::fstream& OUT)
+void PolyCell::dumpShort(std::fstream& OUT)
 {
     int x;
     double y;
