@@ -44,7 +44,7 @@ By default, the three components above will be added to /usr/local/bin. You can 
 
 ## Usage
 
-For a complete walkthrough of commands, scripts and output, please refer to the [SodaPop wiki](wiki.org).
+For a complete walkthrough of commands, scripts and output, please refer to the [SodaPop wiki](https://github.com/louisgt/SodaPop/wiki).
 
 ![Pop. dynamics example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
 
