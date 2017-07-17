@@ -108,10 +108,10 @@ constexpr double PI  = 3.141592653589793238463;
 // -> all copies are effectively aggregated
 const double DG_STOP = exp(-1*(99)/kT);
 
-// Create a 3D matrix for pDDG values
+// Create a 3D matrix for fitness landscape
 const int max_gene = 1200;
 const int max_resi = 640;
-double pDDG[max_gene][max_resi][20];
+double matrix[max_gene][max_resi][20];
 
 /******* FUNCTION DECLARATIONS *******/
 int GetIndexFromAA(std::string);
@@ -122,8 +122,9 @@ int CheckBP(std::string);
 std::string n3_to_n3(std::string, int);
 std::string getBarcode();
 double RandomNumber();
-void InitDDGMatrix();
-void ExtractPDDGMatrix(std::string);
+void InitMatrix();
+void ExtractDDGMatrix(std::string);
+void ExtractDMSMatrix(std::string);
 void LoadPrimordialGenes(const std::string&,const std::string&);
 int StringDiff(const std::string&, const std::string&);
 std::string trim(const std::string&);
@@ -448,8 +449,6 @@ std::string AdjacentBP(std::string a, int j){
     return B[x];
 }
 
-//THIS FUNCTION NEEDS AN EXTREME MAKEOVER
-
 //Checks if codon b when mutated resulted in a STOP codon a.
 //If b is a STOP codon, it is replaced by 
 //Input: 	a, new codon
@@ -464,7 +463,7 @@ std::string n3_to_n3(std::string a, std::string b, int i){
       switch (i)
       {
           case 0:
-              l =  (2*r);// std::cout << l << std::endl;
+              l =  (2*r);
 
               if (b == "CAA" ){
                 if  ( l<1 )	a = "GAA";
@@ -644,12 +643,12 @@ std::string getBarcode()
 }
 
 // initializes the 3D matrix for DDG values
-void InitDDGMatrix()
+void InitMatrix()
 {
     for(int i = 0; i != max_gene; ++i)
       for(int j = 0; j != max_resi; ++j)
         for(int k = 0; k != 20; ++k)
-          pDDG[i][j][k] = 1; //i.e., exp(-0/kT) = 1
+          matrix[i][j][k] = 1; //i.e., exp(-0/kT) = 1
 }
 
 // extracts values from the DDG file and stores them in the matrix
@@ -674,7 +673,39 @@ void ExtractPDDGMatrix(std::string filepath)
             for(int j = 0; iss>>word; j++){
                 //extract DDG values
                 double x = atof(word.c_str());
-                pDDG[gene_num][i-1][j] = exp(-x/kT);
+                matrix[gene_num][i-1][j] = exp(-x/kT);
+            }
+        }
+        else if ( word == "Gene_NUM"){
+            iss >> word;
+            gene_num = atoi(word.c_str());
+        }
+    }
+    temp.close();
+}
+
+void ExtractDMSMatrix(std::string filepath)
+{
+    std::fstream temp(filepath);
+    if(!temp.is_open()){
+        std::cerr << "File could not be open: "<< filepath << std::endl;
+        exit(2);
+    }
+    std::string line;
+    int gene_num = 0;
+    while(!temp.eof()){
+        std::string word;
+        getline(temp,line);
+        std::istringstream iss(line, std::istringstream::in);
+        iss >> word;
+        if ( word == "DMS"){
+            iss >> word;
+            //residue index
+            int i = atoi(word.c_str());
+            for(int j = 0; iss>>word; j++){
+                //extract DMS values
+                double x = atof(word.c_str());
+                matrix[gene_num][i-1][j] = x;
             }
         }
         else if ( word == "Gene_NUM"){
@@ -739,7 +770,6 @@ void LoadPrimordialGenes(const std::string& genelistfile, const std::string& gen
                   if(w=="Gene_NUM"){
                       iss >> w;
                       gn = atoi(w.c_str());
-                      assert( gn == flag_AASeq); // Gene list must be ordered from 0..(N-1);
                   }
                   else if ( w=="N_Seq" ){
                       assert( gn >= 0);
@@ -776,8 +806,6 @@ void qread_Cell(std::fstream& IN, std::fstream& OUT)
     std::vector<char> buf(l);
     IN.read(&buf[0], l);
     barcode.assign(buf.begin(), buf.end());
-
-    std::cout << barcode << std::endl;
 
     OUT << barcode;
 

@@ -36,12 +36,10 @@ int main(int argc, char *argv[]){
       OUT << std::endl;
       if(flag)
       {
-          std::cout << "Quick read" << std::endl;
           qread_Cell(IN,OUT);//numbers are DUMMY time parameters
       }
       else
       {
-          std::cout << "Long read" << std::endl;
           read_Cell(IN,OUT);
       }
     }

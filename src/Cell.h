@@ -61,13 +61,17 @@ Cell::Cell(std::fstream& cell_in)
     Gene_arr_.reserve(GENECOUNTMAX);
     ch_barcode(getBarcode());
     std::string line;
+    std::string genesPath = "files/genes/";
     while (!cell_in.eof())
     {
         getline(cell_in,line);
         std::string word;
         std::istringstream iss(line, std::istringstream::in);
         iss >> word;
-
+        if ( word == "genes_path" ){
+          iss >> word; 
+          genesPath = word.c_str();
+        }
         if ( word == "org_id" ){
           iss >> word; 
           ID_ = atoi(word.c_str());
@@ -82,7 +86,7 @@ Cell::Cell(std::fstream& cell_in)
         //concentration and stability from gene file take precedence
               iss >> word;
               //open gene file
-              sprintf(buffer,"%s%s.gene","files/genes/",word.c_str());
+              sprintf(buffer,"%s%s.gene",genesPath.c_str(),word.c_str());
               std::fstream temp (buffer);
               if (!temp.is_open()){
                 std::cerr << "File could not be open: " << buffer << std::endl;

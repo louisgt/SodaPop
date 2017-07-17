@@ -254,7 +254,7 @@ double Gene::Mutate_BP(int i, int j)
     int aa_new = GetIndexFromCodon(cdn_new);
     
     // get DDG value from matrix
-    double x = pDDG[g_num_][resi][aa_new-1];
+    double x = matrix[g_num_][resi][aa_new-1];
 
     //Ignore mutations to and from CYSTEINE
     if( (aa_new==2) || (aa_curr==2)){
@@ -273,7 +273,7 @@ double Gene::Mutate_BP(int i, int j)
     }
     else if(aa_primo == aa_new){//REVERT TO WT
 
-          double x_curr = pDDG[g_num_][resi][aa_curr-1];
+          double x_curr = matrix[g_num_][resi][aa_curr-1];
           assert( x_curr<DDG_min || x_curr>DDG_max); 
           
           dg_ /= x_curr;
@@ -283,7 +283,7 @@ double Gene::Mutate_BP(int i, int j)
     }
     else{//TYPICAL NON-SYNONYMOUS
 
-          double x_curr = pDDG[g_num_][resi][aa_curr-1];
+          double x_curr = matrix[g_num_][resi][aa_curr-1];
           assert( x_curr<DDG_min || x_curr>DDG_max); 
 
           // assign new DG value
@@ -349,7 +349,7 @@ double Gene::CheckDG()
         std::cout << aa;
         if(aa != aa0){
               int j = GetIndexFromAA(aa);
-              double x = pDDG[g_num_][i][j-1]; 
+              double x = matrix[g_num_][i][j-1]; 
               if ( x>DDG_min || x<DDG_max) std::cout << " Ignoring " << -kT*log(x);
               else{
                     ddg*=x;
