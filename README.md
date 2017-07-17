@@ -1,6 +1,6 @@
 # SodaPop-1.0
 
-##### Table of Contents  
+## Table of Contents  
 
 [Overview](#overview)  
 
