@@ -2,13 +2,23 @@
 #include <tclap/CmdLine.h>
 #include <unistd.h>
 
-/*
-DESCRIPTION: Implementation of microorganism population dynamics and evolution
-inspired from "omics" data and protein biophysics.
+/*SodaPop
 
-AUTHOR: LOUIS GAUTHIER
-Version: 1.0
-*/
+Copyright (C) 2017 Louis Gauthier
+
+    SodaPop is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    SodaPop is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with SodaPop.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 int main(int argc, char *argv[])
 {
