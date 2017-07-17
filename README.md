@@ -44,8 +44,8 @@ Coming soon.
 error: unrecognized command line option "-std=c++11"
 ```
 
-Your gcc/g++ compiler is probably outdated. Get a newer version [here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
+Make sure your gcc/g++ compiler is up-to-date. Get a newer version [here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
 
 2. I am a Windows user. How can I build and use this software?
 
-Download and install [Cygwin](https://www.cygwin.com/) on your computer. It will allow you to build SodaPop from source and use it as you would on a Unix system.
+Download and install [Cygwin](https://www.cygwin.com/) on your computer. This will allow you to build SodaPop from source and use it as you would on a Unix system.
