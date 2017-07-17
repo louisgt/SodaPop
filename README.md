@@ -31,7 +31,7 @@ By default, the three components above will be added to /usr/local/bin. You can 
 
 ## Usage
 
-![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+![Pop. dynamics example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
 
 ## Troubleshooting
 
