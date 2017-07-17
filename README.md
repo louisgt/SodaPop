@@ -48,6 +48,10 @@ Make sure your gcc/g++ compiler is up-to-date. Get a newer version [here](https:
 
 Download and install [Cygwin](https://www.cygwin.com/) on your computer. This will allow you to build SodaPop from source and use it as you would on a Unix system.
 
+## Contributing
+
+SodaPop is a work in progress meant to be useful to the scientific community. If you have ideas for additionnal features, or if you are interested in contributing to the software, please contact Adrian Serohijos at adrian.serohijos@umontreal.ca.
+
 ## License
 
 Copyright (C) 2017 Louis Gauthier
