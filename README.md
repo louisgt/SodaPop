@@ -1,9 +1,19 @@
 # SodaPop-1.0
 
+##### Table of Contents  
+[Overview](#overview)  
+[Installation](#installation)
+[Usage](#usage)
+[Troubleshooting](#troubleshooting)
+[Contributing](#contributing)
+[License](#license)
+
+<a name="overview"/>
 ## Overview
 
 SodaPop is a forward-time simulator of large haploid populations aimed at studying structure, dynamics and the distribution of fitness effects without prior assumptions on the landscape. The program integrates biochemical and biophysical properties in a cell-based, object-oriented framework and provides an efficient, open-source toolkit for studying large-scale molecular evolution. SodaPop is designed with large-scale simulations in mind, making it suitable for the investigation of evolutionary dynamics in the context of antibiotic resistance, viral evolution and cancer.
 
+<a name="installation"/>
 ## Installation
 
 SodaPop is set of command-line tools written in the C++ programming language using the C++11 Standard. To decompress and extract the contents of the downloaded repository, open a command-line terminal window, change into the directory where the download is located on your computer and run the following command
@@ -29,12 +39,14 @@ make install
 
 By default, the three components above will be added to /usr/local/bin. You can change this in the makefile by editing the content of the $INSTALLDIR variable.
 
+<a name="usage"/>
 ## Usage
 
 ![Pop. dynamics example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
 
 ![Fitness trajectory](https://user-images.githubusercontent.com/29554043/28281203-573643f0-6af4-11e7-9362-212a833a056f.png)
 
+<a name="troubleshooting"/>
 ## Troubleshooting
 
 1. I get the following error when I try to compile using make: 
@@ -48,10 +60,12 @@ Make sure your gcc/g++ compiler is up-to-date. Get a newer version [here](https:
 
 Download and install [Cygwin](https://www.cygwin.com/) on your computer. This will allow you to build SodaPop from source and use it as you would on a Unix system.
 
+<a name="contributing"/>
 ## Contributing
 
 SodaPop is a work in progress meant to be useful to the scientific community. If you have ideas for additionnal features, or if you are interested in contributing to the software, please contact Adrian Serohijos at adrian.serohijos@umontreal.ca.
 
+<a name="license"/>
 ## License
 
 Copyright (C) 2017 Louis Gauthier
