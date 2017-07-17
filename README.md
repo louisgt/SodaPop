@@ -20,7 +20,7 @@ Before you proceed with the installation, you may wish to move the extracted fil
 make
 ```
 
-This will use the provided makefile to build the binaries sodapop, sodasnap and sodasumm. If you wish to install the program to your computer, run the command
+This will use the included makefile to build the binaries **sodapop**, **sodasnap** and **sodasumm**. To install the program to your computer, run the command
 
 >
 ```bash
@@ -29,13 +29,11 @@ make install
 
 By default, the three components above will be added to /usr/local/bin. You can change this in the makefile by editing the content of the $INSTALLDIR variable.
 
-## API Reference
+## Usage
 
-Coming soon.
+![Pop. dynamics example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
 
-## Tests
-
-Coming soon.
+![Fitness trajectory](https://user-images.githubusercontent.com/29554043/28281203-573643f0-6af4-11e7-9362-212a833a056f.png)
 
 ## Troubleshooting
 
@@ -44,8 +42,12 @@ Coming soon.
 error: unrecognized command line option "-std=c++11"
 ```
 
-Your gcc/g++ compiler is probably outdated. Get a newer version [here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
+Make sure your gcc/g++ compiler is up-to-date. Get a newer version [here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
 
 2. I am a Windows user. How can I build and use this software?
 
-Download and install [Cygwin](https://www.cygwin.com/) on your computer. It will allow you to build SodaPop from source and use it as you would on a Unix system.
+Download and install [Cygwin](https://www.cygwin.com/) on your computer. This will allow you to build SodaPop from source and use it as you would on a Unix system.
+
+## License
+
+
