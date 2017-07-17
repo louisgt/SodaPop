@@ -20,7 +20,7 @@ class PolyCell: public Cell
 	    PolyCell(std::fstream&, const std::string&);
 
 	    void UpdateRates();
-	    double ranmut_Gene();
+	    void ranmut_Gene(std::ofstream&, int);
 	    void change_exprlevel();
 	    void dump(std::fstream&, int);
         void dumpShort(std::fstream&);
@@ -135,7 +135,7 @@ void PolyCell::UpdateRates()
     }
 }
 
-double PolyCell::ranmut_Gene()
+void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 {
     // get genome size
     int L = Gene_L_.back();
@@ -157,19 +157,28 @@ double PolyCell::ranmut_Gene()
          site = site - (*k);        
     }
 
+    std::string mutation = "";
+
     int bp = (int) (3 * (uniformdevptr->doub()));
     double wi = fitness();
     if(useGauss_){
         (*j).Mutate_BP_Gaussian(site,bp);
     }
     else{
-        (*j).Mutate_BP(site,bp);
+        mutation = (*j).Mutate_BP(site,bp);
     }
             
     UpdateRates();
     double wf = fitness();
     double s = wf - wi;
-    return s;
+
+    // save beneficial mutations to log
+    // we could save all mutations with abs(s) >= some value x
+    log << barcode().c_str() << "\t";
+    log << fixed;
+    log << mutation << "\t";
+    log << s << "\t";
+    log << ctr << endl;
 }
 
 // Dump cell information to binary file
@@ -214,10 +223,10 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         OUT.write((char*)(&Ns),sizeof(int));
 
         //Save length of nucleo sequence
-        std::string DNAsequence = (*i).nseq();
-        int nl = DNAsequence.length();
+        std::string AAsequence = GetProtFromNuc((*i).nseq());
+        int nl = AAsequence.length();
         OUT.write((char*)&nl, sizeof(int));
-        OUT.write(DNAsequence.data(), nl);
+        OUT.write(AAsequence.data(), nl);
     }
 }
 

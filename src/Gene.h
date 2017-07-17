@@ -30,7 +30,7 @@ class Gene
         Gene& operator=(const Gene&);
       
         double Mutate_BP_Gaussian(int, int);
-        double Mutate_BP(int, int);
+        std::string Mutate_BP(int, int);
 
         void Update_Sequences(std::string);
      
@@ -226,7 +226,7 @@ INPUT:
     i -> site to mutate
     j -> bp to mutate to
 */
-double Gene::Mutate_BP(int i, int j)
+std::string Gene::Mutate_BP(int i, int j)
 { 
     // extract codon to be mutated
     int cdn_ndx = (i%3);
@@ -239,7 +239,6 @@ double Gene::Mutate_BP(int i, int j)
     int aa_curr = GetIndexFromCodon(cdn_curr);
     std::string cdn_new = cdn_curr;
 
-    // fetch primordial amino acid
     std::string s = PrimordialAASeq.at(g_num_);     
     int aa_primo = GetIndexFromAA(s.at(resi));
 
@@ -256,20 +255,24 @@ double Gene::Mutate_BP(int i, int j)
     // get DDG value from matrix
     double x = matrix[g_num_][resi][aa_new-1];
 
+    std::string mutation = std::to_string(g_num_) + '\t' + GetProtFromNuc(cdn_curr) + '\t' + std::to_string(resi) + '\t' + GetProtFromNuc(cdn_new);
+
+    // fetch primordial amino acid
+
     //Ignore mutations to and from CYSTEINE
     if( (aa_new==2) || (aa_curr==2)){
-        return 1;
+        return "CYSTEINE\tNA\tNA\tNA";
     }
 
     //Case unphysical DDG estimate
     if( x>DDG_min || x<DDG_max){
-        return 1;
+        return "UNPHYSICAL\tNA\tNA\tNA";
     }
 
     if( aa_curr == aa_new){//SILENT
           nucseq_.replace(cdn_start, 3, cdn_new);
           Ns_ += 1;
-          return 1;
+          return "SILENT\tNA\tNA\tNA";
     }
     else if(aa_primo == aa_new){//REVERT TO WT
 
@@ -279,7 +282,7 @@ double Gene::Mutate_BP(int i, int j)
           dg_ /= x_curr;
           nucseq_.replace(cdn_start, 3, cdn_new);
           Na_ += 1;
-          return 1;
+          return mutation;
     }
     else{//TYPICAL NON-SYNONYMOUS
 
@@ -291,7 +294,7 @@ double Gene::Mutate_BP(int i, int j)
           dg_ *= x;
           nucseq_.replace(cdn_start, 3, cdn_new);
           Na_ += 1;
-          return x;
+          return mutation;
     }
 }
 

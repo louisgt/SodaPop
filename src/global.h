@@ -846,7 +846,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
     for(int j=0; j<gene_size; j++){
         double e, c, dg;
         int gene_nid, Ns, Na;
-        std::string DNAsequence;
+        std::string AAsequence;
 
         IN.read((char*)(&gene_nid),sizeof(int));   
         IN.read((char*)(&e),sizeof(double));
@@ -856,15 +856,16 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
         IN.read((char*)(&Ns),sizeof(int));
         IN.read((char*)(&Na),sizeof(int));
         
-        //read DNA sequence
+        //read AA sequence
         int nl;
         IN.read((char*)&nl, sizeof(int));
         std::vector<char> buff(nl);
         IN.read(&buff[0], nl);  
-        DNAsequence.assign(buff.begin(), buff.end());
+        AAsequence.assign(buff.begin(), buff.end());
 
-        sprintf(buffer,"G %12e %12e %6d %6d ", c, dg, Na, Ns);
+        sprintf(buffer,"%d G %12e %12e %6d %6d ",j, c, dg, Na, Ns);
         OUT << buffer << std::endl;
+        OUT << AAsequence << std::endl;
     } 
 }
 

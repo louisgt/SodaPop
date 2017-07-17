@@ -235,15 +235,8 @@ int main(int argc, char *argv[])
                 if((*it).mrate()*(*it).genome_size() > RandomNumber())
                 {
                     MUTATION_CTR++;
-                    // get selection coefficient s
-                    double s = (*it).ranmut_Gene();
-
-                    // save beneficial mutations to log
-                    // we could save all mutations with abs(s) >= some value x
-                    MUTATIONLOG << (*it).barcode().c_str() << "\t";
-                    MUTATIONLOG << fixed;
-                    MUTATIONLOG << s << "\t";
-                    MUTATIONLOG << GENERATION_CTR << endl;      
+                    // mutate and write mutation to file
+                    (*it).ranmut_Gene(MUTATIONLOG,GENERATION_CTR);      
                 }
                 std::advance(it,1);
             }
