@@ -29,6 +29,10 @@ make install
 
 By default, the three components above will be added to /usr/local/bin. You can change this in the makefile by editing the content of the $INSTALLDIR variable.
 
+## Usage
+
+![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+
 ## Troubleshooting
 
 1. I get the following error when I try to compile using make: 
@@ -41,3 +45,7 @@ Make sure your gcc/g++ compiler is up-to-date. Get a newer version [here](https:
 2. I am a Windows user. How can I build and use this software?
 
 Download and install [Cygwin](https://www.cygwin.com/) on your computer. This will allow you to build SodaPop from source and use it as you would on a Unix system.
+
+## License
+
+
