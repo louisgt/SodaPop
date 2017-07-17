@@ -20,7 +20,7 @@ Before you proceed with the installation, you may wish to move the extracted fil
 make
 ```
 
-This will use the provided makefile to build the binaries sodapop, sodasnap and sodasumm. If you wish to install the program to your computer, run the command
+This will use the included makefile to build the binaries **sodapop**, **sodasnap** and **sodasumm**. To install the program to your computer, run the command
 
 >
 ```bash
@@ -28,14 +28,6 @@ make install
 ```
 
 By default, the three components above will be added to /usr/local/bin. You can change this in the makefile by editing the content of the $INSTALLDIR variable.
-
-## API Reference
-
-Coming soon.
-
-## Tests
-
-Coming soon.
 
 ## Troubleshooting
 
