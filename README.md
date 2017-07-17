@@ -33,6 +33,8 @@ By default, the three components above will be added to /usr/local/bin. You can 
 
 ![Pop. dynamics example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
 
+![Fitness trajectory](https://user-images.githubusercontent.com/29554043/28281203-573643f0-6af4-11e7-9362-212a833a056f.png)
+
 ## Troubleshooting
 
 1. I get the following error when I try to compile using make: 
