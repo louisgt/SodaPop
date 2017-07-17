@@ -1,14 +1,12 @@
 # SodaPop-1.0
 
-## Table of Contents  
+## Table of Contents
 
 [Overview](#overview)  
-[Installation](#installation)
-
-[Usage](#usage)
-[Troubleshooting](#troubleshooting)
-
-[Contributing](#contributing)
+[Installation](#installation)  
+[Usage](#usage)  
+[Troubleshooting](#troubleshooting)  
+[Contributing](#contributing)  
 [License](#license)
 
 <a name="overview"/>
