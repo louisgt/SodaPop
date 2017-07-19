@@ -50,6 +50,8 @@ For a complete walkthrough of commands, scripts and output, please refer to the 
 
 ![Fitness trajectory](https://user-images.githubusercontent.com/29554043/28281203-573643f0-6af4-11e7-9362-212a833a056f.png)
 
+![Clonal interference](https://user-images.githubusercontent.com/29554043/28374005-7e0a6e60-6c71-11e7-945b-546541b0c3f1.png)
+
 <a name="troubleshooting"/>
 
 ## Troubleshooting
