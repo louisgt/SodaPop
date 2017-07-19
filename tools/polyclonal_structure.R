@@ -1,0 +1,41 @@
+arg = commandArgs(trailingOnly=TRUE)
+
+#### PARSE CURRENT SIMULATION DIRECTORY
+src = arg[1]
+dt=as.numeric(arg[2])
+dir = getwd()
+
+#### LOAD UTILITIES (INSTALL IF MISSING)
+if (!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
+pacman::p_load(ggplot2, reshape2)
+
+#### IMPORT TIME SERIES DATA
+generations = as.data.frame(read.csv(paste(dir,src,"ALL_generations.txt",sep=""), header = FALSE, sep =" "))
+rows_to_keep = generations$V3 != 0
+generations = generations[rows_to_keep,] 
+avg_fitness <- read.csv(paste(dir,src,"avg_fitness.txt",sep=""), header = FALSE)
+avg_fitness$gen = as.numeric(row.names(avg_fitness))*dt-dt
+
+fixgen = (ncol(generations) - 2)*dt
+colnames(generations)[2:(ncol(generations))]=seq(0,fixgen, dt)
+generations$V1 = sapply(generations$V1, as.factor)
+FLUX = melt(generations, id='V1')
+
+print("Saving plot a to file...")
+
+a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_bw() + labs(x = "Generations",y="Average fitness",title='Evolution of the average population fitness in time')
+ggsave("fitness.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8)
+
+print("Saving plot b to file...")
+
+b = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_area(aes(fill=V1),alpha=0.5) + theme_bw() + scale_color_discrete(guide=FALSE) + scale_fill_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,dt*25)) +
+  labs(x = "Generations",y="Count",title='Population dynamics under Wright-Fisher model')
+b$theme$plot.margin = unit(c(1,1.5,1.5,1.5),"cm")
+ggsave("graph1.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8)
+
+print("Saving plot c to file...")
+
+c = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_line() + theme_bw() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,dt*25)) + 
+labs(x = "Generations",y="Count",title='Population dynamics under Wright-Fisher model')
+c$theme$plot.margin = unit(c(1,1.5,1.5,1.5),"cm")
+ggsave("graph2.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8)
