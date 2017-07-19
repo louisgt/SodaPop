@@ -211,7 +211,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
 
     OUT.write(barcode().c_str(), s);
 
-    y = o_mrate_;
+    y = fitness();
     OUT.write((char*)(&y),sizeof(double));
     
     y = c_mrate_;		 	 
@@ -237,10 +237,10 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         OUT.write((char*)(&Ns),sizeof(int));
 
         //Save length of nucleo sequence
-        std::string AAsequence = GetProtFromNuc((*i).nseq());
-        int nl = AAsequence.length();
+        std::string DNAsequence = (*i).nseq();
+        int nl = DNAsequence.length();
         OUT.write((char*)&nl, sizeof(int));
-        OUT.write(AAsequence.data(), nl);
+        OUT.write(DNAsequence.data(), nl);
     }
 }
 
@@ -289,11 +289,10 @@ void PolyCell::PrintCell(int cell_ndx)
         double e = (*i).e;
         double c = (*i).conc;
         double dg = -kT*log((*i).dg());
-        double ddg = -kT*log((*i).CheckDG());
         int Ns = (*i).Ns();
         int Na = (*i).Na();
            
-        sprintf(buffer,"G %d% 2.2f %10.8f %10.8f %10.8f %d %d ", gene_nid, e, c, dg, ddg, Ns, Na);
+        sprintf(buffer,"G %d% 2.2f %10.8f %10.8f %d %d ", gene_nid, e, c, dg, Ns, Na);
         std::cout << buffer << std::endl;  
       }
       std::cout << std::endl;

@@ -313,7 +313,6 @@ std::string Gene::Mutate_BP(int i, int j)
     }
 }
 
-
 // Updates the current DNA sequence
 void Gene::Update_Sequences(const std::string DNAsequence)
 { 
@@ -345,36 +344,4 @@ double Gene::functional()
 double Gene::misfolded()
 {
     return (this->conc)*(1-Pnat());
-}
-
-//***************************************************
-//	ERROR CHECKING ROUTINES
-//***************************************************
-double Gene::CheckDG()
-{
-      std::string A0 = PrimordialAASeq.at(g_num_);
-
-      std::string A = GetProtFromNuc(nucseq_);
-      std::cout << A0 << std::endl;
-      std::cout << A << std::endl;
-
-      double ddg = 1; 
-      //calculate DDG
-      for(int i=0; i<la_; i++){
-        char aa0 = A0.at(i);
-        std::cout << i << " " << aa0 << " ";
-        char aa = A.at(i);
-        std::cout << aa;
-        if(aa != aa0){
-              int j = GetIndexFromAA(aa);
-              double x = matrix[g_num_][i][j-1]; 
-              if ( x>DDG_min || x<DDG_max) std::cout << " Ignoring " << -kT*log(x);
-              else{
-                    ddg*=x;
-                    std::cout << " " << -kT*log(x);
-              }
-        }
-        std::cout << std::endl;
-      }  
-      return ddg; 
 }

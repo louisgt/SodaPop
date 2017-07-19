@@ -837,7 +837,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
 {
     char buffer[140];
     int cell_id, cell_index, gene_size;
-    double m,m0;
+    double m,f;
     std::string barcode;
 
     IN.read((char*)(&cell_index),sizeof(int));
@@ -851,17 +851,17 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
 
     OUT << barcode;
 
-    IN.read((char*)(&m0),sizeof(double));
+    IN.read((char*)(&f),sizeof(double));
     IN.read((char*)(&m),sizeof(double));
     IN.read((char*)(&gene_size),sizeof(int));
     
-    sprintf(buffer," C %6d %12e %12e", cell_index, m0, m);
+    sprintf(buffer," C %6d %12e %12e", cell_index, f, m);
     OUT << buffer << std::endl;
 
     for(int j=0; j<gene_size; j++){
         double e, c, dg;
         int gene_nid, Ns, Na;
-        std::string AAsequence;
+        std::string DNAsequence;
 
         IN.read((char*)(&gene_nid),sizeof(int));   
         IN.read((char*)(&e),sizeof(double));
@@ -871,16 +871,16 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
         IN.read((char*)(&Ns),sizeof(int));
         IN.read((char*)(&Na),sizeof(int));
         
-        //read AA sequence
+        //read DNA sequence
         int nl;
         IN.read((char*)&nl, sizeof(int));
         std::vector<char> buff(nl);
         IN.read(&buff[0], nl);  
-        AAsequence.assign(buff.begin(), buff.end());
+        DNAsequence.assign(buff.begin(), buff.end());
 
         sprintf(buffer,"%d G %12e %12e %6d %6d ",j, c, dg, Na, Ns);
         OUT << buffer << std::endl;
-        OUT << AAsequence << std::endl;
+        OUT << GetProtFromNuc(DNAsequence) << std::endl;
     } 
 }
 
