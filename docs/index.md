@@ -8,7 +8,7 @@ The goal of this wiki is to demonstrate the functionalities of SodaPop and to pr
 
 - [Creating a starting population](https://github.com/louisgt/SodaPop/wiki/Creating-a-starting-population) 
 - [Running a basic simulation](https://github.com/louisgt/SodaPop/wiki/Running-a-basic-simulation)  
-- [Converting binary snapshots to text](https://github.com/louisgt/SodaPop/wiki/Converting-binary-snapshots-to-text)
+- [Converting binary snapshots to text](Converting-binary-snapshots-to-text.md)
 - [Creating a custom fitness function](https://github.com/louisgt/SodaPop/wiki/Creating-a-custom-fitness-function)
 - [Analysis](https://github.com/louisgt/SodaPop/wiki/Using-the-analysis-tools)    
    * [Extracting barcodes](https://github.com/louisgt/SodaPop/wiki/Extracting-barcodes)  
