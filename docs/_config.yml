@@ -1,0 +1,5 @@
+theme: jekyll-theme-cayman
+title: SodaPop
+description: A fast, versatile forward-time simulator for large-scale population dynamics and molecular evolution.
+show_downloads: "true"
+baseurl: /SodaPop
