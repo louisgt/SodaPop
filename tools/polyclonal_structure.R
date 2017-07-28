@@ -9,16 +9,24 @@ dir = getwd()
 if (!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
 pacman::p_load(ggplot2, reshape2)
 
+print("Importing time series data...")
+
 #### IMPORT TIME SERIES DATA
 generations = as.data.frame(read.csv(paste(dir,src,"ALL_generations.txt",sep=""), header = FALSE, sep =" "))
+
+print("Extracting rows to keep...")
 rows_to_keep = generations$V3 != 0
-generations = generations[rows_to_keep,] 
+generations = generations[rows_to_keep,]
+
+print("Importing average fitness trajectory...")
 avg_fitness <- read.csv(paste(dir,src,"avg_fitness.txt",sep=""), header = FALSE)
 avg_fitness$gen = as.numeric(row.names(avg_fitness))*dt-dt
 
 fixgen = (ncol(generations) - 2)*dt
 colnames(generations)[2:(ncol(generations))]=seq(0,fixgen, dt)
-generations$V1 = sapply(generations$V1, as.factor)
+# print("Transforming barcodes into factors...")
+# generations$V1 = sapply(generations$V1, as.factor)
+print("Melting dataframe...")
 FLUX = melt(generations, id='V1')
 
 print("Saving plot a to file...")
