@@ -1,0 +1,14 @@
+//organism ID and mutation rate
+org_id  1
+mrate   1.53116e-6
+//Gene prefix, ID, stability (kcal/mol)
+G	0	-2
+G	1	-2
+G	2	-2
+G	3	-2
+G	4	-2
+G	5	-2
+G	6	-2
+G	7	-2
+G	8	-2
+G	9	-2
