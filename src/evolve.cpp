@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
     bool trackMutations = false;
     bool createPop = false;
     bool useDDG = false;
+    bool useShort = false;
     
     std::string geneListFile, genesPath;
     std::string snapFile, startSnapFile, matrixFile;
@@ -75,6 +76,8 @@ int main(int argc, char *argv[])
     TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
     // boolean switch to track mutations
     TCLAP::SwitchArg eventsArg("e","track-events","Track mutation events", cmd, false);
+    // boolean switch to use short format for snapshots
+    TCLAP::SwitchArg shortArg("s","short-format","Use short format for population snapshots", cmd, false);
 
     // Add the arguments to the CmdLine object.
     cmd.add(maxArg);
@@ -112,6 +115,7 @@ int main(int argc, char *argv[])
     PolyCell::ff_ = fitArg.getValue();
     enableAnalysis = analysisArg.getValue();
     trackMutations = eventsArg.getValue();
+    useShort = shortArg.getValue();
     createPop = initArg.getValue();
 
     }catch (TCLAP::ArgException &e){
@@ -198,13 +202,22 @@ int main(int argc, char *argv[])
     OUT2.write((char*)(&TIME),sizeof(double));
     OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
-    int l=1;
-    // dump snapshot of initial population and get sum of fitnesses
-    for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-        w_sum += (*k).fitness();
-        (*k).dump(OUT2,l);
-        l++;
-    } 
+    if(useShort){
+        for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
+            w_sum += (*k).fitness();
+            (*k).dumpShort(OUT2);
+        } 
+    }
+    else{
+        int l=1;
+        // dump snapshot of initial population and get sum of fitnesses
+        for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
+            w_sum += (*k).fitness();
+            (*k).dump(OUT2,l);
+            l++;
+        } 
+    }
+    
     OUT2.close();   
 
     std::ofstream MUTATIONLOG;
@@ -312,11 +325,19 @@ int main(int argc, char *argv[])
              OUT2.write((char*)(&TIME),sizeof(double));
              OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
-             int l=1;
-             for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-                 (*k).dump(OUT2,l);
-                 l++;
-             } 
+             if(useShort){
+                    for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
+                     (*k).dumpShort(OUT2);
+                } 
+             }
+             else{
+                int l=1;
+                for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
+                    (*k).dump(OUT2,l);
+                    l++;
+                }
+             }
+              
              OUT2.close();
          }
     }
