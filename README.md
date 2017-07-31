@@ -71,7 +71,7 @@ Download and install [Cygwin](https://www.cygwin.com/) on your computer. This wi
 
 ## Contributing
 
-SodaPop is a work in progress meant to be useful to the scientific community. If you have ideas for additionnal features, or if you are interested in contributing to the software, please contact Adrian Serohijos at adrian.serohijos@umontreal.ca.
+SodaPop is a work in progress. It can be expanded by implementing new features. It can moreover be further optimized for performance and memory. If you have ideas for additionnal features, or if you are interested in contributing to the software, please contact Louis Gauthier at louis.gauthier@umontreal.ca
 
 <a name="license"/>
 
