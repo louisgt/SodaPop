@@ -21,10 +21,12 @@ Copyright (C) 2017 Louis Gauthier
 
 class PolyCell: public Cell
 {
+    typedef double(PolyCell::*funcPtr)(void);
 	protected:
         double fitness_;
         int Total_Ns_;
         int Total_Na_;
+        funcPtr fit;
 
 	public:
         static int ff_;
@@ -34,6 +36,7 @@ class PolyCell: public Cell
 	    PolyCell(std::fstream&, const std::string&);
 
 	    void UpdateRates();
+        void ranmut_Gene();
 	    void ranmut_Gene(std::ofstream&, int);
 	    void change_exprlevel();
 	    void dump(std::fstream&, int);
@@ -42,15 +45,17 @@ class PolyCell: public Cell
 	    void FillGene_L();
         void ch_Fitness(double f){fitness_ = f;}
         // Fitness functions
+        void selectFitness();
         double flux();
         double toxicity();
         double metabolicOutput();
-        const double neutral();
+        double neutral();
         ///////////////////////
         const double fitness();
         int Na(){return Total_Na_;}
         int Ns(){return Total_Ns_;}
         void UpdateNsNa();
+
 };
 
 // By default the fitness function is set to neutral
@@ -60,6 +65,7 @@ bool PolyCell::useGauss_ = false;
 PolyCell::PolyCell(){}
 PolyCell::PolyCell(std::fstream& f) : Cell(f)
 {
+    selectFitness();
 	// Update current rates
   	this->UpdateRates();  
   	// Fill gene length array
@@ -67,6 +73,7 @@ PolyCell::PolyCell(std::fstream& f) : Cell(f)
 }    
 PolyCell::PolyCell(std::fstream& f, const std::string& s) : Cell(f,s)
 {
+    selectFitness();
 	// Update current rates
   	this->UpdateRates();  
   	// Fill gene length array
@@ -81,6 +88,21 @@ void PolyCell::FillGene_L()
     for(i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
         sum+= (*i).length();
         Gene_L_.push_back(sum);
+    }
+}
+
+void PolyCell::selectFitness()
+{
+    switch(PolyCell::ff_){
+        case 1: fit = &PolyCell::flux;
+            break;
+        case 2: fit = &PolyCell::toxicity;
+            break;
+        case 3: fit = &PolyCell::metabolicOutput;
+            break;
+        case 4: fit = &PolyCell::neutral;
+            break;
+        default:;
     }
 }
 
@@ -124,7 +146,7 @@ double PolyCell::metabolicOutput()
 }
 
 // NEUTRAL FITNESS FUNCTION
-const double PolyCell::neutral()
+double PolyCell::neutral()
 {
     return 1;
 }
@@ -136,17 +158,7 @@ const double PolyCell::fitness()
 
 void PolyCell::UpdateRates()
 {
-    switch(PolyCell::ff_){
-        case 1: ch_Fitness(this->flux());
-            break;
-        case 2: ch_Fitness(this->toxicity());
-            break;
-        case 3: ch_Fitness(this->metabolicOutput());
-            break;
-        case 4: ch_Fitness(this->neutral());
-            break;
-        default:;
-    }
+    ch_Fitness((this->*fit)());
 }
 
 void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
@@ -193,6 +205,39 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     log << mutation << "\t";
     log << s << "\t";
     log << ctr << endl;
+}
+
+void PolyCell::ranmut_Gene()
+{
+    // get genome size
+    int L = Gene_L_.back();
+    // pick random site to mutate
+    int site = (int) ( L * (uniformdevptr->doub()));
+
+    // find the corresponding gene
+    std::vector<Gene>::iterator j = Gene_arr_.begin();
+    VectInt_citerator k = Gene_L_.begin();
+
+    if(site >= (*k)){
+    // random number generated is greater than
+    // the cummulative sum of genes
+         for(k = Gene_L_.begin(); k != Gene_L_.end(); ++k){
+             if( site<(*k) ) break;
+             j++; 
+         }        
+         k--;
+         site = site - (*k);        
+    }
+
+    int bp = (int) (3 * (uniformdevptr->doub()));
+    if(useGauss_){
+        (*j).Mutate_BP_Gaussian(site,bp);
+    }
+    else{
+        (*j).Mutate_BP(site,bp);
+    }
+            
+    UpdateRates();
 }
 
 // Dump cell information to binary file

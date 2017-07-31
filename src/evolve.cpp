@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     double TIME = 0;
     char buffer[200];
     bool enableAnalysis = false;
+    bool trackMutations = false;
     bool createPop = false;
     bool useDDG = false;
     
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
     // errors in input are caught and explained to user
     try { 
     // Define the command line object
-    TCLAP::CmdLine cmd("Full model of molecular evolution", ' ', "1.0");
+    TCLAP::CmdLine cmd("SodaPop: a multi-scale model of molecular evolution", ' ', "v1.0");
 
     // Define value arguments
     TCLAP::ValueArg<int> maxArg("m","maxgen","Maximum number of generations",false,10000,"int");
@@ -72,6 +73,8 @@ int main(int argc, char *argv[])
     TCLAP::SwitchArg initArg("c","create-single","Create initial population on the fly", cmd, false);
     // boolean switch to enable analysis
     TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
+    // boolean switch to track mutations
+    TCLAP::SwitchArg eventsArg("e","track-events","Track mutation events", cmd, false);
 
     // Add the arguments to the CmdLine object.
     cmd.add(maxArg);
@@ -108,6 +111,7 @@ int main(int argc, char *argv[])
     genesPath = libArg.getValue();
     PolyCell::ff_ = fitArg.getValue();
     enableAnalysis = analysisArg.getValue();
+    trackMutations = eventsArg.getValue();
     createPop = initArg.getValue();
 
     }catch (TCLAP::ArgException &e){
@@ -203,13 +207,17 @@ int main(int argc, char *argv[])
     } 
     OUT2.close();   
 
-    // Open MUTATION LOG
-    sprintf(buffer, "out/%s/MUTATION_LOG.%03d",snapFile.c_str(),node);
-    std::ofstream MUTATIONLOG(buffer);
-    if ( !MUTATIONLOG.is_open() ) {
-        std::cerr << "Mutation log file could not be opened";
-        exit(1);
+    std::ofstream MUTATIONLOG;
+    if(trackMutations){
+        // Open MUTATION LOG
+        sprintf(buffer, "out/%s/MUTATION_LOG.%03d",snapFile.c_str(),node);
+        MUTATIONLOG.open(buffer);
+        if ( !MUTATIONLOG.is_open() ) {
+            std::cerr << "Mutation log file could not be opened";
+            exit(1);
+        }
     }
+    
     std::cout << "Starting evolution ..." << std::endl;
 
     // PSEUDO WRIGHT-FISHER PROCESS
@@ -245,8 +253,13 @@ int main(int argc, char *argv[])
                 if((*it).mrate()*(*it).genome_size() > RandomNumber())
                 {
                     MUTATION_CTR++;
-                    // mutate and write mutation to file
-                    (*it).ranmut_Gene(MUTATIONLOG,GENERATION_CTR);      
+                    if(trackMutations){
+                        // mutate and write mutation to file
+                        (*it).ranmut_Gene(MUTATIONLOG,GENERATION_CTR);
+                    }
+                    else{
+                        (*it).ranmut_Gene();
+                    }       
                 }
                 std::advance(it,1);
             }
