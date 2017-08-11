@@ -193,7 +193,6 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     else{
         mutation = (*j).Mutate_BP(site,bp);
     }
-            
     UpdateRates();
     double wf = fitness();
     double s = wf - wi;

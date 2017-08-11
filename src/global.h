@@ -55,14 +55,7 @@ auto ProperlySeededRandomEngine () -> typename std::enable_if<!!N, T>::type {
     T seededEngine (seeds);
     return seededEngine;
 }
-
-/******* RANDOM GENERATORS *********/
-
-//Global declarations of deviate generators
-Ran *uniformdevptr;
-Normaldev *normaldevptr;
-Poissondev *poissondevptr;
-Binomialdev *binomialdevptr;
+   Ran *uniformdevptr;
 
 /******** PSEUDO RANDOM NUMBER GENERATOR
 
@@ -71,7 +64,7 @@ adapted from      PCG: A Family of Simple Fast Space-Efficient Statistically Goo
                   by MELISSA E. O’NEILL
 
 this RNG provides high quality uniform random floats
-without a big memory or time penalty
+without a significant memory/time penalty
 */
 
 //Set seed source to rand device
@@ -964,7 +957,3 @@ bool makePath(const std::string& path)
         return false;
     }
 }
-
-
-
-

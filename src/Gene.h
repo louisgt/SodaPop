@@ -35,6 +35,13 @@ class Gene
         double e;		//essentiality: 1-if directly involved in replication, 0-otherwise
    
     public:
+        static double shape_;
+        static double scale_;
+        static double mean_;
+        static double stdev_;
+        static std::gamma_distribution<double> gamma_;
+        static std::normal_distribution<> normal_;
+
         Gene();
         Gene(int, std::string, double);
         Gene(std::fstream&);
@@ -43,6 +50,11 @@ class Gene
       
         bool operator==(Gene&);
         Gene& operator=(const Gene&);
+
+        static void initGamma();
+        static double RandomGamma();
+        static void initNormal();
+        static double RandomNormal();
       
         double Mutate_BP_Gaussian(int, int);
         std::string Mutate_BP(int, int);
@@ -70,6 +82,15 @@ class Gene
         double Pnat();
 };
 
+double Gene::shape_ = 1.0;
+double Gene::scale_ = 1.0;
+double Gene::mean_ = 1.0;
+double Gene::stdev_ = 1.0;
+
+auto engine = ProperlySeededRandomEngine();
+std::gamma_distribution<double> Gene::gamma_ = std::gamma_distribution<double>(Gene::shape_, Gene::scale_);
+std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(Gene::mean_, Gene::stdev_);
+
 Gene::Gene(){
       g_num_ = 0;
       ln_ = 0; la_ = 0;
@@ -93,14 +114,12 @@ Gene::Gene(const int i, const std::string a, double c)
         ln_=a.length();
         la_=ln_/3;
         std::string aaseq = GetProtFromNuc(nucseq_);
-
         //check for stop codons in midsequence
         std::string::size_type loc = aaseq.find("X", 0 );
         if(loc != std::string::npos){
             std::cerr << "ERROR: DNA sequence has STOP codons in the middle"<<std::endl;
             exit(2);
         }           
-
         dg_= 1;
         conc = c;
         e = 0;
@@ -232,6 +251,26 @@ double Gene::Mutate_BP_Gaussian(int i, int j)
 
         return 1;
     }
+}
+
+void Gene::initGamma()
+{
+    Gene::gamma_.param(std::gamma_distribution<double>::param_type(Gene::shape_, Gene::scale_));
+}
+
+void Gene::initNormal()
+{
+    Gene::normal_.param(std::normal_distribution<>::param_type(Gene::mean_, Gene::stdev_));
+}
+
+double Gene::RandomGamma()
+{
+    return Gene::gamma_(engine);
+}
+
+double Gene::RandomNormal()
+{
+    return Gene::normal_(engine);
 }
 
 /*

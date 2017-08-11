@@ -34,18 +34,15 @@ int main(int argc, char *argv[])
     bool enableAnalysis = false;
     bool trackMutations = false;
     bool createPop = false;
-    bool useDDG = false;
     bool useShort = false;
-    
+
+    std::string inputType;
     std::string geneListFile, genesPath;
-    std::string snapFile, startSnapFile, matrixFile;
+    std::string outDir, startSnapFile, matrixFile;
 
     auto rng = ProperlySeededRandomEngine();
-
-    Ran rand_uniform(rng());                        uniformdevptr = &rand_uniform;
-    Normaldev rand_normal(1.0, 1.0, rng());         normaldevptr = &rand_normal;
-    Poissondev rand_poisson(1.0, rng());            poissondevptr = &rand_poisson;
-    Binomialdev rand_binomial(1, 0.5, rng());       binomialdevptr = &rand_binomial;
+    Ran rand_uniform(rng());                        
+    uniformdevptr = &rand_uniform;
 
     // Wrap everything in a try block
     // errors in input are caught and explained to user
@@ -61,21 +58,38 @@ int main(int argc, char *argv[])
     //files
     TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"sim","filename");
     TCLAP::ValueArg<std::string> geneArg("g","gene-list","Gene list file",true,"null","filename");
-    TCLAP::ValueArg<std::string> matrixArg("i","input","Input defining the fitness landscape",false,"null","filename");
     TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",false,"null","filename");
-    TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",true,"null","filename");
+    TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",false,"files/genes/","filename");
+
+    TCLAP::ValueArg<std::string> matrixArg("i","input","Input file defining the fitness landscape",false,"null","filename");
+    
     // fitness function
-    TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"fitness");
+    TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"integer ID");
+    
     // boolean switch to use DDG as input type
-    TCLAP::SwitchArg DDGArg("d","ddg-input","Use DDG as input type", cmd, false);
-    // boolean switch to draw DDG values from Gaussian
-    TCLAP::SwitchArg gaussArg("r","rand-dg","Draw DDG values from Gaussian distribution", cmd, false);
+    TCLAP::ValueArg<std::string> inputArg("","sim-type","Define simulation type\n<s> (from selection coefficient, DMS or otherwise)\n<stability> (from DDG matrix or distribution)", false,"s","string");
+
+    //use gamma distribution to draw selection coefficients
+    TCLAP::SwitchArg gammaArg("","gamma","Draw selection coefficients from normal distribution", cmd, false);
+
+    //use normal distribution to draw selection coefficients
+    TCLAP::SwitchArg normalArg("","normal","Draw selection coefficients from gamma distribution", cmd, false);
+
+    //first parameter of distribution
+    TCLAP::ValueArg<double> alphaArg("","alpha","Alpha parameter of distribution\nGamma -> shape\nNormal -> mean",false,1,"double");
+
+    //second parameter of distribution
+    TCLAP::ValueArg<double> betaArg("","beta","Beta parameter of distribution\nGamma -> scale\nNormal -> S.D.",false,1,"double");
+
     // boolean switch to create population from scratch
     TCLAP::SwitchArg initArg("c","create-single","Create initial population on the fly", cmd, false);
+    
     // boolean switch to enable analysis
     TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
+    
     // boolean switch to track mutations
     TCLAP::SwitchArg eventsArg("e","track-events","Track mutation events", cmd, false);
+    
     // boolean switch to use short format for snapshots
     TCLAP::SwitchArg shortArg("s","short-format","Use short format for population snapshots", cmd, false);
 
@@ -89,6 +103,9 @@ int main(int argc, char *argv[])
     cmd.add(libArg);
     cmd.add(fitArg);
     cmd.add(matrixArg);
+    cmd.add(alphaArg);
+    cmd.add(betaArg);
+    cmd.add(inputArg);
 
     // Parse the argv array.
     cmd.parse(argc, argv);
@@ -99,20 +116,62 @@ int main(int argc, char *argv[])
     DT = dtArg.getValue();
 
     geneListFile = geneArg.getValue();
-    snapFile = prefixArg.getValue();
+    outDir = prefixArg.getValue();
     startSnapFile = startArg.getValue();
-    if(matrixArg.isSet()){
-        matrixFile = matrixArg.getValue();
-        if(DDGArg.isSet()){
-            useDDG = DDGArg.getValue();
+    genesPath = libArg.getValue();
+
+    inputType = inputArg.getValue();
+
+    std::cout << "Begin ... " << std::endl;
+    if(inputType == "s")
+    {
+        std::cout << "Initializing matrix ..." << std::endl;
+        InitMatrix();
+        std::cout << "Loading primordial genes file ..." << std::endl;
+        LoadPrimordialGenes(geneListFile,genesPath);
+        // if matrix is given
+        if(matrixArg.isSet())
+        {
+            matrixFile = matrixArg.getValue();
+            std::cout << "Extracting DMS matrix ..." << std::endl;
+            ExtractDMSMatrix(matrixFile.c_str());
+        }
+        else
+        {
+            if(gammaArg.isSet())
+            {
+                Gene::shape_ = alphaArg.getValue();
+                Gene::scale_ = betaArg.getValue();
+                Gene::initGamma();
+            }
+            else if(normalArg.isSet())
+            {
+                Gene::mean_ = alphaArg.getValue();
+                Gene::stdev_ = betaArg.getValue();
+                Gene::initNormal();
+            }
         }
     }
-    else
+    else if(inputType == "stability")
     {
-        PolyCell::useGauss_ = gaussArg.getValue();
+        std::cout << "Initializing matrix ..." << std::endl;
+        InitMatrix();
+        std::cout << "Loading primordial genes file ..." << std::endl;
+        LoadPrimordialGenes(geneListFile,genesPath);
+        PolyCell::ff_ = fitArg.getValue();
+        // if DDG matrix is given
+        if(matrixArg.isSet())
+        {
+            matrixFile = matrixArg.getValue();
+            std::cout << "Extracting PDDG matrix ..." << std::endl;
+            ExtractPDDGMatrix(matrixFile.c_str());
+        }
+        else
+        {
+            PolyCell::useGauss_ = true;
+        }
     }
-    genesPath = libArg.getValue();
-    PolyCell::ff_ = fitArg.getValue();
+
     enableAnalysis = analysisArg.getValue();
     trackMutations = eventsArg.getValue();
     useShort = shortArg.getValue();
@@ -120,25 +179,6 @@ int main(int argc, char *argv[])
 
     }catch (TCLAP::ArgException &e){
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;}
-    
-    /********************************************/
-    std::cout << "Begin ... " << std::endl;
-    if(!PolyCell::useGauss_){
-        std::cout << "Initializing matrix ..." << std::endl;
-        InitMatrix();
-        std::cout << "Loading primordial genes file ..." << std::endl;
-        LoadPrimordialGenes(geneListFile,genesPath);
-        if(useDDG){
-            std::cout << "Extracting PDDG matrix ..." << std::endl;
-            ExtractPDDGMatrix(matrixFile.c_str());
-        }
-        else{
-            std::cout << "Extracting DMS matrix ..." << std::endl;
-            ExtractDMSMatrix(matrixFile.c_str());
-        }
-        
-    } 
-    /********************************************/
 
     std::cout << "Opening starting population snapshot ..." << std::endl;
     std::fstream startsnap (startSnapFile.c_str(),std::ios::in|std::ios::binary);
@@ -154,7 +194,7 @@ int main(int argc, char *argv[])
     startsnap.read((char*)(&TIME),sizeof(double));
     startsnap.read((char*)(&Total_Cell_Count),sizeof(int));
 
-    sprintf(buffer,"out/%s/snapshots",snapFile.c_str());
+    sprintf(buffer,"out/%s/snapshots",outDir.c_str());
     std::string outPath = buffer;
     std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
     std::cout << "Opening events file ..." << std::endl;
@@ -165,6 +205,7 @@ int main(int argc, char *argv[])
     // IF POPULATION IS INITIALLY MONOCLONAL
     // CREATE VECTOR WITH N IDENTICAL CELLS
     // MINOR COMPUTATIONAL PENALTY DUE TO REATTRIBUTION OF BARCODES (BELOW)
+    // BUT LARGELY OFFSET BY QUASI-INSTANTANEOUS INITIALIZATION OF VECTOR
     if(createPop){
         std::cout << "Creating a population of " << N << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
@@ -188,7 +229,7 @@ int main(int argc, char *argv[])
     startsnap.close();
     std::cout << "Saving initial population snapshot ... " << std::endl;
     // save initial population snapshot
-    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),snapFile.c_str(), GENERATION_CTR); 
+    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
 
     // Open snapshot file
     std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
@@ -223,7 +264,7 @@ int main(int argc, char *argv[])
     std::ofstream MUTATIONLOG;
     if(trackMutations){
         // Open MUTATION LOG
-        sprintf(buffer, "out/%s/MUTATION_LOG.%03d",snapFile.c_str(),node);
+        sprintf(buffer, "out/%s/MUTATION_LOG.%03d",outDir.c_str(),node);
         MUTATIONLOG.open(buffer);
         if ( !MUTATIONLOG.is_open() ) {
             std::cerr << "Mutation log file could not be opened";
@@ -239,6 +280,7 @@ int main(int argc, char *argv[])
         // reserve 2N to allow overflow and prevent segfault
         Cell_temp.reserve(N*2);
         // for each cell in the population
+
         for(std::vector<PolyCell>::iterator j = Cell_arr.begin(); j != Cell_arr.end(); ++j)
         {
             // fitness of cell j with respect to sum of population fitness
@@ -311,7 +353,7 @@ int main(int argc, char *argv[])
         GENERATION_CTR++; 
         // save population snapshot every DT generations
         if( (GENERATION_CTR % DT) == 0){
-             sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),snapFile.c_str(), GENERATION_CTR); 
+             sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
 
              //Open snapshot file
              std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
@@ -348,7 +390,7 @@ int main(int argc, char *argv[])
     std::cout << "Total number of mutation events: " << MUTATION_CTR << std::endl;
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
-        std::string command = "/bin/bash tools/barcodes.sh "+snapFile+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT);
+        std::string command = "/bin/bash tools/barcodes.sh "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT);
         const char *cmd = command.c_str();
         system(cmd);
     }
