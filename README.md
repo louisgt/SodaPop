@@ -59,92 +59,92 @@ For a complete walkthrough of commands, scripts and output, please refer to the 
 
 >
 ```bash
-m maxgen
+m [maxgen]: number of generations to simulate
 ```
 
 >
 ```bash
-n size
+n [size]: population size cutoff
 ```
 
 >
 ```bash
-t dt
+t [dt]: time interval for population snapshots
 ```
 
 >
 ```bash
-o prefix
+o [prefix]: prefix to use for output
 ```
 
 >
 ```bash
-g gene-list
+g [gene-list]: gene list file
 ```
 
 >
 ```bash
-p pop-desc
+p [pop-desc]: population description (snapshot) file
 ```
 
 >
 ```bash
-l gene-lib
+l [gene-lib]: path to gene library
 ```
 
 >
 ```bash
-i input
+i [input]: input file defining the fitness landscape
 ```
 
 >
 ```bash
-f fitness
+f [fitness]: fitness function to use
 ```
 
 >
 ```bash
-sim-type
+sim-type: defines the theoretical and experimental background for the simulation
 ```
 
 >
 ```bash
-gamma
+gamma: draw values from gamma distribution
 ```
 
 >
 ```bash
-normal
+normal: draw values from normal distribution
 ```
 
 >
 ```bash
-alpha
+alpha: alpha parameter of distribution
 ```
 
 >
 ```bash
-beta
+beta: beta parameter of distribution
 ```
 
 >
 ```bash
-c create-single
+c [create-single]: create initial population from a single cell
 ```
 
 >
 ```bash
-a analyze
+a [analyze]: enable automatic analysis of simulation
 ```
 
 >
 ```bash
-e track-events
+e [track-events]: track arising mutations
 ```
 
 >
 ```bash
-s short-format
+s [short-format]: use short format for population snapshots
 ```
 
 <a name="troubleshooting"/>
