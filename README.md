@@ -8,10 +8,9 @@ SodaPop is a forward-time simulator of large haploid populations aimed at studyi
 ## Table of Contents
 
 [Installation](#installation)  
-[Usage](#usage)
-
-[Flags](#flags)
-[Troubleshooting](#troubleshooting)  
+[Usage](#usage)  
+[Flags](#flags)  
+[Troubleshooting](#troubleshooting)   
 [Contributing](#contributing)  
 [License](#license)
 
