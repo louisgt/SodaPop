@@ -8,7 +8,8 @@ SodaPop is a forward-time simulator of large haploid populations aimed at studyi
 ## Table of Contents
 
 [Installation](#installation)  
-[Usage](#usage)  
+[Usage](#usage)
+[Flags](#flags)
 [Troubleshooting](#troubleshooting)  
 [Contributing](#contributing)  
 [License](#license)
@@ -51,6 +52,100 @@ For a complete walkthrough of commands, scripts and output, please refer to the 
 ![Fitness trajectory](https://user-images.githubusercontent.com/29554043/28281203-573643f0-6af4-11e7-9362-212a833a056f.png)
 
 ![Clonal interference](https://user-images.githubusercontent.com/29554043/28374005-7e0a6e60-6c71-11e7-945b-546541b0c3f1.png)
+
+<a name="flags"/>
+
+## Flags
+
+>
+```bash
+m maxgen
+```
+
+>
+```bash
+n size
+```
+
+>
+```bash
+t dt
+```
+
+>
+```bash
+o prefix
+```
+
+>
+```bash
+g gene-list
+```
+
+>
+```bash
+p pop-desc
+```
+
+>
+```bash
+l gene-lib
+```
+
+>
+```bash
+i input
+```
+
+>
+```bash
+f fitness
+```
+
+>
+```bash
+sim-type
+```
+
+>
+```bash
+gamma
+```
+
+>
+```bash
+normal
+```
+
+>
+```bash
+alpha
+```
+
+>
+```bash
+beta
+```
+
+>
+```bash
+c create-single
+```
+
+>
+```bash
+a analyze
+```
+
+>
+```bash
+e track-events
+```
+
+>
+```bash
+s short-format
+```
 
 <a name="troubleshooting"/>
 
