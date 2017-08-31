@@ -31,19 +31,23 @@ FLUX = melt(generations, id='V1')
 
 print("Saving plot a to file...")
 
+step = dt*10
+if(fixgen/step > 12){
+	step = dt*25
+}
+
 a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_bw() + labs(x = "Generations",y="Average fitness",title='Evolution of the average population fitness in time')
-ggsave("fitness.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8)
+ggsave("fitness.tiff", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
 
 print("Saving plot b to file...")
-
-b = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_area(aes(fill=V1),alpha=0.5) + theme_bw() + scale_color_discrete(guide=FALSE) + scale_fill_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,dt*25)) +
-  labs(x = "Generations",y="Count",title='Population dynamics under Wright-Fisher model')
-b$theme$plot.margin = unit(c(1,1.5,1.5,1.5),"cm")
-ggsave("graph1.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8)
+b = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_area(aes(fill=V1),alpha=0.5) + theme_bw() + scale_color_discrete(guide=FALSE) + scale_fill_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) +
+  labs(x = "Generations",y="Count")
+b$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
+ggsave("clonal_structure.tiff", plot=b, path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
 
 print("Saving plot c to file...")
 
-c = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_line() + theme_bw() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,dt*25)) + 
-labs(x = "Generations",y="Count",title='Population dynamics under Wright-Fisher model')
-c$theme$plot.margin = unit(c(1,1.5,1.5,1.5),"cm")
-ggsave("graph2.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8)
+c = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_line() + theme_bw() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
+labs(x = "Generations",y="Count")
+c$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
+ggsave("clonal_trajectories.tiff", plot=c, path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)

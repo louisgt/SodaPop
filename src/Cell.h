@@ -147,7 +147,7 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
     
     //read gene info
     for(int j=0; j<gene_size; j++){
-        double e, c, dg;
+        double e, c, dg, f;
         int gene_nid, Ns, Na;
         std::string DNAsequence;
      
@@ -155,6 +155,7 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
         IN.read((char*)(&e),sizeof(double));
         IN.read((char*)(&c),sizeof(double));
         IN.read((char*)(&dg),sizeof(double));
+        IN.read((char*)(&f),sizeof(double));
         IN.read((char*)(&Ns),sizeof(int));
         IN.read((char*)(&Na),sizeof(int));
 
@@ -177,6 +178,7 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
         G.conc = c;
         dg = exp(-dg/kT);
         G.ch_dg(dg);
+        G.ch_f(f);
         G.Update_Sequences(DNAsequence);
         G.ch_Na(Na);
         G.ch_Ns(Ns); 

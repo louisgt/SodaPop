@@ -102,6 +102,7 @@ const double CONC_MAX = 1e15;
 const double kT = 0.5922; //defines the energy units
 const double COST = 1e-4; // see Geiler-Samerotte et al. 2011
 const double A_FACTOR = 0.005754898; // see Serohijos & Shakhnovich 2013
+const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
 
 
 // exponent values are precalculated to be used readily
@@ -784,7 +785,7 @@ void LoadPrimordialGenes(const std::string& genelistfile, const std::string& gen
                       iss >> w;
                       std::string aaseq=GetProtFromNuc(w);
                       //check stop codons in midsequence
-                      std::string::size_type loc = aaseq.find("X", 0);
+                      size_t loc = aaseq.find("X", 0);
                       assert( loc == std::string::npos ); // no match
                       VectStr_iterator iter = PrimordialAASeq.begin();
                       PrimordialAASeq.insert(iter+gn, aaseq); 
@@ -821,8 +822,8 @@ void qread_Cell(std::fstream& IN, std::fstream& OUT)
     IN.read((char*)(&ns),sizeof(int));
     IN.read((char*)(&f),sizeof(double));
     
-    sprintf(buffer," C %6d %6d %12e", na, ns, f);
-    OUT << buffer << std::endl;
+    sprintf(buffer,"\tC\t%d\t%d\t%e", na, ns, f);
+    OUT << buffer;
 }
 
 // Reads a unit cell stored in binary format using Cell::dump()
@@ -848,11 +849,11 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
     IN.read((char*)(&m),sizeof(double));
     IN.read((char*)(&gene_size),sizeof(int));
     
-    sprintf(buffer," C %6d %12e %12e", cell_index, f, m);
+    sprintf(buffer,"\tC\t%d\t%e\t%e", cell_index, f, m);
     OUT << buffer << std::endl;
 
     for(int j=0; j<gene_size; j++){
-        double e, c, dg;
+        double e, c, dg, f;
         int gene_nid, Ns, Na;
         std::string DNAsequence;
 
@@ -860,6 +861,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
         IN.read((char*)(&e),sizeof(double));
         IN.read((char*)(&c),sizeof(double));
         IN.read((char*)(&dg),sizeof(double));
+        IN.read((char*)(&f),sizeof(double));
 
         IN.read((char*)(&Ns),sizeof(int));
         IN.read((char*)(&Na),sizeof(int));
@@ -871,9 +873,9 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
         IN.read(&buff[0], nl);  
         DNAsequence.assign(buff.begin(), buff.end());
 
-        sprintf(buffer,"%d G %12e %12e %6d %6d ",j, c, dg, Na, Ns);
+        sprintf(buffer,"%d\tG\t%e\t%e\t%e\t%d\t%d\t",j, c, dg, f, Na, Ns);
         OUT << buffer << std::endl;
-        OUT << GetProtFromNuc(DNAsequence) << std::endl;
+        OUT << GetProtFromNuc(DNAsequence);
     } 
 }
 

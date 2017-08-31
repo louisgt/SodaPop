@@ -5,6 +5,7 @@ OUT=$1
 MAXGEN=$2
 POPSIZE=$3
 DT=$4
+LONG=$5
 
 ##### CREATE DIRECTORIES FOR RESULTS
 rm -r out/$OUT/barcodes; mkdir out/$OUT/barcodes
@@ -19,7 +20,7 @@ FILES=$PREFIX/snapshots/*.snap
 for filename in $FILES
 do
 	y=${filename%.001}
-	./sodasnap $filename $y.txt 0
+	./sodasnap $filename $y.txt $LONG
 done
 
 #### EXTRACT AND SORT BARCODES
@@ -28,9 +29,9 @@ FILES=$PREFIX/snapshots/*.snap.txt
 for filename in $FILES
 do
 	y=${filename%%.txt}
-	grep -w "C" $filename | cut -d " " -f1 | sort > $PREFIX/barcodes/${y##*/}.barcodes
+	grep -w "C" $filename | cut -f1 | sort > $PREFIX/barcodes/${y##*/}.barcodes
 	#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
-	grep -w "C" $filename | awk -F ' ' -v N=$3 '{sum += $4} END {print sum/N}' >> $PREFIX/avg_fitness.txt
+	grep -w "C" $filename | awk -v N=$3 '{sum += $5} END {print sum/N}' >> $PREFIX/avg_fitness.txt
 done
 
 echo Parsing unique barcodes...
@@ -76,9 +77,6 @@ cat $PREFIX/barcodes/series$i.txt | cut -d " " -f 1,3- > $PREFIX/ALL_generations
 rm $PREFIX/barcodes/series*.txt
 
 #### PLOT RESULTS IN R SCRIPTS
-touch out/$OUT/graph/graph1.png
-touch out/$OUT/graph/graph2.png
-touch out/$OUT/graph/fitness.png
 Rscript tools/polyclonal_structure.R /out/$OUT/ $DT
 
 echo Done.

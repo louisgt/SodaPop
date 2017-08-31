@@ -5,7 +5,7 @@ DESCRIPTION: Converts population summary to a snap file.
 
 int main(int argc, char *argv[]){
     if(argc != 3){
-        std::cerr <<"summ2snap <population summary> [ 0-full | 1-single cell ]\n";
+        std::cerr <<"sodasnap <population summary> [ 0-full | 1-single cell ]\n";
         exit(1);
     }
 

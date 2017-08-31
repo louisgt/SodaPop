@@ -70,10 +70,10 @@ int main(int argc, char *argv[])
     TCLAP::ValueArg<std::string> inputArg("","sim-type","Define simulation type\n<s> (from selection coefficient, DMS or otherwise)\n<stability> (from DDG matrix or distribution)", false,"s","string");
 
     //use gamma distribution to draw selection coefficients
-    TCLAP::SwitchArg gammaArg("","gamma","Draw selection coefficients from normal distribution", cmd, false);
+    TCLAP::SwitchArg gammaArg("","gamma","Draw selection coefficients from gamma distribution", cmd, false);
 
     //use normal distribution to draw selection coefficients
-    TCLAP::SwitchArg normalArg("","normal","Draw selection coefficients from gamma distribution", cmd, false);
+    TCLAP::SwitchArg normalArg("","normal","Draw selection coefficients from normal distribution", cmd, false);
 
     //first parameter of distribution
     TCLAP::ValueArg<double> alphaArg("","alpha","Alpha parameter of distribution\nGamma -> shape\nNormal -> mean",false,1,"double");
@@ -125,6 +125,8 @@ int main(int argc, char *argv[])
     std::cout << "Begin ... " << std::endl;
     if(inputType == "s")
     {
+        PolyCell::fromS_ = true;
+        PolyCell::ff_ = 4;
         std::cout << "Initializing matrix ..." << std::endl;
         InitMatrix();
         std::cout << "Loading primordial genes file ..." << std::endl;
@@ -138,6 +140,7 @@ int main(int argc, char *argv[])
         }
         else
         {
+            PolyCell::useDist_ = true;
             if(gammaArg.isSet())
             {
                 Gene::shape_ = alphaArg.getValue();
@@ -168,7 +171,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            PolyCell::useGauss_ = true;
+            PolyCell::useDist_ = true;
         }
     }
 
@@ -197,7 +200,6 @@ int main(int argc, char *argv[])
     sprintf(buffer,"out/%s/snapshots",outDir.c_str());
     std::string outPath = buffer;
     std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
-    std::cout << "Opening events file ..." << std::endl;
 
     std::vector <PolyCell> Cell_arr;
     double w_sum = 0;
@@ -384,13 +386,17 @@ int main(int argc, char *argv[])
          }
     }
 
-    std::cout << "Closing mutation log ..." << std::endl;
     MUTATIONLOG.close();
     std::cout << "Done." << std::endl;
     std::cout << "Total number of mutation events: " << MUTATION_CTR << std::endl;
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
-        std::string command = "/bin/bash tools/barcodes.sh "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT);
+        std::string script = "tools/barcodes.sh";
+        if(useShort)
+        {
+            script = "tools/barcodes_short.sh";
+        }
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT);
         const char *cmd = command.c_str();
         system(cmd);
     }

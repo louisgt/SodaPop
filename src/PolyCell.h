@@ -30,7 +30,8 @@ class PolyCell: public Cell
 
 	public:
         static int ff_;
-        static bool useGauss_;
+        static bool useDist_;
+        static bool fromS_;
 		PolyCell();
 	    PolyCell(std::fstream&);			    
 	    PolyCell(std::fstream&, const std::string&);
@@ -49,6 +50,7 @@ class PolyCell: public Cell
         double flux();
         double toxicity();
         double metabolicOutput();
+        double multiplicative();
         double neutral();
         ///////////////////////
         const double fitness();
@@ -59,8 +61,9 @@ class PolyCell: public Cell
 };
 
 // By default the fitness function is set to neutral
-int PolyCell::ff_ = 4;
-bool PolyCell::useGauss_ = false;
+int PolyCell::ff_ = 5;
+bool PolyCell::useDist_ = false;
+bool PolyCell::fromS_ = false;
 
 PolyCell::PolyCell(){}
 PolyCell::PolyCell(std::fstream& f) : Cell(f)
@@ -100,7 +103,9 @@ void PolyCell::selectFitness()
             break;
         case 3: fit = &PolyCell::metabolicOutput;
             break;
-        case 4: fit = &PolyCell::neutral;
+        case 4: fit = &PolyCell::multiplicative;
+            break;
+        case 5: fit = &PolyCell::neutral;
             break;
         default:;
     }
@@ -145,6 +150,18 @@ double PolyCell::metabolicOutput()
     else return w;
 }
 
+// MULTIPLICATIVE FITNESS FUNCTION
+double PolyCell::multiplicative()
+{
+    std::vector<Gene>::iterator i = Gene_arr_.begin();
+    double f = (*i).f();
+    for(i = i + 1; i != Gene_arr_.end(); ++i){
+        if(f*(*i).f() < 0) return 0;
+        f = f*(*i).f();
+    }
+    return f;
+}
+
 // NEUTRAL FITNESS FUNCTION
 double PolyCell::neutral()
 {
@@ -186,13 +203,31 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     std::string mutation = "";
 
     int bp = (int) (3 * (uniformdevptr->doub()));
+
     double wi = fitness();
-    if(useGauss_){
-        (*j).Mutate_BP_Gaussian(site,bp);
+    if(fromS_)
+    {
+        if(useDist_)
+        {
+            (*j).Mutate_Select_Dist(site,bp);
+        }
+        else
+        {
+            mutation = (*j).Mutate_Select(site,bp);
+        }
     }
-    else{
-        mutation = (*j).Mutate_BP(site,bp);
+    else
+    {
+        if(useDist_)
+        {
+            (*j).Mutate_Stabil_Gaussian(site,bp);
+        }
+        else
+        {
+            mutation = (*j).Mutate_Stabil(site,bp);
+        }
     }
+
     UpdateRates();
     double wf = fitness();
     double s = wf - wi;
@@ -229,13 +264,30 @@ void PolyCell::ranmut_Gene()
     }
 
     int bp = (int) (3 * (uniformdevptr->doub()));
-    if(useGauss_){
-        (*j).Mutate_BP_Gaussian(site,bp);
+    // what is the input type?
+    if(fromS_)
+    {
+        if(useDist_)
+        {
+            (*j).Mutate_Select_Dist(site,bp);
+        }
+        else
+        {
+            (*j).Mutate_Select(site,bp);
+        }
     }
-    else{
-        (*j).Mutate_BP(site,bp);
+    else
+    {
+        if(useDist_)
+        {
+            (*j).Mutate_Stabil_Gaussian(site,bp);
+        }
+        else
+        {
+            (*j).Mutate_Stabil(site,bp);
+        }
     }
-            
+         
     UpdateRates();
 }
 
@@ -269,6 +321,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         double s = (*i).e;
         double c = (*i).conc;
         double dg = -kT*log((*i).dg());
+        double f = (*i).f();
 
         int Ns = i->Ns();
         int Na = i->Na();
@@ -277,6 +330,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         OUT.write((char*)(&s),sizeof(double));
         OUT.write((char*)(&c),sizeof(double));
         OUT.write((char*)(&dg),sizeof(double));
+        OUT.write((char*)(&f),sizeof(double));
         OUT.write((char*)(&Na),sizeof(int));
         OUT.write((char*)(&Ns),sizeof(int));
 

@@ -30,6 +30,7 @@ class Gene
         std::string nucseq_;	//nucleotide sequence
         
         double dg_;		//stability
+        double f_;      //gene "fitness"
     public:
         double conc;	//concentration
         double e;		//essentiality: 1-if directly involved in replication, 0-otherwise
@@ -56,12 +57,15 @@ class Gene
         static void initNormal();
         static double RandomNormal();
       
-        double Mutate_BP_Gaussian(int, int);
-        std::string Mutate_BP(int, int);
+        double Mutate_Stabil_Gaussian(int, int);
+        std::string Mutate_Stabil(int, int);
+        double Mutate_Select_Dist(int, int);
+        std::string Mutate_Select(int, int);
 
         void Update_Sequences(std::string);
      
         void ch_dg(const double a){ dg_ = a; }
+        void ch_f(const double a){ f_ = a; }
         void ch_Na(const int a){ Na_ = a; }
         void ch_Ns(const int a){ Ns_ = a; }
         void ch_ln(int l){ln_ = l;}
@@ -73,6 +77,7 @@ class Gene
         const int AAlength(){return la_;}
         const std::string nseq(){return nucseq_;}
         const double dg(){return dg_;}
+        const double f(){return f_;}
         const int Ns(){return Ns_;}
         const int Na(){return Na_;}
 
@@ -97,6 +102,7 @@ Gene::Gene(){
       Na_ = 0; Ns_ = 0;
       nucseq_ = ""; 
       dg_ = 1;
+      f_ = 1;
       conc = 1;
       e = 0;
 }
@@ -121,6 +127,7 @@ Gene::Gene(const int i, const std::string a, double c)
             exit(2);
         }           
         dg_= 1;
+        f_= 1;
         conc = c;
         e = 0;
         Na_ = 0;
@@ -175,6 +182,11 @@ Gene::Gene(std::fstream& gene_in)
       	    dg_ = atof(word.c_str());
             dg_ = exp(-dg_/kT);
         }
+        else if (word == "F")
+        { 
+            iss>>word; 
+            f_ = atof(word.c_str());
+        }
         else if (word == "//"){;}//do nothing
     }
     Na_ = 0; //default
@@ -188,7 +200,8 @@ Gene::Gene(const Gene& G)
     ln_ = G.ln_;
     la_ = G.la_;
     nucseq_ = G.nucseq_;
-    dg_ = G.dg_; 
+    dg_ = G.dg_;
+    f_ = G.f_;
     conc = G.conc;
     e = G.e;
     Na_ = G.Na_;
@@ -215,6 +228,7 @@ Gene& Gene::operator=(const Gene& A)
         this->ln_ = A.ln_;
         this->la_ = A.la_;
         this->dg_ = A.dg_;
+        this->f_ = A.f_;
         this->conc = A.conc;
         this->e = A.e;
         this->Na_ = A.Na_;
@@ -228,13 +242,13 @@ Gene& Gene::operator=(const Gene& A)
 This version of the mutation function draws the DDG value from a gaussian distribution
 with a shifting mean to mimic sequence depletion.
 */
-double Gene::Mutate_BP_Gaussian(int i, int j)
+double Gene::Mutate_Stabil_Gaussian(int i, int j)
 { 
     if(i>=ln_){
         std::cerr << "ERROR: Mutation site out of bounds."<< std::endl;
         exit(2);
     }       
-    double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
+
     double ran = RandomNumber();
        
     if(ran <= fNs){//non-synonymous mutation
@@ -253,26 +267,6 @@ double Gene::Mutate_BP_Gaussian(int i, int j)
     }
 }
 
-void Gene::initGamma()
-{
-    Gene::gamma_.param(std::gamma_distribution<double>::param_type(Gene::shape_, Gene::scale_));
-}
-
-void Gene::initNormal()
-{
-    Gene::normal_.param(std::normal_distribution<>::param_type(Gene::mean_, Gene::stdev_));
-}
-
-double Gene::RandomGamma()
-{
-    return Gene::gamma_(engine);
-}
-
-double Gene::RandomNormal()
-{
-    return Gene::normal_(engine);
-}
-
 /*
 This version of the mutation function gets the DDG value from the DDG matrix
 input by the user.
@@ -280,7 +274,7 @@ INPUT:
     i -> site to mutate
     j -> bp to mutate to
 */
-std::string Gene::Mutate_BP(int i, int j)
+std::string Gene::Mutate_Stabil(int i, int j)
 { 
     // extract codon to be mutated
     int cdn_ndx = (i%3);
@@ -351,6 +345,112 @@ std::string Gene::Mutate_BP(int i, int j)
           return mutation;
     }
 }
+
+/*
+This version of the mutation function draws the selection coefficient value from a gamma or normal distribution
+*/
+double Gene::Mutate_Select_Dist(int i, int j)
+{ 
+    if(i>=ln_){
+        std::cerr << "ERROR: Mutation site out of bounds."<< std::endl;
+        exit(2);
+    }       
+
+    double ran = RandomNumber();
+       
+    if(ran <= fNs){//non-synonymous mutation
+        double s = RandomNormal();
+        double wf = f_ + s;
+        f_ = wf * f_;
+        Na_ += 1;
+        return s;
+    }
+    else{
+        this->Ns_ += 1;
+        return 1;
+    }
+}
+
+/*
+This version of the mutation function gets the DDG value from the DDG matrix
+input by the user.
+INPUT: 
+    i -> site to mutate
+    j -> bp to mutate to
+*/
+std::string Gene::Mutate_Select(int i, int j)
+{ 
+    // extract codon to be mutated
+    int cdn_ndx = (i%3);
+    int cdn_start = i - cdn_ndx; 
+    int resi = cdn_start/3;
+
+    // fetch current codon
+    std::string cdn_curr = nucseq_.substr(cdn_start, 3);
+    // fetch current amino acid
+    int aa_curr = GetIndexFromCodon(cdn_curr);
+    std::string cdn_new = cdn_curr;
+
+    std::string s = PrimordialAASeq.at(g_num_);     
+
+    // get mutated bp
+    std::string bp = AdjacentBP( cdn_curr.substr(cdn_ndx, 1), j); //new BP
+   
+    // mutate codon
+    cdn_new.replace(cdn_ndx, 1, bp);
+    // check for stop codon
+    cdn_new = n3_to_n3(cdn_new, cdn_curr, cdn_ndx);
+    // get new amino acid
+    int aa_new = GetIndexFromCodon(cdn_new);
+    
+    // get selection coefficient from matrix
+    double new_s = matrix[g_num_][resi][aa_new-1];
+
+    std::string mutation = std::to_string(g_num_) + '\t' + GetProtFromNuc(cdn_curr) + '\t' + std::to_string(resi) + '\t' + GetProtFromNuc(cdn_new);
+
+    // fetch primordial amino acid
+
+    //Ignore mutations to and from CYSTEINE
+    if( (aa_new==2) || (aa_curr==2)){
+        return "CYSTEINE\tNA\tNA\tNA";
+    }
+
+    if( aa_curr == aa_new){//SILENT
+          nucseq_.replace(cdn_start, 3, cdn_new);
+          Ns_ += 1;
+          return "SILENT\tNA\tNA\tNA";
+    }
+    else{//TYPICAL NON-SYNONYMOUS 
+
+          // assign new fitness value
+          double new_f = f_ + new_s;
+          f_ = f_ * new_f;
+          nucseq_.replace(cdn_start, 3, cdn_new);
+          Na_ += 1;
+          return mutation;
+    }
+}
+
+void Gene::initGamma()
+{
+    Gene::gamma_.param(std::gamma_distribution<double>::param_type(Gene::shape_, Gene::scale_));
+}
+
+void Gene::initNormal()
+{
+    Gene::normal_.param(std::normal_distribution<>::param_type(Gene::mean_, Gene::stdev_));
+}
+
+double Gene::RandomGamma()
+{
+    return Gene::gamma_(engine);
+}
+
+double Gene::RandomNormal()
+{
+    return Gene::normal_(engine);
+}
+
 
 // Updates the current DNA sequence
 void Gene::Update_Sequences(const std::string DNAsequence)
