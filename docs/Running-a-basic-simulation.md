@@ -1,8 +1,8 @@
 # Getting started
 
-[Creating a starting population snapshot](#start)  
-[Running a simple neutral simulation](#simple)  
-[Converting binary snapshots to text](#convert)
+- [Creating a starting population snapshot](#start)  
+- [Running a simple neutral simulation](#simple)  
+- [Converting binary snapshots to text](#convert)
 
 ***
 
