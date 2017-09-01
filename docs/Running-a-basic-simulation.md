@@ -92,7 +92,7 @@ To convert binary snapshots output by either of the programs above, you can use 
 
 ***
 
-# Go back to [home page.](index.md)
+## or go back to [home page.](index.md)
 
 
 
