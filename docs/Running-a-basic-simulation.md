@@ -34,3 +34,40 @@ We need the population summary created above, and we must specify if we want to 
 
 Once you run sodasumm, a file called population.snap will appear in your working directory. This is your starting snapshot. You can move it to your start folder and rename it as you like. We advise to keep the .snap extension to distinguish between text and binary files.
 
+## Running a simple neutral simulation
+
+Using our previously created population, we can run a very simple neutral simulation, that is, without selection. We can do this using the sample files packaged with the program. Try running the following command:
+
+```bash
+sodapop --sim-type stability –f 5 –p files/start/pop1K.snap –g files/genes/gene_list.dat –o neutral –n 1000 –m 1000 –t 10
+```
+
+
+The output should look like this:
+
+```bash
+Begin ... 
+Initializing matrix ...
+Loading primordial genes file ...
+Opening starting population snapshot ...
+Creating directory out/neutral/snapshots ... OK
+Constructing population from source files/start/pop1K.snap ...
+Saving initial population snapshot ... 
+Starting evolution ...
+Done.
+Total number of mutation events: 10767
+```
+
+Let’s break down this command step by step.
+
+- sodapop is the main simulation utility (or program).  
+- --sim-type stability defines the type of input to be used for the simulation. In our case, we chose stability.  
+- -f 4 is the choice of fitness function. For more information on fitness functions, see section below. For now, just know that 4 is the mapping for the neutral fitness function.  
+- -p files/start/pop1K.snap is the argument for the starting population snapshot.  
+- -g files/genes/gene_list.dat is the argument for the gene index list.  
+- -o neutral is the prefix for output.  
+- -n 1000  is the population size.  
+- -m 1000  is the number of generations we would like to simulate.  
+- -t 10  is the interval at which the program saves a population snapshot.  
+
+
