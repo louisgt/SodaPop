@@ -1,5 +1,6 @@
 [Creating a starting population snapshot](#start)  
 [Running a simple neutral simulation](#simple)
+[Converting binary snapshots to text](#convert)
 
 ***
 
@@ -78,6 +79,8 @@ Let’s break down this command step by step.
 - -n 1000  is the population size.  
 - -m 1000  is the number of generations we would like to simulate.  
 - -t 10  is the interval at which the program saves a population snapshot.  
+
+<a name="convert"/>
 
 ## Converting binary snapshots to text
 
