@@ -90,4 +90,4 @@ To convert binary snapshots output by either of the programs above, you can use 
 
 # Move on to [results and analysis](Using-the-analysis-tools.md).
 
-## or go back to [home page.](index.md)
+## or go back to the [home page.](index.md)
