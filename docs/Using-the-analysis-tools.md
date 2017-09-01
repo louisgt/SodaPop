@@ -23,7 +23,7 @@ By default, SodaPop will always output population snapshots following the parame
 Both of these scripts can also be launched from the command-line by running barcodes.sh along with the parameters: [name of the simulation directory] [number of generations] [population size] [step (dt)] [0 if long format, 1 if short format]. As an example, the following would be the command to analyze a long format simulation with N = 10000, M = 10000 and a time step of 25 generations:
 
 ```bash
-./barcodes.sh test_sim 10000 10000 25 0
+  ./barcodes.sh test_sim 10000 10000 25 0
 ```
 
 Below you will find examples of these plots and a brief explanation.
