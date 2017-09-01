@@ -37,15 +37,15 @@ will yield the same response from the terminal. The man utility displays the man
   man ls
 ```  
 
-will display the manual page for ls.
+will display the manual page for **ls**.
 The last component of our command is the argument ‘Documents/’. It tells ls that we want to list the content of that directory. And that’s it!  
-Besides ls, you will need to know how to use a few other basic utilities in order to get started.
+Besides **ls**, you will need to know how to use a few other basic utilities in order to get started.
 
 ```bash
   cd
 ```  
 
-is the command to change directory. By default, without any flag or argument, cd will move up one folder. You can navigate down a folder by giving the name of the folder you wish to move to as an argument. If you are unsure of the folder you are currently in, type
+is the command to change directory. By default, without any flag or argument, **cd** will move up one folder. You can navigate down a folder by giving the name of the folder you wish to move to as an argument. If you are unsure of the folder you are currently in, type
 
 ```bash
   pwd
