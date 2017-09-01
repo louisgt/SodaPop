@@ -83,4 +83,4 @@ s [short-format]: toggling this flag will save a more compact snapshot of the po
 
 # Move on to [description of the algorithm](Description-of-the-core-algorithm.md).
 
-## or go back to [home page.](index.md)
+## or go back to the [home page.](index.md)
