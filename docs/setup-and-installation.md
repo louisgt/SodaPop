@@ -115,6 +115,4 @@ it is probable your compiler is out-of-date. You can get a [new version of gcc/g
 
 # Great! Now we can [get started](Running-a-basic-simulation.md)! 
 
-***
-
 ## or go back to [home page.](index.md)
