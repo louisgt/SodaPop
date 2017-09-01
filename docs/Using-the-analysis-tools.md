@@ -72,4 +72,4 @@ The columns respectively correspond to the barcode, the gene ID, the prior amino
 
 # Move on to [command-line flags](command-line-flags.md).
 
-## or go back to [home page.](index.md)
+## or go back to the [home page.](index.md)
