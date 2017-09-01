@@ -117,4 +117,4 @@ it is probable your compiler is out-of-date. You can get a [new version of gcc/g
 
 ***
 
-# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go back to [home page.](index.md)
+# Go back to [home page.](index.md)
