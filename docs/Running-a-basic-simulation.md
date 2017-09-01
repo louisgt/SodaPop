@@ -1,4 +1,4 @@
-#                                           [Back to home page.](index.md)
+#                                                [Back to home page.](index.md)
 
 [Creating a starting population snapshot](#start)  
 [Running a simple neutral simulation](#simple)  
