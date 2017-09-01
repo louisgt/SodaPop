@@ -18,3 +18,5 @@ The program reads and writes binary files because they are smaller in size. Sinc
 ## Pseudo-random number generation
 
 We are working with the assumption that arising mutations are uniformly distributed along the genome, and a single simulation run can easily produce millions of mutations. Hence, we need a reliable pseudo-random number generator (PRNG) that lacks bias. Additionally, we want our PRNG to be relatively fast as it is being used heavily in the algorithm. Finally, the PRNG should be lightweight and compatible with C/C++. Following these criteria, we opted to use the PCG family of random generators by Melissa E. O’Neill, as a substitute to the widely used Mersenne Twister provided in C++11. The reason is that the latter has a large state space and is known to be uneven in its output, while PCG is compact, relatively fast and uniform in its output, which makes it a good candidate for simulation.
+
+## Go back to [home page.](index.md)
