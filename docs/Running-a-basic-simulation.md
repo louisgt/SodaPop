@@ -31,7 +31,7 @@ Once your cell is defined, you can create a population snapshot. The last layer 
 
 To recapitulate, we must first create a gene file [1]. Then we define a cell file to include our gene(s) [2]. Finally, we create a population summary defining the initial clonal structure we want [3]. 
 
-We can now build our starting population. We will use the program called sodasumm to build our population snapshot. If you run the program without any flag nor argument, it will display
+We can now build our starting population. We will use the program called **sodasumm** to build our population snapshot. If you run the program without any flag nor argument, it will display
 
 ```bash
 sodasumm <population summary> [0-full | 1-single cell]
@@ -39,7 +39,7 @@ sodasumm <population summary> [0-full | 1-single cell]
 
 We need the population summary created above, and we must specify if we want to build the full population or strictly the first cell. The rationale behind this option is that as your population size increases to millions, populating the vector of cells gets computationally expensive. Extending the population with copies of a single cell is much faster than adding each cell one-by-one. However, you should only do this if your starting population is monoclonal. In any case, for smaller effective sizes, the cost of this operation is negligible.
 
-Once you run sodasumm, a file called population.snap will appear in your working directory. This is your starting snapshot. You can move it to your start folder and rename it as you like. We advise to keep the .snap extension to distinguish between text and binary files.
+Once you run **sodasumm**, a file called population.snap will appear in your working directory. This is your starting snapshot. You can move it to your start folder and rename it as you like. We advise to keep the .snap extension to distinguish between text and binary files.
 
 <a name="simple"/>
 
@@ -78,5 +78,12 @@ Let’s break down this command step by step.
 - -n 1000  is the population size.  
 - -m 1000  is the number of generations we would like to simulate.  
 - -t 10  is the interval at which the program saves a population snapshot.  
+
+## Converting binary snapshots to text
+
+To convert binary snapshots output by either of the programs above, you can use the program called **sodasnap**. Alternatively, adding the -a flag to your **sodapop** command will call analysis scripts once the simulation is done. This will automatically convert your snapshots to text, extract barcodes and plot general results. The following section discusses this in more detail.
+
+# Move on to [results and analysis](Using-the-analysis-tools.md).
+
 
 
