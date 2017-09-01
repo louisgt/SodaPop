@@ -1,3 +1,5 @@
+# Setup and Installation
+
 ### Windows users: we strongly recommend installing a Unix-like environment such as Cygwin or MinGW to install and use the program. For all intents and purposes, the examples and the commands will be for a Unix environment.
 
 SodaPop is set of command-line tools written in the C++ programming language using the C++11 Standard.
