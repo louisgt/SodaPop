@@ -80,3 +80,9 @@ e [track-events]: toggling this flag will keep a log of all arising mutations du
 ```
 s [short-format]: toggling this flag will save a more compact snapshot of the population to track population dynamics only. As mentioned above, normal snapshot size scales linearly with the number of cells and the size of their genome. Thus, large simulations can output an equivalently large volume of data. The information for individual genes (including explicit sequences) is not saved when using this format. If sequence information is not needed for an experiment, users may choose to toggle this option to minimize output. Unless disk space is scarce, we strongly recommend keeping the normal output format when running simulations. This will ensure you do not discard valuable information.
 ```
+
+# Move on to [description of the algorithm](Description-of-the-core-algorithm.md).
+
+***
+
+## or go back to [home page.](index.md)
