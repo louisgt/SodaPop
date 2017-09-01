@@ -1,5 +1,7 @@
 # &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go back to [home page.](index.md)
 
+***
+
 [Creating a starting population snapshot](#start)  
 [Running a simple neutral simulation](#simple)  
 [Converting binary snapshots to text](#convert)
