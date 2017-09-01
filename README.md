@@ -6,6 +6,8 @@ SodaPop is a forward-time simulator of large haploid populations aimed at studyi
 
 ### Visit the [SodaPop website](https://louisgt.github.io/SodaPop/) for online documentation.
 
+### [Download the SodaPop user manual](https://github.com/louisgt/SodaPop/files/1271058/MANUAL.pdf).
+
 ## Troubleshooting
 
 1. I get the following error when I try to compile using make: 
