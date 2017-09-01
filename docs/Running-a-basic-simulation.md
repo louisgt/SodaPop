@@ -1,6 +1,4 @@
-# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go back to [home page.](index.md)
-
-***
+# Getting started
 
 [Creating a starting population snapshot](#start)  
 [Running a simple neutral simulation](#simple)  
@@ -91,6 +89,10 @@ Let’s break down this command step by step.
 To convert binary snapshots output by either of the programs above, you can use the program called **sodasnap**. Alternatively, adding the -a flag to your **sodapop** command will call analysis scripts once the simulation is done. This will automatically convert your snapshots to text, extract barcodes and plot general results. The following section discusses this in more detail.
 
 # Move on to [results and analysis](Using-the-analysis-tools.md).
+
+***
+
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go back to [home page.](index.md)
 
 
 
