@@ -1,6 +1,8 @@
 [Creating a starting population snapshot](#start)  
 [Running a simple neutral simulation](#simple)
 
+***
+
 <a name="start"/>
 
 ## Creating a starting population snapshot
