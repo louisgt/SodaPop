@@ -8,7 +8,7 @@ By default, SodaPop will always output population snapshots following the parame
 
 ## Scripts
 
-*(**barcodes.sh**)* : this is a Bash script that uses Unix utilities such as awk, grep, uniq, join. It performs the following operations:
+***barcodes.sh*** : this is a Bash script that uses Unix utilities such as awk, grep, uniq, join. It performs the following operations:
 
 - a.	Convert binary snapshots to text
 - b.	Extract and sort the barcodes for each time point
@@ -18,7 +18,7 @@ By default, SodaPop will always output population snapshots following the parame
 - f.	Combine the time points in a dataframe
 - g.	Call polyclonal_structure.R with parameters
 
-*(**polyclonal_structure.R**)* : this is a R script that imports the time series and the fitness table to make three distinct plots.
+***polyclonal_structure.R*** : this is a R script that imports the time series and the fitness table to make three distinct plots.
 
 Both of these scripts can also be launched from the command-line by running barcodes.sh along with the parameters: [name of the simulation directory] [number of generations] [population size] [step (dt)] [0 if long format, 1 if short format]. As an example, the following would be the command to analyze a long format simulation with N = 10000, M = 10000 and a time step of 25 generations:
 
