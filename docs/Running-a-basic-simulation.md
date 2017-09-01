@@ -1,3 +1,8 @@
+[Creating a starting population snapshot](#start)  
+[Running a simple neutral simulation](#simple)
+
+<a name="start"/>
+
 ## Creating a starting population snapshot
 
 Prior to running a simulation, the first thing you should do is create your own population snapshot. In SodaPop, a population is defined by a collection of cells, that are in turned defined by their genes. We will thus start by creating a gene file. A basic gene file looks like this:
@@ -33,6 +38,8 @@ sodasumm <population summary> [0-full | 1-single cell]
 We need the population summary created above, and we must specify if we want to build the full population or strictly the first cell. The rationale behind this option is that as your population size increases to millions, populating the vector of cells gets computationally expensive. Extending the population with copies of a single cell is much faster than adding each cell one-by-one. However, you should only do this if your starting population is monoclonal. In any case, for smaller effective sizes, the cost of this operation is negligible.
 
 Once you run sodasumm, a file called population.snap will appear in your working directory. This is your starting snapshot. You can move it to your start folder and rename it as you like. We advise to keep the .snap extension to distinguish between text and binary files.
+
+<a name="simple"/>
 
 ## Running a simple neutral simulation
 
