@@ -68,3 +68,10 @@ CGAGACTGTGGGAGT 4       T       48      R       -0.198414       21
 ```
 
 The columns respectively correspond to the barcode, the gene ID, the prior amino acid, its position in the sequence, the resulting mutation, its selection coefficient and the generation at which it occurred. 
+
+
+# Move on to [command-line flags](command-line-flags.md).
+
+***
+
+## or go back to [home page.](index.md)
