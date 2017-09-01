@@ -2,7 +2,7 @@
 
 Prior to running a simulation, the first thing you should do is create your own population snapshot. In SodaPop, a population is defined by a collection of cells, that are in turned defined by their genes. We will thus start by creating a gene file. A basic gene file looks like this:
 
-![gene file example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
+![gene file example](https://user-images.githubusercontent.com/29554043/29973868-0524bf4a-8eff-11e7-9e55-2fc43d006d28.png)
 
 It has a numeric identifier as well as an alphanumeric ID. The numeric identifier is important for the proper mapping of ancestral sequences. Genes are thus saved as [numericID].gene. You may keep an index of the alphanumeric ID corresponding to each gene file in the gene list (see below). Genes have an explicit nucleotide sequence and the corresponding translated amino acid sequence. The ‘E’ is a binary argument that denotes essentiality. The ‘DG’ is the Gibbs free energy (∆G, in kcal/mol), or stability of the protein. Finally, ‘CONC’ is the concentration (or abundance) of the gene.
 
@@ -10,17 +10,17 @@ To make a gene file, open a blank text file and make a tab-separated gene templa
 
 The file gene_list.dat keeps an index of all the genes defined for the simulation. It lists the name of the gene files in your genes folder:
 
-![gene list example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
+![gene list example](https://user-images.githubusercontent.com/29554043/29973877-0c507052-8eff-11e7-9b6e-7cc005b2fafc.png)
 
 You can define as many genes and gene lists as you like. However, make sure you use the correct list when you run a simulation. If there is a mismatch between the genes of your intial population and the genes in your index list, the program will abort and issue an error.
 
 Now that we’ve created our gene, we need to define a cell and its genome. Just like genes, cells also possess personal attributes such as a mutation rate. The file lists all the identifiers of genes in this cell, preceded by a ‘G’. Again, genes are indexed by their numeric identifier. The same goes for cells:
 
-![cell file example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
+![cell file example](https://user-images.githubusercontent.com/29554043/29973885-1148f836-8eff-11e7-800e-19a98d61080f.png)
 
 Once your cell is defined, you can create a population snapshot. The last layer in the hierarchy is the population description file. It lists the composition of the population we wish to create. In our case, we will start with a single lineage, but adding subpopulations is straightforward. The template below shows the information required to define a population. The count is the size of the population for that type of cell. The comment is optional and is ignored by the program.
 
-![population summary example](https://user-images.githubusercontent.com/29554043/28281174-42b56b7c-6af4-11e7-86c9-f8393c123513.png)
+![population summary example](https://user-images.githubusercontent.com/29554043/29973889-149b8328-8eff-11e7-9fac-a336e186a5d2.png)
 
 To recapitulate, we must first create a gene file [1]. Then we define a cell file to include our gene(s) [2]. Finally, we create a population summary defining the initial clonal structure we want [3]. 
 
