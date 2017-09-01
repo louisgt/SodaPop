@@ -104,3 +104,5 @@ If you get the following error when compiling
   error: unrecognized command line option "-std=c++11"
 ```  
 it is probable your compiler is out-of-date. You can get a [new version of gcc/g++ here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
+
+# Great! Now we can [get started](Running-a-basic-simulation.md)! 
