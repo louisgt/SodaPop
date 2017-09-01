@@ -2,4 +2,6 @@
 
 The package includes a small bioinformatics pipeline to extract, analyze and plot your data. Scripts are written in Bash and R\* and can be used separately from the main program. Those familiar with scripting languages can also use the scripts as stepping stones for further analyses.
 
-By default, SodaPop will always output population snapshots following the parameters input by the user. This ensures you don’t lose any simulation data. To toggle on automatic analysis, use the –a [--analyze] Boolean flag with your command (see section 5).
+By default, SodaPop will always output population snapshots following the parameters input by the user. This ensures you don’t lose any simulation data. To toggle on automatic analysis, use the –a [--analyze] Boolean flag with your command (see [Command line flags](command-line-flags.md)).
+
+### \* As a requirement to make plots, the R programming language needs to be installed on your machine. You can download the [latest version of R here](https://cran.r-project.org/). The script will automatically install the required R packages for you at runtime.
