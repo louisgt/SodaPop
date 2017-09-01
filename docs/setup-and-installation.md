@@ -1,7 +1,3 @@
-# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go back to [home page.](index.md)
-
-***
-
 ### Windows users: we strongly recommend installing a Unix-like environment such as Cygwin or MinGW to install and use the program. For all intents and purposes, the examples and the commands will be for a Unix environment.
 
 SodaPop is set of command-line tools written in the C++ programming language using the C++11 Standard.
@@ -116,3 +112,7 @@ If you get the following error when compiling
 it is probable your compiler is out-of-date. You can get a [new version of gcc/g++ here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
 
 # Great! Now we can [get started](Running-a-basic-simulation.md)! 
+
+***
+
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Go back to [home page.](index.md)
