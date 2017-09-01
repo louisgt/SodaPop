@@ -6,12 +6,12 @@
 
 The goal of this wiki is to demonstrate the functionalities of SodaPop and to provide useful and informative examples for its users.
 
-- [Creating a starting population](Creating-a-starting-population.md) 
-- [Running a basic simulation](Running-a-basic-simulation.md)  
-- [Converting binary snapshots to text](Converting-binary-snapshots-to-text.md)
-- [Creating a custom fitness function](Creating-a-custom-fitness-function.md)
-- [Analysis](Using-the-analysis-tools.md)    
+
+- [Setup and installation](Creating-a-starting-population.md)
+- [Getting started](Running-a-basic-simulation.md)
+- [Results and Analysis](Using-the-analysis-tools.md)    
    * [Extracting barcodes](Extracting-barcodes.md)  
    * [Plotting population dynamics](Plotting-population-dynamics.md)
    * [Generating a multiple sequence alignment (MSA)](Generating-a-multiple-sequence-alignment.md)
+- [Command-line flags](Creating-a-starting-population.md)
 - [Description of the core algorithm](Description-of-the-core-algorithm.md)
