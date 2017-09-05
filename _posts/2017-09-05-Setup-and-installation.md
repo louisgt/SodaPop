@@ -120,4 +120,4 @@ it is probable your compiler is out-of-date. You can get a [new version of gcc/g
 # Great! Now we can [get started]({{ site.baseurl }}{% post_url 2017-09-05-Running-a-basic-simulation %}).
 
 
-## or go back to the [home page]({{ site.baseurl }}{index.md}).
+## or go back to the [home page]({{ site.baseurl }}{% link index.md %}).
