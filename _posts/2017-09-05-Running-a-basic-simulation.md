@@ -1,3 +1,8 @@
+---
+layout: default
+title: SodaPop test
+---
+
 # Getting started
 
 - [Creating a starting population snapshot](#start)  
