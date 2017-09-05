@@ -1,6 +1,5 @@
 ---
 layout: post
-title: SodaPop test
 ---
 
 # Command-line flags
