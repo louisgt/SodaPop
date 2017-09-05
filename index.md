@@ -12,20 +12,20 @@ title: SodaPop test
 The goal of this wiki is to demonstrate the functionalities of SodaPop and to provide useful and informative examples for its users.
 
 
-### [Setup and installation](2017-09-05-Setup-and-installation.md)
+### [Setup and installation](_posts/2017-09-05-Setup-and-installation.md)
 
 ***
 
-### [Getting started](2017-09-05-Running-a-basic-simulation.md)
+### [Getting started](_posts/2017-09-05-Running-a-basic-simulation.md)
 
 ***
 
-### [Results and Analysis](2017-09-05-Results-and-analysis.md)    
+### [Results and Analysis](_posts/2017-09-05-Results-and-analysis.md)    
 
 ***
 
-### [Command-line flags](2017-09-05-Command-line-flags.md)
+### [Command-line flags](_posts/2017-09-05-Command-line-flags.md)
 
 ***
 
-### [Description of the core algorithm](2017-09-05-Description-of-the-core-algorithm.md)
+### [Description of the core algorithm](_posts/2017-09-05-Description-of-the-core-algorithm.md)
