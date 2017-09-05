@@ -1,6 +1,5 @@
 ---
-layout: default
-title: SodaPop test
+layout: post
 ---
 
 # Getting started
