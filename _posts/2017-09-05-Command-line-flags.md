@@ -1,3 +1,8 @@
+---
+layout: default
+title: SodaPop test
+---
+
 # Command-line flags
 
 Command-line flags are modifiers that toggle features, change behaviors and provide great flexibility on the simulation parameters. A description of the flags can always be displayed in the command-line itself by typing 
