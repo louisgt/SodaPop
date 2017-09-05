@@ -117,6 +117,7 @@ If you get the following error when compiling
 ```  
 it is probable your compiler is out-of-date. You can get a [new version of gcc/g++ here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
 
-# Great! Now we can [get started](Running-a-basic-simulation.md)! 
+# Great! Now we can [get started]({{ site.baseurl }}{% post_url 2017-09-05-Running-a-basic-simulation %})
+
 
 ## or go back to the [home page.](index.md)
