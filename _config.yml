@@ -1,2 +1,3 @@
 name: SodaPop test website
 markdown: kramdown
+permalink: /blog/:year/:month/:day/:title
