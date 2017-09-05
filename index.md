@@ -12,7 +12,7 @@ title: SodaPop test
 The goal of this wiki is to demonstrate the functionalities of SodaPop and to provide useful and informative examples for its users.
 
 
-### [Setup and installation](2017-09-05-Setup-and-installation.md)
+### [Setup and installation](/_posts/2017-09-05-Setup-and-installation.md)
 
 ***
 
