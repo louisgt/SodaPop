@@ -17,16 +17,16 @@ The goal of this wiki is to demonstrate the functionalities of SodaPop and to pr
 
 ***
 
-### [Getting started](2017-09-05-Running-a-basic-simulation.md)
+### [Getting started]({{ site.baseurl }}{% post_url 2017-09-05-Running-a-basic-simulation %})
 
 ***
 
-### [Results and Analysis](2017-09-05-Results-and-analysis.md)    
+### [Results and Analysis]({{ site.baseurl }}{% post_url 2017-09-05-Results-and-analysis %})   
 
 ***
 
-### [Command-line flags](2017-09-05-Command-line-flags.md)
+### [Command-line flags]({{ site.baseurl }}{% post_url 2017-09-05-Command-line-flags %})
 
 ***
 
-### [Description of the core algorithm](2017-09-05-Description-of-the-core-algorithm.md)
+### [Description of the core algorithm]({{ site.baseurl }}{% post_url 2017-09-05-Description-of-the-core-algorithm %})
