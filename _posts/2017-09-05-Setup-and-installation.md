@@ -1,8 +1,7 @@
 ---
 layout: post
+title: Setup and installation
 ---
-
-# Setup and Installation
 
 ### Windows users: we strongly recommend installing a Unix-like environment such as Cygwin or MinGW to install and use the program. For all intents and purposes, the examples and the commands will be for a Unix environment.
 
@@ -92,20 +91,20 @@ A nice feature of the terminal is tab autocomplete. Whenever you want to type an
 To decompress and extract the contents of the downloaded repository, open a command-line terminal window, change into the directory where the download is located on your computer and run the following command
 
 ```bash
-tar –zxvf [zip file]
+  tar –zxvf [zip file]
 ```
 
 Before you proceed with the installation, you may wish to move the extracted files to a folder of your choosing. To compile the SodaPop locally, navigate to the program folder and run
 
 ```bash
-make
+  make
 ```
 
 This will use the makefile to build the binaries **sodapop**, **sodasnap** and **sodasumm**. To install the program to your computer, run the command
 
 
 ```bash
-make install
+  make install
 ```
 
 By default, the three components above will be added to /usr/local/bin. You can change this in the makefile by editing the content of the $INSTALLDIR variable. Likewise, any other parameter in the makefile can easily be modified.
@@ -119,5 +118,3 @@ it is probable your compiler is out-of-date. You can get a [new version of gcc/g
 
 # Great! Now we can [get started]({{ site.baseurl }}{% post_url 2017-09-05-Running-a-basic-simulation %}).
 
-
-## or go back to the [home page]({{ site.baseurl }}{% link index.md %}).
