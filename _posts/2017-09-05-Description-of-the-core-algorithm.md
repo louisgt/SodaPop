@@ -4,6 +4,7 @@ title: Algorithm and implementation
 ---
 
 ![algo](https://user-images.githubusercontent.com/29554043/28376750-ecf38e40-6c78-11e7-92ec-3365d1dd9043.png)
+
 **Illustration of SodaPop's core algorithm.**
 
 ## Data structures and complexity

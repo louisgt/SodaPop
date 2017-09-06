@@ -7,12 +7,12 @@ The package includes a small bioinformatics pipeline to extract, analyze and plo
 
 By default, SodaPop will always output population snapshots following the parameters input by the user. This ensures you don’t lose any simulation data. To toggle on automatic analysis, use the –a [--analyze] Boolean flag with your command (see [Command line flags]({{ site.baseurl }}{% post_url 2017-09-05-Command-line-flags %})).
 
-### \* As a requirement to make plots, the R programming language needs to be installed on your machine. You can download the [latest version of R here](https://cran.r-project.org/). The script will automatically install the required R packages for you at runtime.
+> ### \* As a requirement to make plots, the R programming language needs to be installed on your machine. You can download the [latest version of R here](https://cran.r-project.org/). The script will automatically install the required R packages for you at runtime.
 
 ## Scripts
 
 ***barcodes.sh*** : this is a Bash script that uses Unix utilities such as awk, grep, uniq, join. It performs the following operations:
-
+>
 - a.	Convert binary snapshots to text
 - b.	Extract and sort the barcodes for each time point
 - c.	Compute the mean population fitness for each time point

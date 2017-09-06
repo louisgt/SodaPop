@@ -73,17 +73,17 @@ Done.
 Total number of mutation events: 10767
 ```
 
-Let’s break down this command step by step.
+Let’s break down this command step by step:
 
-- sodapop is the main simulation utility (or program).  
-- --sim-type stability defines the type of input to be used for the simulation. In our case, we chose stability.  
-- -f 5 is the choice of fitness function. For more information on fitness functions, refer to the SodaPop manual (PDF). For now, just know that 5 is the mapping for the neutral fitness function.  
-- -p files/start/pop1K.snap is the argument for the starting population snapshot.  
-- -g files/genes/gene_list.dat is the argument for the gene index list.  
-- -o neutral is the prefix for output.  
-- -n 1000  is the population size.  
-- -m 1000  is the number of generations we would like to simulate.  
-- -t 10  is the interval at which the program saves a population snapshot.  
+>    ***sodapop*** is the main simulation utility (or program).   
+    ***sim-type stability*** defines the type of input to be used for the simulation. In our case, we chose stability.   
+    ***f 5*** is the choice of fitness function. For more information on fitness functions, refer to the SodaPop manual (PDF). For now, just know that 5 is the mapping for the neutral fitness function.   
+    ***p files/start/pop1K.snap*** is the argument for the starting population snapshot.    
+    ***g files/genes/gene_list.dat*** is the argument for the gene index list.   
+    ***o neutral*** is the prefix for output.   
+    ***n 1000***  is the population size.   
+    ***m 1000***  is the number of generations we would like to simulate.  
+    ***t 10***  is the interval at which the program saves a population snapshot.   
 
 <a name="convert"/>
 
