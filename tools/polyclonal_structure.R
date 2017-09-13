@@ -31,7 +31,7 @@ print("Saving plot a to file...")
 
 step = dt*10
 if(fixgen/step > 12){
-	step = dt*25
+	step = dt*50
 }
 
 a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_bw() + labs(x = "Generations",y="Average fitness")
