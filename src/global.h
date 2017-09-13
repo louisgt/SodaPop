@@ -55,7 +55,7 @@ auto ProperlySeededRandomEngine () -> typename std::enable_if<!!N, T>::type {
     T seededEngine (seeds);
     return seededEngine;
 }
-   Ran *uniformdevptr;
+Ran *uniformdevptr;
 
 /******** PSEUDO RANDOM NUMBER GENERATOR
 
@@ -69,7 +69,7 @@ without a significant memory/time penalty
 
 //Set seed source to rand device
 pcg_extras::seed_seq_from<std::random_device> seed_source;
-//Create rng
+//set rng
 pcg32 rng(seed_source);
 //use uniform real dist
 std::uniform_real_distribution<double> uniform_dist(0.0, 1.0);
@@ -101,16 +101,15 @@ const double ddG_max = 99;
 const double CONC_MAX = 1e15;
 const double kT = 0.5922; //defines the energy units
 const double COST = 1e-4; // see Geiler-Samerotte et al. 2011
+// the factor below is computed using gene abundances, please refer to the SodaPop User Manual for information
 const double A_FACTOR = 0.005754898; // see Serohijos & Shakhnovich 2013
 const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
-
 
 // exponent values are precalculated to be used readily
 const double DDG_min = exp(-1*(ddG_min)/kT);
 const double DDG_max = exp(-1*(ddG_max)/kT);
 const int Bigbuffer_max = 80;
 constexpr double PI  = 3.141592653589793238463;
-
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
@@ -471,159 +470,134 @@ std::string n3_to_n3(std::string a, std::string b, int i){
   {
       switch (i)
       {
-          case 0:
-              l =  (2*r);
-
-              if (b == "CAA" ){
-                if  ( l<1 )	a = "GAA";
-                else 		a = "AAA";
-              }else if (b == "GAA" ){
-                if  ( l<1 )	a = "CAA";
-                else 		a = "AAA";
-              }else if (b == "AAA" ){
-                 if  ( l<1 )	a = "GAA";
-                else 		a = "CAA";
-              }else{
-                std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
-                exit(2);
-              }
-
+          case 0: l =  (2*r);
+                  if (b == "CAA" ){
+                    if  ( l<1 )	a = "GAA";
+                    else 		a = "AAA";
+                  }else if (b == "GAA" ){
+                    if  ( l<1 )	a = "CAA";
+                    else 		a = "AAA";
+                  }else if (b == "AAA" ){
+                     if  ( l<1 )	a = "GAA";
+                    else 		a = "CAA";
+                  }else{
+                    std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
+                    exit(2);
+                  }
            break;
 
           case 1:
-              if 	(b == "TTA") a = "TCA";
-              else if (b == "TCA") a = "TTA";
-              else {
-                std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
-                exit(2); 
-              }
-
+                  if 	(b == "TTA") a = "TCA";
+                  else if (b == "TCA") a = "TTA";
+                  else {
+                    std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
+                    exit(2); 
+                  }
             break;
 
           case 2:
-              if 	(b == "TAT") a = "TAC";
-              else if (b == "TAC") a = "TAT";
-              else {
-                std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
-                exit(2); 
-              }
-
+                  if 	(b == "TAT") a = "TAC";
+                  else if (b == "TAC") a = "TAT";
+                  else {
+                    std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
+                    exit(2); 
+                  }
             break;
-
-           default:
-            std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
+           default: std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
       }
   }
   else if (a == "TAG")
   {
       switch (i)
       {
-          case 0:
-              l = (2*r);
-
-              if (b == "AAG" ){
-                if  ( l<1 )	a = "GAG";
-                else 		a = "CAG";
-              }else if (b == "GAG" ){
-                if  ( l<1 )	a = "AAG";
-                else 		a = "CAG";
-              }else if (b == "CAG" ){
-                 if  ( l<1 )	a = "GAG";
-                else 		a = "AAG";
-              }else{
-                std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
-                exit(2);
-              }
-
+          case 0: l = (2*r);
+                  if (b == "AAG" ){
+                    if  ( l<1 )	a = "GAG";
+                    else 		a = "CAG";
+                  }else if (b == "GAG" ){
+                    if  ( l<1 )	a = "AAG";
+                    else 		a = "CAG";
+                  }else if (b == "CAG" ){
+                     if  ( l<1 )	a = "GAG";
+                    else 		a = "AAG";
+                  }else{
+                    std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
+                    exit(2);
+                  }
            break;
 
-          case 1:
-              l = (2*r);
-
-              if (b == "TTG" ){
-                if  ( l<1 )	a = "TGG";
-                else 		a = "TGC";
-              }else if (b == "TGG" ){
-                if  ( l<1 )	a = "TTG";
-                else 		a = "TGC";
-              }else if (b == "TCG" ){
-                 if  ( l<1 )	a = "TTG";
-                else 		a = "TGG";
-              }else{
-                std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
-                exit(2);
-              }
-
+          case 1: l = (2*r);
+                  if (b == "TTG" ){
+                    if  ( l<1 )	a = "TGG";
+                    else 		a = "TGC";
+                  }else if (b == "TGG" ){
+                    if  ( l<1 )	a = "TTG";
+                    else 		a = "TGC";
+                  }else if (b == "TCG" ){
+                     if  ( l<1 )	a = "TTG";
+                    else 		a = "TGG";
+                  }else{
+                    std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
+                    exit(2);
+                  }
            break;
 
           case 2:
-              if 	(b == "TAT") a = "TAC";
-              else if (b == "TAC") a = "TAT";
-              else {
-                std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
-                exit(2); 
-              }
-
+                  if 	(b == "TAT") a = "TAC";
+                  else if (b == "TAC") a = "TAT";
+                  else {
+                    std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
+                    exit(2); 
+                  }
               break;
-
-             default:
-             std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
+          default: std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
        }
    }
    else if (a == "TGA")
    {
       switch (i)
       {
-          case 0:
-              l =  (2*r);
-
-              if (b == "AGA" ){
-                if  ( l<1 )	a = "GGA";
-                else 		a = "CGA";
-              }else if (b == "GGA" ){
-                if  ( l<1 )	a = "AGA";
-                else 		a = "CGA";
-              }else if (b == "CGA" ){
-                 if  ( l<1 )	a = "AGA";
-                else 		a = "GGA";
-              }else{
-                std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
-                exit(2);
-              }
-
+          case 0: l =  (2*r);
+                  if (b == "AGA" ){
+                    if  ( l<1 )	a = "GGA";
+                    else 		a = "CGA";
+                  }else if (b == "GGA" ){
+                    if  ( l<1 )	a = "AGA";
+                    else 		a = "CGA";
+                  }else if (b == "CGA" ){
+                     if  ( l<1 )	a = "AGA";
+                    else 		a = "GGA";
+                  }else{
+                    std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
+                    exit(2);
+                  }
            break;
 
          case 1:
-              if 	(b == "TTA") a = "TCA";
-              else if (b == "TCA") a = "TTA";
-              else {
-                std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
-                exit(2); 
-              }
-
+                  if 	(b == "TTA") a = "TCA";
+                  else if (b == "TCA") a = "TTA";
+                  else {
+                    std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
+                    exit(2); 
+                  }
               break;
 
-          case 2:
-              l =  (2*r);
-
-              if (b == "TGT" ){
-                if  ( l<1 )	a = "TGG";
-                else 		a = "TGC";
-              }else if (b == "TGG" ){
-                if  ( l<1 )	a = "TGT";
-                else 		a = "TGC";
-              }else if (b == "TGC" ){
-                 if  ( l<1 )	a = "TGT";
-                else 		a = "TGG";
-              }else{
-                std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
-                exit(2);
-              }
-
+          case 2: l =  (2*r);
+                  if (b == "TGT" ){
+                    if  ( l<1 )	a = "TGG";
+                    else 		a = "TGC";
+                  }else if (b == "TGG" ){
+                    if  ( l<1 )	a = "TGT";
+                    else 		a = "TGC";
+                  }else if (b == "TGC" ){
+                     if  ( l<1 )	a = "TGT";
+                    else 		a = "TGG";
+                  }else{
+                    std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
+                    exit(2);
+                  }
            break;
-
-           default:
-            std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
+           default: std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
       }  
   }
   return a;
