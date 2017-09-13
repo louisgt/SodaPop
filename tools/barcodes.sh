@@ -63,7 +63,6 @@ j=1
 cat $PREFIX/barcodes/start.txt > $PREFIX/barcodes/series$i.txt
 
 #### JOIN TIME FRAMES IN A SUITABLE FORMAT
-####for filename in `ls -v ./$PREFIX/barcodes/*.unique`
 for filename in `find $PREFIX/barcodes/ -maxdepth 1 -name "*.unique"`
 do
 	join -t' ' -e 0 -a 1 -1 1 -2 1 -o 2.2 $PREFIX/barcodes/series$i.txt $filename | paste -d' ' $PREFIX/barcodes/series$i.txt - > $PREFIX/barcodes/series$j.txt
