@@ -45,8 +45,9 @@ int main(int argc, char *argv[])
     uniformdevptr = &rand_uniform;
 
     // Wrap everything in a try block
-    // errors in input are caught and explained to user
-    try { 
+    // errors in cmd line input are caught and explained to user
+    try {
+        
     // Define the command line object
     TCLAP::CmdLine cmd("SodaPop: a multi-scale model of molecular evolution", ' ', "v1.0");
 
@@ -56,11 +57,10 @@ int main(int argc, char *argv[])
     TCLAP::ValueArg<int> dtArg("t","dt","Time interval for snapshots",false,1,"int");
 
     //files
-    TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"sim","filename");
+    TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"newSim","filename");
     TCLAP::ValueArg<std::string> geneArg("g","gene-list","Gene list file",true,"null","filename");
     TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",false,"null","filename");
     TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",false,"files/genes/","filename");
-
     TCLAP::ValueArg<std::string> matrixArg("i","input","Input file defining the fitness landscape",false,"null","filename");
     
     // fitness function
@@ -204,10 +204,10 @@ int main(int argc, char *argv[])
     std::vector <PolyCell> Cell_arr;
     double w_sum = 0;
 
-    // IF POPULATION IS INITIALLY MONOCLONAL
-    // CREATE VECTOR WITH N IDENTICAL CELLS
-    // MINOR COMPUTATIONAL PENALTY DUE TO REATTRIBUTION OF BARCODES (BELOW)
-    // BUT LARGELY OFFSET BY QUASI-INSTANTANEOUS INITIALIZATION OF VECTOR
+    // if the population is initially monoclonal
+    // create a vector with N identical cells
+    // minor computational penalty due to reallocation of barcodes (below)
+    // this is largely offset by the much faster initialization of the vector
     if(createPop){
         std::cout << "Creating a population of " << N << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
         } 
     }
     else{
-        // ELSE IT MUST BE POPULATED CELL BY CELL FROM SNAP FILE
+        // otherwise it must be populated cell by cell
         Cell_arr.reserve(N);
         int i=0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
@@ -229,8 +229,9 @@ int main(int argc, char *argv[])
         }
     }
     startsnap.close();
+    
+    // Ouput the initial population snapshot based on the user's preference (short or long)
     std::cout << "Saving initial population snapshot ... " << std::endl;
-    // save initial population snapshot
     sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
 
     // Open snapshot file
@@ -262,7 +263,7 @@ int main(int argc, char *argv[])
     }
     
     OUT2.close();   
-
+    
     std::ofstream MUTATIONLOG;
     if(trackMutations){
         // Open MUTATION LOG
@@ -279,20 +280,22 @@ int main(int argc, char *argv[])
     // PSEUDO WRIGHT-FISHER PROCESS
     while(GENERATION_CTR < GENERATION_MAX){
         std::vector<PolyCell> Cell_temp;
-        // reserve 2N to allow overflow and prevent segfault
+        // reserve 2N to allow overflow and prevent segfaulting
         Cell_temp.reserve(N*2);
+        
         // for each cell in the population
-
         for(std::vector<PolyCell>::iterator j = Cell_arr.begin(); j != Cell_arr.end(); ++j)
         {
-            // fitness of cell j with respect to sum of population fitness
+            // fitness of cell j with respect to sum of population fitnesses
             double w = (*j).fitness()/w_sum;
+            
             // probability parameter of binomial distribution
             std::binomial_distribution<> binCell(N, w);
+            
             // number of progeny k is drawn from binomial distribution with N trials and mean w
             int k = binCell(rng);
             
-            // if nil, the cell will be wiped from the population
+            // if nil, the cell will be wiped from the next generation
             if(k == 0) continue;
 
             // iterator to current available position
