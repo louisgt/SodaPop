@@ -24,8 +24,6 @@ avg_fitness$gen = as.numeric(row.names(avg_fitness))*dt-dt
 
 fixgen = (ncol(generations) - 2)*dt
 colnames(generations)[2:(ncol(generations))]=seq(0,fixgen, dt)
-# print("Transforming barcodes into factors...")
-# generations$V1 = sapply(generations$V1, as.factor)
 print("Melting dataframe...")
 FLUX = melt(generations, id='V1')
 
@@ -36,18 +34,18 @@ if(fixgen/step > 12){
 	step = dt*25
 }
 
-a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_bw() + labs(x = "Generations",y="Average fitness",title='Evolution of the average population fitness in time')
-ggsave("fitness.tiff", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
+a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_bw() + labs(x = "Generations",y="Average fitness")
+ggsave("fitness.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
 
 print("Saving plot b to file...")
 b = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_area(aes(fill=V1),alpha=0.5) + theme_bw() + scale_color_discrete(guide=FALSE) + scale_fill_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) +
   labs(x = "Generations",y="Count")
 b$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
-ggsave("clonal_structure.tiff", plot=b, path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
+ggsave("clonal_structure.png", plot=b, path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
 
 print("Saving plot c to file...")
 
 c = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_line() + theme_bw() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
 labs(x = "Generations",y="Count")
 c$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
-ggsave("clonal_trajectories.tiff", plot=c, path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
+ggsave("clonal_trajectories.png", plot=c, path = paste(dir,src,"graph/",sep=""), width = 5.5, height = 4, dpi=600)
