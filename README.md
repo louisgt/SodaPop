@@ -1,5 +1,5 @@
 # SodaPop-1.0
-## **S**imulating the **D**ynamics of **A**sexual **Pop**ulations
+**S**imulating the **D**ynamics of **A**sexual **Pop**ulations
 
 ## Overview
 
