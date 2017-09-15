@@ -1,5 +1,6 @@
 # SodaPop-1.0
-Developed by the http://www.serohijoslab.org/
+
+## Developed by the http://www.serohijoslab.org/
 
 ## Visit the [SodaPop website](https://louisgt.github.io/SodaPop/) for online documentation or [download the SodaPop user manual](https://github.com/louisgt/SodaPop/files/1271058/MANUAL.pdf).
 
