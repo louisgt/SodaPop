@@ -32,18 +32,18 @@ class PolyCell: public Cell
         static int ff_;
         static bool useDist_;
         static bool fromS_;
-	PolyCell();
-	PolyCell(std::fstream&);			    
-	PolyCell(std::fstream&, const std::string&);
+		PolyCell();
+	    PolyCell(std::fstream&);			    
+	    PolyCell(std::fstream&, const std::string&);
 
-	void UpdateRates();
+	    void UpdateRates();
         void ranmut_Gene();
-	void ranmut_Gene(std::ofstream&, int);
-	void change_exprlevel();
-	void dump(std::fstream&, int);
+	    void ranmut_Gene(std::ofstream&, int);
+	    void change_exprlevel();
+	    void dump(std::fstream&, int);
         void dumpShort(std::fstream&);
-	void PrintCell(int);
-	void FillGene_L();
+	    void PrintCell(int);
+	    void FillGene_L();
         void ch_Fitness(double f){fitness_ = f;}
         // Fitness functions
         void selectFitness();
@@ -57,6 +57,7 @@ class PolyCell: public Cell
         int Na(){return Total_Na_;}
         int Ns(){return Total_Ns_;}
         void UpdateNsNa();
+
 };
 
 // By default the fitness function is set to neutral
@@ -67,7 +68,7 @@ bool PolyCell::fromS_ = false;
 PolyCell::PolyCell(){}
 PolyCell::PolyCell(std::fstream& f) : Cell(f)
 {
-	selectFitness();
+    selectFitness();
 	// Update current rates
   	this->UpdateRates();  
   	// Fill gene length array
@@ -75,7 +76,7 @@ PolyCell::PolyCell(std::fstream& f) : Cell(f)
 }    
 PolyCell::PolyCell(std::fstream& f, const std::string& s) : Cell(f,s)
 {
-	selectFitness();
+    selectFitness();
 	// Update current rates
   	this->UpdateRates();  
   	// Fill gene length array
@@ -167,15 +168,6 @@ double PolyCell::neutral()
     return 1;
 }
 
-// USER DEFINED FITNESS FUNCTION
-// use this template to implement your own fitness function
-/*
-double PolyCell::myFitnessFunc()
-{
-    return 0;
-}
-*/
-
 const double PolyCell::fitness()
 {
     return fitness_;
@@ -186,8 +178,6 @@ void PolyCell::UpdateRates()
     ch_Fitness((this->*fit)());
 }
 
-// Randomly chooses a site to mutate in the genome using the
-// appropriate mutation function
 void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 {
     // get genome size
@@ -251,7 +241,6 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     log << ctr << endl;
 }
 
-// same as above but no tracking of mutations
 void PolyCell::ranmut_Gene()
 {
     // get genome size
@@ -353,7 +342,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
     }
 }
 
-// Dump short summary to binary file
+// Dump cell summary to binary file
 void PolyCell::dumpShort(std::fstream& OUT)
 {
     int x;

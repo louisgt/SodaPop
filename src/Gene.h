@@ -36,7 +36,6 @@ class Gene
         double e;		//essentiality: 1-if directly involved in replication, 0-otherwise
    
     public:
-        // parameters for random distributions
         static double shape_;
         static double scale_;
         static double mean_;
@@ -65,7 +64,6 @@ class Gene
 
         void Update_Sequences(std::string);
      
-        // accessors
         void ch_dg(const double a){ dg_ = a; }
         void ch_f(const double a){ f_ = a; }
         void ch_Na(const int a){ Na_ = a; }
@@ -89,13 +87,11 @@ class Gene
         double Pnat();
 };
 
-// initialize distribution parameters to default value
 double Gene::shape_ = 1.0;
 double Gene::scale_ = 1.0;
 double Gene::mean_ = 1.0;
 double Gene::stdev_ = 1.0;
 
-// initialize PRNG engine and distributions
 auto engine = ProperlySeededRandomEngine();
 std::gamma_distribution<double> Gene::gamma_ = std::gamma_distribution<double>(Gene::shape_, Gene::scale_);
 std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(Gene::mean_, Gene::stdev_);
@@ -191,7 +187,7 @@ Gene::Gene(std::fstream& gene_in)
             iss>>word; 
             f_ = atof(word.c_str());
         }
-        else if (word == "//"){;} // ignore comments
+        else if (word == "//"){;}//do nothing
     }
     Na_ = 0; //default
     Ns_ = 0;
@@ -244,7 +240,7 @@ Gene& Gene::operator=(const Gene& A)
 
 /*
 This version of the mutation function draws the DDG value from a gaussian distribution
-with mean = 1.0 and SD = 1.7
+with a shifting mean to mimic sequence depletion.
 */
 double Gene::Mutate_Stabil_Gaussian(int i, int j)
 { 
@@ -272,7 +268,7 @@ double Gene::Mutate_Stabil_Gaussian(int i, int j)
 }
 
 /*
-This version of the mutation function gets the value from the DDG matrix
+This version of the mutation function gets the DDG value from the DDG matrix
 input by the user.
 INPUT: 
     i -> site to mutate
@@ -376,8 +372,8 @@ double Gene::Mutate_Select_Dist(int i, int j)
 }
 
 /*
-This version of the mutation function gets the selection coefficient from the input matrix
-and back calculates the corresponding fitness change
+This version of the mutation function gets the DDG value from the DDG matrix
+input by the user.
 INPUT: 
     i -> site to mutate
     j -> bp to mutate to

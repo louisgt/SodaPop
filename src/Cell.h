@@ -34,7 +34,7 @@ class Cell
     public:
         //Array of genes
         std::vector<Gene> Gene_arr_;
-        //Cumulative sum of gene lengths (i.e. genome size)
+        //Cummulative sum of gene lengths (i.e. genome size)
         VectInt Gene_L_;
         Cell();
         Cell(std::fstream&);			    
@@ -44,13 +44,14 @@ class Cell
         virtual void dump(std::fstream&, int) = 0;
         virtual void PrintCell(int) = 0;       
              
-        //accessors
+        //getters
         const int ID(){return ID_;}
         const double mrate(){return c_mrate_;}
         const int gene_count(){return Gene_arr_.size();}
         const int genome_size(){return Gene_L_.back();}
         const std::string barcode(){return barcode_;}   
 
+        //setters
         void change_ID(int a){ ID_ = a;}
         void ch_barcode(std::string s){barcode_ = s;}
         int total_mutations(const int&);
@@ -185,7 +186,7 @@ Cell::Cell(std::fstream& IN, const std::string& genesPath)
     }
 }
 
-// Initialize the cumulative gene length array
+// Initialize the cummulative gene length array
 void Cell::FillGene_L()
 {
     int sum = 0;
@@ -223,3 +224,5 @@ int Cell::total_mutations(const int& spec)
 }
 
 #endif
+
+

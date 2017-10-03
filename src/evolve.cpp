@@ -27,7 +27,6 @@ int main(int argc, char *argv[])
     int GENERATION_MAX = GENERATION_CTR + 1;
     int MUTATION_CTR = 0;
     double N=1;
-    int node = 1;
     int DT = 1;
     double TIME = 0;
     char buffer[200];
@@ -45,9 +44,8 @@ int main(int argc, char *argv[])
     uniformdevptr = &rand_uniform;
 
     // Wrap everything in a try block
-    // errors in cmd line input are caught and explained to user
-    try {
-        
+    // errors in input are caught and explained to user
+    try { 
     // Define the command line object
     TCLAP::CmdLine cmd("SodaPop: a multi-scale model of molecular evolution", ' ', "v1.0");
 
@@ -57,10 +55,11 @@ int main(int argc, char *argv[])
     TCLAP::ValueArg<int> dtArg("t","dt","Time interval for snapshots",false,1,"int");
 
     //files
-    TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"newSim","filename");
+    TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"sim","filename");
     TCLAP::ValueArg<std::string> geneArg("g","gene-list","Gene list file",true,"null","filename");
     TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",false,"null","filename");
     TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",false,"files/genes/","filename");
+
     TCLAP::ValueArg<std::string> matrixArg("i","input","Input file defining the fitness landscape",false,"null","filename");
     
     // fitness function
@@ -204,10 +203,10 @@ int main(int argc, char *argv[])
     std::vector <PolyCell> Cell_arr;
     double w_sum = 0;
 
-    // if the population is initially monoclonal
-    // create a vector with N identical cells
-    // minor computational penalty due to reallocation of barcodes (below)
-    // this is largely offset by the much faster initialization of the vector
+    // IF POPULATION IS INITIALLY MONOCLONAL
+    // CREATE VECTOR WITH N IDENTICAL CELLS
+    // MINOR COMPUTATIONAL PENALTY DUE TO REATTRIBUTION OF BARCODES (BELOW)
+    // BUT LARGELY OFFSET BY QUASI-INSTANTANEOUS INITIALIZATION OF VECTOR
     if(createPop){
         std::cout << "Creating a population of " << N << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
@@ -218,7 +217,7 @@ int main(int argc, char *argv[])
         } 
     }
     else{
-        // otherwise it must be populated cell by cell
+        // ELSE IT MUST BE POPULATED CELL BY CELL FROM SNAP FILE
         Cell_arr.reserve(N);
         int i=0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
@@ -229,9 +228,8 @@ int main(int argc, char *argv[])
         }
     }
     startsnap.close();
-    
-    // Ouput the initial population snapshot based on the user's preference (short or long)
     std::cout << "Saving initial population snapshot ... " << std::endl;
+    // save initial population snapshot
     sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
 
     // Open snapshot file
@@ -263,11 +261,11 @@ int main(int argc, char *argv[])
     }
     
     OUT2.close();   
-    
+
     std::ofstream MUTATIONLOG;
     if(trackMutations){
         // Open MUTATION LOG
-        sprintf(buffer, "out/%s/MUTATION_LOG.%03d",outDir.c_str(),node);
+        sprintf(buffer, "out/%s/MUTATION_LOG",outDir.c_str());
         MUTATIONLOG.open(buffer);
         if ( !MUTATIONLOG.is_open() ) {
             std::cerr << "Mutation log file could not be opened";
@@ -280,22 +278,20 @@ int main(int argc, char *argv[])
     // PSEUDO WRIGHT-FISHER PROCESS
     while(GENERATION_CTR < GENERATION_MAX){
         std::vector<PolyCell> Cell_temp;
-        // reserve 2N to allow overflow and prevent segfaulting
+        // reserve 2N to allow overflow and prevent segfault
         Cell_temp.reserve(N*2);
-        
         // for each cell in the population
+
         for(std::vector<PolyCell>::iterator j = Cell_arr.begin(); j != Cell_arr.end(); ++j)
         {
-            // fitness of cell j with respect to sum of population fitnesses
+            // fitness of cell j with respect to sum of population fitness
             double w = (*j).fitness()/w_sum;
-            
             // probability parameter of binomial distribution
             std::binomial_distribution<> binCell(N, w);
-            
             // number of progeny k is drawn from binomial distribution with N trials and mean w
             int k = binCell(rng);
             
-            // if nil, the cell will be wiped from the next generation
+            // if nil, the cell will be wiped from the population
             if(k == 0) continue;
 
             // iterator to current available position
@@ -395,11 +391,7 @@ int main(int argc, char *argv[])
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
         std::string script = "tools/barcodes.sh";
-        if(useShort)
-        {
-            script = "tools/barcodes_short.sh";
-        }
-        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT);
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT)+" "+std::to_string((int) useShort);
         const char *cmd = command.c_str();
         system(cmd);
     }
