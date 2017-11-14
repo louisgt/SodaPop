@@ -1,7 +1,5 @@
 # SodaPop-1.0
 
-![header](https://user-images.githubusercontent.com/29554043/32801437-0cb5cc14-c94b-11e7-8b22-5687ff245afc.png)
-
 ## Developed by the http://www.serohijoslab.org/
 
 ## Visit the [SodaPop website](https://louisgt.github.io/SodaPop/) for online documentation or [download the SodaPop user manual](https://github.com/louisgt/SodaPop/files/1271058/MANUAL.pdf).
@@ -9,6 +7,8 @@
 ## Overview
 
 SodaPop is a forward-time simulator of large asexual populations aimed at studying structure, dynamics and the distribution of fitness effects without prior assumptions on the landscape. The program integrates biochemical and biophysical properties in a cell-based, object-oriented framework and provides an efficient, open-source toolkit for studying large-scale molecular evolution. SodaPop is designed with large-scale simulations in mind, making it suitable for the investigation of evolutionary dynamics in the context of antibiotic resistance, viral evolution and cancer.
+
+![header](https://user-images.githubusercontent.com/29554043/32801437-0cb5cc14-c94b-11e7-8b22-5687ff245afc.png)
 
 ## Troubleshooting
 
