@@ -115,22 +115,23 @@ void PolyCell::selectFitness()
 double PolyCell::flux()
 {
     double f = 0;
+    //sum (concentration*Pnat) over all genes
     for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
         f = f + 1/((*i).functional());
     }
-    return A_FACTOR/f;
+    return exp(A_FACTOR/f-1);
 }
 
 // TOXICITY FITNESS FUNCTION
 double PolyCell::toxicity()
 {
     double f = 0;
+    //sum (concentration*(1-Pnat)) over all genes
     for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
         f +=(*i).misfolded();
     }
-    double w = 1-(COST*f);
-    if(w<0) return 0;
-    else return w;
+    double w = exp(-(COST*f));
+    return w;
 }
 
 // METABOLIC FLUX FITNESS FUNCTION

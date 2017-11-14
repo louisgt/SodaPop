@@ -338,6 +338,7 @@ std::string Gene::Mutate_Stabil(int i, int j)
           assert( x_curr<DDG_min || x_curr>DDG_max); 
 
           // assign new DG value
+          // division account for wildtype background
           dg_ /= x_curr;
           dg_ *= x;
           nucseq_.replace(cdn_start, 3, cdn_new);
