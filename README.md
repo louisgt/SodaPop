@@ -1,5 +1,7 @@
 # SodaPop-1.0
 
+![header](https://user-images.githubusercontent.com/29554043/32801437-0cb5cc14-c94b-11e7-8b22-5687ff245afc.png)
+
 ## Developed by the http://www.serohijoslab.org/
 
 ## Visit the [SodaPop website](https://louisgt.github.io/SodaPop/) for online documentation or [download the SodaPop user manual](https://github.com/louisgt/SodaPop/files/1271058/MANUAL.pdf).
