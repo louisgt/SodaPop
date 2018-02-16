@@ -137,18 +137,18 @@ double PolyCell::toxicity()
 // METABOLIC FLUX FITNESS FUNCTION
 double PolyCell::metabolicOutput()
 {
-    double f = 0;
-    double t = 0;
-    for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
-        f = f + 1/((*i).functional());
-        t +=(*i).misfolded();
+    double flux = 0;
+    double toxicity = 0;
+    for (auto& it : Gene_arr_) {
+        flux += 1 / it.functional();
+        toxicity += it.misfolded();
     }
-    f = A_FACTOR/f;
-    t = COST*f;
 
-    double w = f - t;
-    if(w<0) return 0;
-    else return w;
+    flux = A_FACTOR / flux;
+    toxicity = COST * toxicity;
+
+    double fitness = flux - toxicity;
+    return (fitness < 0) ? 0 : fitness;
 }
 
 // MULTIPLICATIVE FITNESS FUNCTION
