@@ -1,10 +1,11 @@
 #include "PolyCell.h"
 #include <tclap/CmdLine.h>
 #include <unistd.h>
+#include "rng.h"
 
 /*SodaPop
 
-Copyright (C) 2017 Louis Gauthier
+Copyright (C) 2018 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,145 +40,147 @@ int main(int argc, char *argv[])
     std::string geneListFile, genesPath;
     std::string outDir, startSnapFile, matrixFile;
 
-    auto rng = ProperlySeededRandomEngine();
-    Ran rand_uniform(rng());                        
-    uniformdevptr = &rand_uniform;
-
     // Wrap everything in a try block
     // errors in input are caught and explained to user
     try { 
-    // Define the command line object
-    TCLAP::CmdLine cmd("SodaPop: a multi-scale model of molecular evolution", ' ', "v1.0");
+        // Define the command line object
+        TCLAP::CmdLine cmd("SodaPop: a multi-scale model of molecular evolution", ' ', "v1.0");
 
-    // Define value arguments
-    TCLAP::ValueArg<int> maxArg("m","maxgen","Maximum number of generations",false,10000,"int");
-    TCLAP::ValueArg<int> popArg("n","size","Initial population size",false,1,"int");
-    TCLAP::ValueArg<int> dtArg("t","dt","Time interval for snapshots",false,1,"int");
+        // Define value arguments
+        TCLAP::ValueArg<int> maxArg("m","maxgen","Maximum number of generations",false,10000,"int");
+        TCLAP::ValueArg<int> popArg("n","size","Initial population size",false,1,"int");
+        TCLAP::ValueArg<int> dtArg("t","dt","Time interval for snapshots",false,1,"int");
 
-    //files
-    TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"sim","filename");
-    TCLAP::ValueArg<std::string> geneArg("g","gene-list","Gene list file",true,"null","filename");
-    TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",false,"null","filename");
-    TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",false,"files/genes/","filename");
+        //files
+        TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"sim","filename");
+        TCLAP::ValueArg<std::string> geneArg("g","gene-list","Gene list file",true,"null","filename");
+        TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",false,"null","filename");
+        TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",false,"files/genes/","filename");
 
-    TCLAP::ValueArg<std::string> matrixArg("i","input","Input file defining the fitness landscape",false,"null","filename");
-    
-    // fitness function
-    TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"integer ID");
-    
-    // boolean switch to use DDG as input type
-    TCLAP::ValueArg<std::string> inputArg("","sim-type","Define simulation type\n<s> (from selection coefficient, DMS or otherwise)\n<stability> (from DDG matrix or distribution)", false,"s","string");
+        TCLAP::ValueArg<std::string> matrixArg("i","input","Input file defining the fitness landscape",false,"null","filename");
+        
+        // fitness function
+        TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"integer ID");
+        
+        // boolean switch to use DDG as input type
+        TCLAP::ValueArg<std::string> inputArg("","sim-type","Define simulation type\n<s> (from selection coefficient, DMS or otherwise)\n<stability> (from DDG matrix or distribution)", false,"s","string");
 
-    //use gamma distribution to draw selection coefficients
-    TCLAP::SwitchArg gammaArg("","gamma","Draw selection coefficients from gamma distribution", cmd, false);
+        //use gamma distribution to draw selection coefficients
+        TCLAP::SwitchArg gammaArg("","gamma","Draw selection coefficients from gamma distribution", cmd, false);
 
-    //use normal distribution to draw selection coefficients
-    TCLAP::SwitchArg normalArg("","normal","Draw selection coefficients from normal distribution", cmd, false);
+        //use normal distribution to draw selection coefficients
+        TCLAP::SwitchArg normalArg("","normal","Draw selection coefficients from normal distribution", cmd, false);
 
-    //first parameter of distribution
-    TCLAP::ValueArg<double> alphaArg("","alpha","Alpha parameter of distribution\nGamma -> shape\nNormal -> mean",false,1,"double");
+        //first parameter of distribution
+        TCLAP::ValueArg<double> alphaArg("","alpha","Alpha parameter of distribution\nGamma -> shape\nNormal -> mean",false,1,"double");
 
-    //second parameter of distribution
-    TCLAP::ValueArg<double> betaArg("","beta","Beta parameter of distribution\nGamma -> scale\nNormal -> S.D.",false,1,"double");
+        //second parameter of distribution
+        TCLAP::ValueArg<double> betaArg("","beta","Beta parameter of distribution\nGamma -> scale\nNormal -> S.D.",false,1,"double");
 
-    // boolean switch to create population from scratch
-    TCLAP::SwitchArg initArg("c","create-single","Create initial population on the fly", cmd, false);
-    
-    // boolean switch to enable analysis
-    TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
-    
-    // boolean switch to track mutations
-    TCLAP::SwitchArg eventsArg("e","track-events","Track mutation events", cmd, false);
-    
-    // boolean switch to use short format for snapshots
-    TCLAP::SwitchArg shortArg("s","short-format","Use short format for population snapshots", cmd, false);
+        // boolean switch to create population from scratch
+        TCLAP::SwitchArg initArg("c","create-single","Create initial population on the fly", cmd, false);
+        
+        // boolean switch to enable analysis
+        TCLAP::SwitchArg analysisArg("a","analysis","Enable analysis scripts", cmd, false);
+        
+        // boolean switch to track mutations
+        TCLAP::SwitchArg eventsArg("e","track-events","Track mutation events", cmd, false);
+        
+        // boolean switch to use short format for snapshots
+        TCLAP::SwitchArg shortArg("s","short-format","Use short format for population snapshots", cmd, false);
 
-    // Add the arguments to the CmdLine object.
-    cmd.add(maxArg);
-    cmd.add(popArg);
-    cmd.add(dtArg);
-    cmd.add(prefixArg);
-    cmd.add(geneArg);
-    cmd.add(startArg);
-    cmd.add(libArg);
-    cmd.add(fitArg);
-    cmd.add(matrixArg);
-    cmd.add(alphaArg);
-    cmd.add(betaArg);
-    cmd.add(inputArg);
+        // RNG seed
+        TCLAP::ValueArg<unsigned long> seedArg("", "seed", "Seed value for RNG.", false, 0, "unsigned int (64-bit)");
 
-    // Parse the argv array.
-    cmd.parse(argc, argv);
+        // Add the arguments to the CmdLine object.
+        cmd.add(maxArg);
+        cmd.add(popArg);
+        cmd.add(dtArg);
+        cmd.add(prefixArg);
+        cmd.add(geneArg);
+        cmd.add(startArg);
+        cmd.add(libArg);
+        cmd.add(fitArg);
+        cmd.add(matrixArg);
+        cmd.add(alphaArg);
+        cmd.add(betaArg);
+        cmd.add(inputArg);
 
-    // Get values from args. 
-    GENERATION_MAX = maxArg.getValue();
-    N = popArg.getValue();
-    DT = dtArg.getValue();
+        // Parse the argv array.
+        cmd.parse(argc, argv);
 
-    geneListFile = geneArg.getValue();
-    outDir = prefixArg.getValue();
-    startSnapFile = startArg.getValue();
-    genesPath = libArg.getValue();
+        // Get values from args. 
+        GENERATION_MAX = maxArg.getValue();
+        N = popArg.getValue();
+        DT = dtArg.getValue();
 
-    inputType = inputArg.getValue();
+        geneListFile = geneArg.getValue();
+        outDir = prefixArg.getValue();
+        startSnapFile = startArg.getValue();
+        genesPath = libArg.getValue();
 
-    std::cout << "Begin ... " << std::endl;
-    if(inputType == "s")
-    {
-        PolyCell::fromS_ = true;
-        PolyCell::ff_ = 4;
-        std::cout << "Initializing matrix ..." << std::endl;
-        InitMatrix();
-        std::cout << "Loading primordial genes file ..." << std::endl;
-        LoadPrimordialGenes(geneListFile,genesPath);
-        // if matrix is given
-        if(matrixArg.isSet())
+        inputType = inputArg.getValue();
+
+        if (seedArg.isSet())
+            setRngSeed(seedArg.getValue());
+
+        std::cout << "Begin ... " << std::endl;
+        if(inputType == "s")
         {
-            matrixFile = matrixArg.getValue();
-            std::cout << "Extracting DMS matrix ..." << std::endl;
-            ExtractDMSMatrix(matrixFile.c_str());
-        }
-        else
-        {
-            PolyCell::useDist_ = true;
-            if(gammaArg.isSet())
+            PolyCell::fromS_ = true;
+            PolyCell::ff_ = 4;
+            std::cout << "Initializing matrix ..." << std::endl;
+            InitMatrix();
+            std::cout << "Loading primordial genes file ..." << std::endl;
+            LoadPrimordialGenes(geneListFile,genesPath);
+            // if matrix is given
+            if(matrixArg.isSet())
             {
-                Gene::shape_ = alphaArg.getValue();
-                Gene::scale_ = betaArg.getValue();
-                Gene::initGamma();
+                matrixFile = matrixArg.getValue();
+                std::cout << "Extracting DMS matrix ..." << std::endl;
+                ExtractDMSMatrix(matrixFile.c_str());
             }
-            else if(normalArg.isSet())
+            else
             {
-                Gene::mean_ = alphaArg.getValue();
-                Gene::stdev_ = betaArg.getValue();
-                Gene::initNormal();
+                PolyCell::useDist_ = true;
+                if(gammaArg.isSet())
+                {
+                    double shape = alphaArg.getValue();
+                    double scale = betaArg.getValue();
+                    Gene::initGamma(shape, scale);
+                }
+                else if(normalArg.isSet())
+                {
+                    double mean = alphaArg.getValue();
+                    double stddev = betaArg.getValue();
+                    Gene::initNormal(mean, stddev);
+                }
             }
         }
-    }
-    else if(inputType == "stability")
-    {
-        std::cout << "Initializing matrix ..." << std::endl;
-        InitMatrix();
-        std::cout << "Loading primordial genes file ..." << std::endl;
-        LoadPrimordialGenes(geneListFile,genesPath);
-        PolyCell::ff_ = fitArg.getValue();
-        // if DDG matrix is given
-        if(matrixArg.isSet())
+        else if(inputType == "stability")
         {
-            matrixFile = matrixArg.getValue();
-            std::cout << "Extracting PDDG matrix ..." << std::endl;
-            ExtractPDDGMatrix(matrixFile.c_str());
+            std::cout << "Initializing matrix ..." << std::endl;
+            InitMatrix();
+            std::cout << "Loading primordial genes file ..." << std::endl;
+            LoadPrimordialGenes(geneListFile,genesPath);
+            PolyCell::ff_ = fitArg.getValue();
+            // if DDG matrix is given
+            if(matrixArg.isSet())
+            {
+                matrixFile = matrixArg.getValue();
+                std::cout << "Extracting PDDG matrix ..." << std::endl;
+                ExtractPDDGMatrix(matrixFile.c_str());
+            }
+            else
+            {
+                PolyCell::useDist_ = true;
+            }
         }
-        else
-        {
-            PolyCell::useDist_ = true;
-        }
-    }
 
-    enableAnalysis = analysisArg.getValue();
-    trackMutations = eventsArg.getValue();
-    useShort = shortArg.getValue();
-    createPop = initArg.getValue();
+        enableAnalysis = analysisArg.getValue();
+        trackMutations = eventsArg.getValue();
+        useShort = shortArg.getValue();
+        createPop = initArg.getValue();
 
     }catch (TCLAP::ArgException &e){
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;}
@@ -205,31 +208,28 @@ int main(int argc, char *argv[])
 
     // IF POPULATION IS INITIALLY MONOCLONAL
     // CREATE VECTOR WITH N IDENTICAL CELLS
-    // MINOR COMPUTATIONAL PENALTY DUE TO REATTRIBUTION OF BARCODES (BELOW)
-    // BUT LARGELY OFFSET BY QUASI-INSTANTANEOUS INITIALIZATION OF VECTOR
     if(createPop){
         std::cout << "Creating a population of " << N << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
-        Cell_arr.reserve(N);
         Cell_arr = std::vector <PolyCell>(N,A);
-        for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-             (*k).ch_barcode(getBarcode());
+        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+             cell_it->ch_barcode(getBarcode());
         } 
     }
     else{
         // ELSE IT MUST BE POPULATED CELL BY CELL FROM SNAP FILE
         Cell_arr.reserve(N);
-        int i=0;
+        int count = 0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
-        while( i<Total_Cell_Count && !startsnap.eof()){
-            PolyCell A(startsnap, genesPath);
-            i++;
-            Cell_arr.emplace_back(A);
+        while(count <Total_Cell_Count && !startsnap.eof()){
+            Cell_arr.emplace_back(startsnap, genesPath);
+            count++;  
         }
     }
     startsnap.close();
+
+
     std::cout << "Saving initial population snapshot ... " << std::endl;
-    // save initial population snapshot
     sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
 
     // Open snapshot file
@@ -245,18 +245,19 @@ int main(int argc, char *argv[])
     OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
     if(useShort){
-        for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-            w_sum += (*k).fitness();
-            (*k).dumpShort(OUT2);
+        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+            w_sum += cell_it->fitness();
+            cell_it->dumpShort(OUT2);
         } 
     }
     else{
-        int l=1;
+        int idx=1;
         // dump snapshot of initial population and get sum of fitnesses
-        for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-            w_sum += (*k).fitness();
-            (*k).dump(OUT2,l);
-            l++;
+        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+            w_sum += cell_it->fitness();
+            cell_it->dump(OUT2,idx);
+            idx++;
+            //(*k).setParent(k - Cell_arr.begin());
         } 
     }
     
@@ -272,49 +273,74 @@ int main(int argc, char *argv[])
             exit(1);
         }
     }
+
+    // sprintf(buffer,"%s/%s.gen%010d.parent",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
+
+    //  //Open snapshot file
+    //  std::fstream OUT3(buffer, std::ios::out | std::ios::binary);
+    //  if (!OUT3.is_open()){
+    //      std::cerr << "Snapshot file could not be opened";
+    //      exit(1);
+    //  }
+
+    //  frame_time = GENERATION_CTR;
+    //  OUT3.write((char*)(&frame_time),sizeof(double));
+    //  OUT3.write((char*)(&TIME),sizeof(double));
+    //  OUT3.write((char*)(&Total_Cell_Count),sizeof(int));
+
+    //  for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
+    //          (*k).dumpParent(OUT3);
+    // } 
+
+    // OUT3.close();
     
     std::cout << "Starting evolution ..." << std::endl;
 
     // PSEUDO WRIGHT-FISHER PROCESS
     while(GENERATION_CTR < GENERATION_MAX){
+        printProgress(GENERATION_CTR*1.0/GENERATION_MAX);
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
         Cell_temp.reserve(N*2);
         // for each cell in the population
 
-        for(std::vector<PolyCell>::iterator j = Cell_arr.begin(); j != Cell_arr.end(); ++j)
+        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it)
         {
             // fitness of cell j with respect to sum of population fitness
-            double w = (*j).fitness()/w_sum;
+            double relative_fitness = cell_it->fitness()/w_sum;
+
             // probability parameter of binomial distribution
-            std::binomial_distribution<> binCell(N, w);
-            // number of progeny k is drawn from binomial distribution with N trials and mean w
-            int k = binCell(rng);
+            std::binomial_distribution<> binCell(N, relative_fitness);
+            // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
+            
+            int n_progeny = binCell(g_rng);
             
             // if nil, the cell will be wiped from the population
-            if(k == 0) continue;
+            if(n_progeny == 0) continue; 
 
             // iterator to current available position
-            std::vector<PolyCell>::iterator it = end(Cell_temp);
+            auto it = std::end(Cell_temp);
 
             // iterator to end position of fill
-            std::vector<PolyCell>::iterator last = it + k;
+            auto last = it + n_progeny;
+
+            cell_it->setParent(cell_it - Cell_arr.begin());
 
             // fill vector with k times the current cell
-            std::fill_n(std::back_inserter(Cell_temp),k,(*j));
+            std::fill_n(std::back_inserter(Cell_temp),n_progeny,(*cell_it));
 
             // after filling with children, go through each one for mutation
             while(it < last){
-                // potentially mutate
-                if((*it).mrate()*(*it).genome_size() > RandomNumber())
+                // attempt mutation
+                if(it->mrate() * it->genome_size() > randomNumber())
                 {
                     MUTATION_CTR++;
                     if(trackMutations){
                         // mutate and write mutation to file
-                        (*it).ranmut_Gene(MUTATIONLOG,GENERATION_CTR);
+                        it->ranmut_Gene(MUTATIONLOG,GENERATION_CTR);
                     }
                     else{
-                        (*it).ranmut_Gene();
+                        it->ranmut_Gene();
                     }       
                 }
                 std::advance(it,1);
@@ -324,30 +350,34 @@ int main(int argc, char *argv[])
         // if the population is below N
         // randomly draw from progeny to pad
         while(Cell_temp.size() < N){
-            int s = Cell_temp.size();
-            std::vector<PolyCell>::iterator j = Cell_temp.begin();
-            Cell_temp.emplace_back((*(j+RandomNumber()*s)));
+            auto cell_it = Cell_temp.begin();
+            Cell_temp.emplace_back(*(cell_it + randomNumber()*Cell_temp.size()));
         }
 
-        // if the population exceeds N
-        // cells are randomly shuffled and the vector is shrunk to N
         if(Cell_temp.size() > N){
-            auto engine = std::default_random_engine{};
-            std::shuffle(Cell_temp.begin(), Cell_temp.end(), engine);
+            std::shuffle(Cell_temp.begin(), Cell_temp.end(), g_rng);
             Cell_temp.resize(N);
         }
 
+        //alternative to shuffling
+       /* while(v_size > N){
+            int rand_idx = v_size*randomNumber();
+            remove_at(Cell_temp,rand_idx);
+            v_size--;
+        }*/
+
         Total_Cell_Count = (int)(Cell_temp.size());
         assert(Total_Cell_Count == N);
+        
         // swap population with initial vector
         Cell_arr.swap(Cell_temp);
 
         // reset and update w_sum
         // update Ns and Na for each cell
         w_sum = 0;
-        for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-            w_sum += (*k).fitness();
-            (*k).UpdateNsNa();
+        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+            w_sum += cell_it->fitness();
+            cell_it->UpdateNsNa();
         }
         
         // update generation counter
@@ -369,25 +399,49 @@ int main(int argc, char *argv[])
              OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
              if(useShort){
-                    for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-                     (*k).dumpShort(OUT2);
+                    for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                     cell_it->dumpShort(OUT2);
                 } 
              }
              else{
-                int l=1;
-                for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-                    (*k).dump(OUT2,l);
-                    l++;
+                int count=1;
+                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                    cell_it->dump(OUT2,count);
+                    count++;
                 }
              }
               
              OUT2.close();
+
+            // TO BE PROPERLY IMPLEMENTED
+            //  sprintf(buffer,"%s/%s.gen%010d.parent",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
+
+            //  //Open snapshot file
+            //  std::fstream OUT3(buffer, std::ios::out | std::ios::binary);
+            //  if (!OUT3.is_open()){
+            //      std::cerr << "Snapshot file could not be opened";
+            //      exit(1);
+            //  }
+      
+            //  frame_time = GENERATION_CTR;
+            //  OUT3.write((char*)(&frame_time),sizeof(double));
+            //  OUT3.write((char*)(&TIME),sizeof(double));
+            //  OUT3.write((char*)(&Total_Cell_Count),sizeof(int));
+
+            //  for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
+            //          (*k).dumpParent(OUT3);
+            // } 
+
+            // OUT3.close();
          }
     }
 
+    printProgress(GENERATION_CTR/GENERATION_MAX);
+    std::cout << std::endl;
     MUTATIONLOG.close();
     std::cout << "Done." << std::endl;
     std::cout << "Total number of mutation events: " << MUTATION_CTR << std::endl;
+
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
         std::string script = "tools/barcodes.sh";
