@@ -1,9 +1,10 @@
 #ifndef POLYCELL_H
 #define POLYCELL_H
-
 #include "Cell.h"
+#include "rng.h"
+
 /*SodaPop
-Copyright (C) 2017 Louis Gauthier
+Copyright (C) 2018 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,42 +23,47 @@ Copyright (C) 2017 Louis Gauthier
 class PolyCell: public Cell
 {
     typedef double(PolyCell::*funcPtr)(void);
-	protected:
-        double fitness_;
-        int Total_Ns_;
-        int Total_Na_;
-        funcPtr fit;
 
-	public:
-        static int ff_;
-        static bool useDist_;
-        static bool fromS_;
-		PolyCell();
-	    PolyCell(std::fstream&);			    
-	    PolyCell(std::fstream&, const std::string&);
+public:
+    static int ff_;
+    static bool useDist_;
+    static bool fromS_;
 
-	    void UpdateRates();
-        void ranmut_Gene();
-	    void ranmut_Gene(std::ofstream&, int);
-	    void change_exprlevel();
-	    void dump(std::fstream&, int);
-        void dumpShort(std::fstream&);
-	    void PrintCell(int);
-	    void FillGene_L();
-        void ch_Fitness(double f){fitness_ = f;}
-        // Fitness functions
-        void selectFitness();
-        double flux();
-        double toxicity();
-        double metabolicOutput();
-        double multiplicative();
-        double neutral();
-        ///////////////////////
-        const double fitness();
-        int Na(){return Total_Na_;}
-        int Ns(){return Total_Ns_;}
-        void UpdateNsNa();
+    PolyCell();
+    PolyCell(std::fstream&);                
+    PolyCell(std::fstream&, const std::string&);
 
+    void FillGene_L();
+
+    // Fitness functions
+    void selectFitness();
+    double flux();
+    double toxicity();
+    double metabolicOutput();
+    double multiplicative();
+    double neutral();
+    void UpdateRates();
+
+    void ranmut_Gene();
+    void ranmut_Gene(std::ofstream&, int);
+    void change_exprlevel();
+    void dump(std::fstream&, int);
+    void dumpShort(std::fstream&);
+    void dumpParent(std::fstream&);
+    void PrintCell(int);
+    
+    int Na(){return Total_Na_;}
+    int Ns(){return Total_Ns_;}
+    void UpdateNsNa();
+
+    void ch_Fitness(double f){fitness_ = f;}
+    const double fitness();
+
+protected:
+    double fitness_;
+    int Total_Ns_;
+    int Total_Na_;
+    funcPtr fit;
 };
 
 // By default the fitness function is set to neutral
@@ -83,7 +89,7 @@ PolyCell::PolyCell(std::fstream& f, const std::string& s) : Cell(f,s)
   	this->FillGene_L();
 }
 
-// Initialize the cummulative gene length array
+// Initialize the cumulative gene length array
 void PolyCell::FillGene_L()
 {
     int sum = 0;
@@ -114,12 +120,14 @@ void PolyCell::selectFitness()
 // FLUX FITNESS FUNCTION
 double PolyCell::flux()
 {
-    double f = 0;
+    double sum_func = 0;
+    double a = 0;
     //sum (concentration*Pnat) over all genes
-    for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
-        f = f + 1/((*i).functional());
+    for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+        sum_func += 1/(gene_it->functional());
+        a += gene_it->A_factor();
     }
-    return exp(A_FACTOR/f-1);
+    return a/sum_func;
 }
 
 // TOXICITY FITNESS FUNCTION
@@ -127,11 +135,10 @@ double PolyCell::toxicity()
 {
     double f = 0;
     //sum (concentration*(1-Pnat)) over all genes
-    for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
-        f +=(*i).misfolded();
+    for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+        f += gene_it->misfolded();
     }
-    double w = exp(-(COST*f));
-    return w;
+    return exp(-(COST*f));
 }
 
 // METABOLIC FLUX FITNESS FUNCTION
@@ -154,13 +161,14 @@ double PolyCell::metabolicOutput()
 // MULTIPLICATIVE FITNESS FUNCTION
 double PolyCell::multiplicative()
 {
-    std::vector<Gene>::iterator i = Gene_arr_.begin();
-    double f = (*i).f();
-    for(i = i + 1; i != Gene_arr_.end(); ++i){
-        if(f*(*i).f() < 0) return 0;
-        f = f*(*i).f();
+    double fitness = 1;
+    for (auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it)
+    {
+        fitness *= gene_it->f();
+        if (fitness < 0)
+            return 0;
     }
-    return f;
+    return fitness;
 }
 
 // NEUTRAL FITNESS FUNCTION
@@ -176,15 +184,17 @@ const double PolyCell::fitness()
 
 void PolyCell::UpdateRates()
 {
-    ch_Fitness((this->*fit)());
+    fitness_ = (this->*fit)();
 }
 
 void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 {
     // get genome size
     int L = Gene_L_.back();
+
     // pick random site to mutate
-    int site = (int) ( L * (uniformdevptr->doub()));
+
+    int site = (int) ( L * randomNumber());
 
     // find the corresponding gene
     std::vector<Gene>::iterator j = Gene_arr_.begin();
@@ -192,9 +202,9 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 
     if(site >= (*k)){
     // random number generated is greater than
-    // the cummulative sum of genes
+    // the cumulative sum of genes
          for(k = Gene_L_.begin(); k != Gene_L_.end(); ++k){
-             if( site<(*k) ) break;
+             if( site< (*k) ) break;
              j++; 
          }        
          k--;
@@ -203,7 +213,7 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 
     std::string mutation = "";
 
-    int bp = (int) (3 * (uniformdevptr->doub()));
+    int bp = (int) (3 * randomNumber());
 
     double wi = fitness();
     if(fromS_)
@@ -247,7 +257,8 @@ void PolyCell::ranmut_Gene()
     // get genome size
     int L = Gene_L_.back();
     // pick random site to mutate
-    int site = (int) ( L * (uniformdevptr->doub()));
+
+    int site = (int) ( L * randomNumber());
 
     // find the corresponding gene
     std::vector<Gene>::iterator j = Gene_arr_.begin();
@@ -255,16 +266,16 @@ void PolyCell::ranmut_Gene()
 
     if(site >= (*k)){
     // random number generated is greater than
-    // the cummulative sum of genes
+    // the cumulative sum of genes
          for(k = Gene_L_.begin(); k != Gene_L_.end(); ++k){
-             if( site<(*k) ) break;
+             if(site< (*k) ) break;
              j++; 
          }        
          k--;
          site = site - (*k);        
     }
 
-    int bp = (int) (3 * (uniformdevptr->doub()));
+    int bp = (int) (3 * randomNumber());
     // what is the input type?
     if(fromS_)
     {
@@ -317,15 +328,15 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
     x = (int)(Gene_arr_.size());		 	 
     OUT.write((char*)(&x),sizeof(int));
 
-   for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
-        int gene_nid = (*i).num();
-        double s = (*i).e;
-        double c = (*i).conc;
-        double dg = -kT*log((*i).dg());
-        double f = (*i).f();
+   for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+        int gene_nid = gene_it->num();
+        double s = gene_it->e();
+        double c = gene_it->conc();
+        double dg = -kT*log(gene_it->dg());
+        double f = gene_it->f();
 
-        int Ns = i->Ns();
-        int Na = i->Na();
+        int Ns = gene_it->Ns();
+        int Na = gene_it->Na();
 
         OUT.write((char*)(&gene_nid),sizeof(int));
         OUT.write((char*)(&s),sizeof(double));
@@ -336,7 +347,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         OUT.write((char*)(&Ns),sizeof(int));
 
         //Save length of nucleo sequence
-        std::string DNAsequence = (*i).nseq();
+        std::string DNAsequence = gene_it->nseq();
         int nl = DNAsequence.length();
         OUT.write((char*)&nl, sizeof(int));
         OUT.write(DNAsequence.data(), nl);
@@ -364,13 +375,21 @@ void PolyCell::dumpShort(std::fstream& OUT)
     OUT.write((char*)(&y),sizeof(double));
 }
 
+// Dump cell parent to binary file
+void PolyCell::dumpParent(std::fstream& OUT)
+{
+    uint32_t a;
+    a = parent();
+    OUT.write((char*)(&a),sizeof(a));
+}
+
 void PolyCell::UpdateNsNa()
 {
     int new_Na = 0;
     int new_Ns = 0;
-    for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
-        new_Na += (*i).Na();
-        new_Ns += (*i).Ns();
+    for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+        new_Na += gene_it->Na();
+        new_Ns += gene_it->Ns();
     }
     Total_Na_ = new_Na;
     Total_Ns_ = new_Ns;
@@ -382,19 +401,17 @@ void PolyCell::PrintCell(int cell_ndx)
       char buffer[140];
       sprintf(buffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), (int)Gene_arr_.size());  
       std::cout << buffer << std::endl;
-      for(std::vector<Gene>::iterator i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
-        //cout << "X ";
-        int gene_nid = (*i).num();
-        double e = (*i).e;
-        double c = (*i).conc;
-        double dg = -kT*log((*i).dg());
-        int Ns = (*i).Ns();
-        int Na = (*i).Na();
+      for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+        int gene_nid = gene_it->num();
+        double e = gene_it->e();
+        double c = gene_it->conc();
+        double dg = -kT*log(gene_it->dg());
+        int Ns = gene_it->Ns();
+        int Na = gene_it->Na();
            
         sprintf(buffer,"G %d% 2.2f %10.8f %10.8f %d %d ", gene_nid, e, c, dg, Ns, Na);
         std::cout << buffer << std::endl;  
       }
       std::cout << std::endl;
 }
-
 #endif
