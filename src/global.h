@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include "pcg_random.hpp"
 #include <sys/stat.h>
 #include <random/include_headers.h>
 #include <random/gamma.h>
@@ -26,8 +25,10 @@
 #include <direct.h>   // _mkdir
 #endif
 
+#include "rng.h"
+
 /*SodaPop
-Copyright (C) 2017 Louis Gauthier
+Copyright (C) 2018 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,33 +47,10 @@ Copyright (C) 2017 Louis Gauthier
 #define POPSIZEMAX 	1000000
 #define GENECOUNTMAX 	100
 
-template<class T = std::mt19937, std::size_t N = T::state_size>
-auto ProperlySeededRandomEngine () -> typename std::enable_if<!!N, T>::type {
-    typename T::result_type random_data[N];
-    std::random_device source;
-    std::generate(std::begin(random_data), std::end(random_data), std::ref(source));
-    std::seed_seq seeds(std::begin(random_data), std::end(random_data));
-    T seededEngine (seeds);
-    return seededEngine;
-}
-   Ran *uniformdevptr;
+// for pretty printing of progress
+#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+#define PBWIDTH 70
 
-/******** PSEUDO RANDOM NUMBER GENERATOR
-
-adapted from      PCG: A Family of Simple Fast Space-Efficient Statistically Good
-                  Algorithms for Random Number Generation
-                  by MELISSA E. O’NEILL
-
-this RNG provides high quality uniform random floats
-without a significant memory/time penalty
-*/
-
-//Set seed source to rand device
-pcg_extras::seed_seq_from<std::random_device> seed_source;
-//Create rng
-pcg32 rng(seed_source);
-//use uniform real dist
-std::uniform_real_distribution<double> uniform_dist(0.0, 1.0);
 
 /******** CONTAINERS AND ITERATORS ********/
 
@@ -90,6 +68,15 @@ typedef std::vector<std::string>::const_iterator VectStr_citerator;
 
 VectStr PrimordialAASeq;
 
+template <typename T>
+T remove_at(std::vector<T>&v, typename std::vector<T>::size_type n)
+{
+    T ans = std::move_if_noexcept(v[n]);
+    v[n] = std::move_if_noexcept(v.back());
+    v.pop_back();
+    return ans;
+}
+
 /******* CONSTANTS *********/
 
 /*****
@@ -101,16 +88,14 @@ const double ddG_max = 99;
 const double CONC_MAX = 1e15;
 const double kT = 0.5922; //defines the energy units
 const double COST = 1e-4; // see Geiler-Samerotte et al. 2011
-const double A_FACTOR = 0.005754898; // see Serohijos & Shakhnovich 2013
+const double A_FACTOR = 0.005646; // see Serohijos & Shakhnovich 2013
 const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
-
 
 // exponent values are precalculated to be used readily
 const double DDG_min = exp(-1*(ddG_min)/kT);
 const double DDG_max = exp(-1*(ddG_max)/kT);
 const int Bigbuffer_max = 80;
 constexpr double PI  = 3.141592653589793238463;
-
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
@@ -130,7 +115,7 @@ std::string GetProtFromNuc(std::string);
 int CheckBP(std::string);
 std::string n3_to_n3(std::string, int);
 std::string getBarcode();
-double RandomNumber();
+//double RandomNumber();
 void InitMatrix();
 void ExtractDDGMatrix(std::string);
 void ExtractDMSMatrix(std::string);
@@ -464,7 +449,8 @@ std::string AdjacentBP(std::string a, int j){
 //		b, old codon
 //		i, mutation site in codon (<3)
 std::string n3_to_n3(std::string a, std::string b, int i){
-  double r = RandomNumber();
+  //double r = RandomNumber();
+  double r = randomNumber();
   double l;
 
   if ( a == "TAA")
@@ -634,14 +620,14 @@ std::string getBarcode()
 {
     char seq [16];
     for(int i = 0; i < 15; i++){
-        if(RandomNumber()<0.5){
-            if(RandomNumber()<0.5){
+        if(randomNumber()<0.5){
+            if(randomNumber()<0.5){
                 seq[i] = 'G';
             }
             else seq[i] = 'C';
         }
         else{
-            if(RandomNumber()<0.5){
+            if(randomNumber()<0.5){
                 seq[i] = 'A';
             }
             else seq[i] = 'T';
@@ -725,19 +711,13 @@ void ExtractDMSMatrix(std::string filepath)
     temp.close();
 }
 
-// returns uniformly distributed floating-point random number on interval [0.0,1.0]
-double RandomNumber()
-{
-    return uniform_dist(rng);
-}
-
 double Ran_Gaussian(const double mean, const double sigma)
 {
     double x, y, r2;
     do{
         // choose x,y in uniform square [-1,+1]
-        x = -1 + 2 * RandomNumber();
-        y = -1 + 2 * RandomNumber();
+        x = -1 + 2 * randomNumber();
+        y = -1 + 2 * randomNumber();
         // check if it is in the unit circle
         r2 = x * x + y * y;
     }while (r2 > 1.0 || r2 == 0); 
@@ -824,6 +804,15 @@ void qread_Cell(std::fstream& IN, std::fstream& OUT)
     
     sprintf(buffer,"\tC\t%d\t%d\t%e", na, ns, f);
     OUT << buffer;
+}
+
+void read_Parent(std::fstream& IN, std::fstream& OUT)
+{
+    uint32_t a;
+
+    IN.read((char*)(&a),sizeof(a));
+    
+    OUT << a;
 }
 
 // Reads a unit cell stored in binary format using Cell::dump()
@@ -958,4 +947,18 @@ bool makePath(const std::string& path)
     default:
         return false;
     }
+}
+
+void printProgress (double progress)
+{
+    std::cout << "[";
+    int pos = PBWIDTH * progress;
+    for (int i = 0; i < PBWIDTH; ++i){
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << "+";
+        else std::cout << " ";
+    }
+
+    std::cout << "] " << int(progress * 100.0) << " %\r";
+    std::cout.flush();
 }
