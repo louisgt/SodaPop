@@ -8,10 +8,13 @@ DT=$4
 LONG=$5
 
 ##### CREATE DIRECTORIES FOR RESULTS
-rm -r out/$OUT/barcodes; mkdir out/$OUT/barcodes
-rm -r out/$OUT/graph; mkdir out/$OUT/graph
+rm -rf out/$OUT/barcodes; mkdir out/$OUT/barcodes
+rm -rf out/$OUT/graph; mkdir out/$OUT/graph
 PREFIX=out/$OUT
-echo $PREFIX
+
+echo Begin analysis.
+
+echo Working in $PREFIX.
 
 echo Extracting barcodes from $PREFIX/snapshots/...
 
@@ -24,14 +27,14 @@ do
 done
 
 #### EXTRACT AND SORT BARCODES
-rm $PREFIX/avg_fitness.txt
+rm -f $PREFIX/avg_fitness.txt
 FILES=$PREFIX/snapshots/*.snap.txt
 for filename in $FILES
 do
 	y=${filename%%.txt}
 	grep -w "C" $filename | cut -f1 | sort > $PREFIX/barcodes/${y##*/}.barcodes
 	#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
-	grep -w "C" $filename | awk -v N=$3 '{sum += $5} END {print sum/N}' >> $PREFIX/avg_fitness.txt
+	grep -w "C" $filename | awk -v N=$3 '{sum += $4} END {print sum/N}' >> $PREFIX/avg_fitness.txt
 done
 
 echo Parsing unique barcodes...
@@ -66,14 +69,14 @@ cat $PREFIX/barcodes/start.txt > $PREFIX/barcodes/series$i.txt
 for filename in `find $PREFIX/barcodes/ -maxdepth 1 -name "*.unique"`
 do
 	join -t' ' -e 0 -a 1 -1 1 -2 1 -o 2.2 $PREFIX/barcodes/series$i.txt $filename | paste -d' ' $PREFIX/barcodes/series$i.txt - > $PREFIX/barcodes/series$j.txt
-	rm $PREFIX/barcodes/series$i.txt
+	rm -f $PREFIX/barcodes/series$i.txt
 	((i++))
 	((j++))
 done
 
 cat $PREFIX/barcodes/series$i.txt | cut -d " " -f 1,3- > $PREFIX/ALL_generations.txt
 
-rm $PREFIX/barcodes/series*.txt
+rm -f $PREFIX/barcodes/series*.txt
 
 #### PLOT RESULTS IN R SCRIPTS
 Rscript tools/polyclonal_structure.R /out/$OUT/ $DT
