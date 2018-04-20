@@ -1,7 +1,8 @@
 #include "global.h"
+#include "rng.h"
 
 /*SodaPop
-Copyright (C) 2017 Louis Gauthier
+Copyright (C) 2018 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,107 +20,103 @@ Copyright (C) 2017 Louis Gauthier
 
 class Gene 
 {
+public:
+    Gene();
+    Gene(int, std::string, double);
+    Gene(std::fstream&);
+    Gene(const Gene&); //copy constructor 
+    ~Gene(); 
+  
+    bool operator==(Gene&);
+    Gene& operator=(const Gene&);
+
+    static void initGamma(double, double);
+    static void initNormal(double, double);
+    static double RandomGamma();
+    static double RandomNormal();
+
+    double Mutate_Stabil_Gaussian(int, int);
+    std::string Mutate_Stabil(int, int);
+    double Mutate_Select_Dist(int, int);
+    std::string Mutate_Select(int, int);
+
+    void Update_Sequences(std::string);
+
+    const int num(){return g_num_;}
+    const int length(){return ln_;}
+    const int AAlength(){return la_;}
+    const std::string nseq(){return nucseq_;}
+    const double dg(){return dg_;}
+    const double f(){return f_;}
+    const int Ns(){return Ns_;}
+    const int Na(){return Na_;}
+
+    double conc() const {return conc_;}
+    double e() const {return e_;}
+
+    double CheckDG();
+    double functional();
+    double misfolded();
+    double Pnat();
+    double A_factor();
+
+    void ch_dg(const double a){ dg_ = a; }
+    void ch_f(const double a){ f_ = a; }
+    void ch_conc(const double c) {conc_ = c;}
+    void ch_Na(const int a){ Na_ = a; }
+    void ch_Ns(const int a){ Ns_ = a; }
+    void ch_e(const double e) {e_ = e;}
+
     private:
-        int g_num_;		//numeric ID pointing to primordial gene
-        int ln_;		//length nuc seq
-        int la_;		//length aa seq
+        int g_num_;     //numeric ID pointing to primordial gene
+        int ln_;        //length nuc seq
+        int la_;        //length aa seq
 
-        int Na_;		//number of non-synonymous substitutions
-        int Ns_;		//number of sysnonymous substitutions
+        int Na_;        //number of non-synonymous substitutions
+        int Ns_;        //number of sysnonymous substitutions
         
-        std::string nucseq_;	//nucleotide sequence
+        std::string nucseq_;    //nucleotide sequence
         
-        double dg_;		//stability
+        double dg_;     //stability
         double f_;      //gene "fitness"
-    public:
-        double conc;	//concentration
-        double e;		//essentiality: 1-if directly involved in replication, 0-otherwise
-   
-    public:
-        static double shape_;
-        static double scale_;
-        static double mean_;
-        static double stdev_;
-        static std::gamma_distribution<double> gamma_;
-        static std::normal_distribution<> normal_;
 
-        Gene();
-        Gene(int, std::string, double);
-        Gene(std::fstream&);
-        Gene(const Gene&); //copy constructor 
-        ~Gene(); 
-      
-        bool operator==(Gene&);
-        Gene& operator=(const Gene&);
+        double conc_;    //concentration
+        double e_;       //essentiality: 1-if directly involved in replication, 0-otherwise
 
-        static void initGamma();
-        static double RandomGamma();
-        static void initNormal();
-        static double RandomNormal();
-      
-        double Mutate_Stabil_Gaussian(int, int);
-        std::string Mutate_Stabil(int, int);
-        double Mutate_Select_Dist(int, int);
-        std::string Mutate_Select(int, int);
-
-        void Update_Sequences(std::string);
-     
-        void ch_dg(const double a){ dg_ = a; }
-        void ch_f(const double a){ f_ = a; }
-        void ch_Na(const int a){ Na_ = a; }
-        void ch_Ns(const int a){ Ns_ = a; }
-        void ch_ln(int l){ln_ = l;}
-        void ch_la(int l){la_ = l;}
-        void ch_gnum(int i){g_num_ = i;}
-
-        const int num(){return g_num_;}
-        const int length(){return ln_;}
-        const int AAlength(){return la_;}
-        const std::string nseq(){return nucseq_;}
-        const double dg(){return dg_;}
-        const double f(){return f_;}
-        const int Ns(){return Ns_;}
-        const int Na(){return Na_;}
-
-        double CheckDG();
-        double functional();
-        double misfolded();
-        double Pnat();
+        static std::gamma_distribution<> gamma_;
+        static std::normal_distribution<> normal_;     
 };
 
-double Gene::shape_ = 1.0;
-double Gene::scale_ = 1.0;
-double Gene::mean_ = 1.0;
-double Gene::stdev_ = 1.0;
-
-auto engine = ProperlySeededRandomEngine();
-std::gamma_distribution<double> Gene::gamma_ = std::gamma_distribution<double>(Gene::shape_, Gene::scale_);
-std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(Gene::mean_, Gene::stdev_);
+std::gamma_distribution<> Gene::gamma_ = std::gamma_distribution<>(1.0, 1.0);
+std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(1.0, 1.0);
 
 Gene::Gene(){
       g_num_ = 0;
-      ln_ = 0; la_ = 0;
-      Na_ = 0; Ns_ = 0;
+      ln_ = 0;
+      la_ = 0;
+      Na_ = 0;
+      Ns_ = 0;
       nucseq_ = ""; 
       dg_ = 1;
       f_ = 1;
-      conc = 1;
-      e = 0;
+      conc_ = 1;
+      e_ = 0;
 }
 
 //Input: gene number, nuc. sequence, concentration
-Gene::Gene(const int i, const std::string a, double c)
+Gene::Gene(const int g_num, const std::string nucseq, double conc) : 
+    g_num_(g_num),
+    nucseq_(nucseq),
+    conc_(conc)
 {
-    if((a.length() % 3) != 0){
-        std::cerr << "Invalid length for nucleotide sequence: " << a.length() << std::endl;
+    if((nucseq.length() % 3) != 0){
+        std::cerr << "Invalid length for nucleotide sequence: " << nucseq.length() << std::endl;
         exit(2);
     }
     else{
-        g_num_=i;
-        nucseq_=a;
-        ln_=a.length();
+        ln_=nucseq.length();
         la_=ln_/3;
-        std::string aaseq = GetProtFromNuc(nucseq_);
+        std::string aaseq = GetProtFromNuc(nucseq);
         //check for stop codons in midsequence
         std::string::size_type loc = aaseq.find("X", 0 );
         if(loc != std::string::npos){
@@ -128,8 +125,7 @@ Gene::Gene(const int i, const std::string a, double c)
         }           
         dg_= 1;
         f_= 1;
-        conc = c;
-        e = 0;
+        e_ = 0;
         Na_ = 0;
         Ns_ = 0;
     }
@@ -170,11 +166,11 @@ Gene::Gene(std::fstream& gene_in)
         }
         else if ( word=="E" ){
             iss >> word;
-            e = atoi(word.c_str());
+            e_ = atoi(word.c_str());
         }
         else if (word == "CONC"){
             iss >> word;
-    	   conc = atof(word.c_str());
+    	   conc_ = atof(word.c_str());
         }
         else if (word == "DG")
         { 
@@ -202,8 +198,8 @@ Gene::Gene(const Gene& G)
     nucseq_ = G.nucseq_;
     dg_ = G.dg_;
     f_ = G.f_;
-    conc = G.conc;
-    e = G.e;
+    conc_ = G.conc_;
+    e_ = G.e_;
     Na_ = G.Na_;
     Ns_ = G.Ns_;
 }
@@ -216,7 +212,7 @@ Gene::~Gene()
 bool Gene::operator== (Gene& G) 
 {
     std::string temp = G.nseq();
-    if ( (temp.compare(nucseq_) == 0) && (conc == G.conc) ) return true;
+    if ( (temp.compare(nucseq_) == 0) && (conc_ == G.conc_) ) return true;
     else return false;
 }
 
@@ -229,8 +225,8 @@ Gene& Gene::operator=(const Gene& A)
         this->la_ = A.la_;
         this->dg_ = A.dg_;
         this->f_ = A.f_;
-        this->conc = A.conc;
-        this->e = A.e;
+        this->conc_ = A.conc_;
+        this->e_ = A.e_;
         this->Na_ = A.Na_;
         this->Ns_ = A.Ns_;
         (this->nucseq_).assign(A.nucseq_);
@@ -249,19 +245,19 @@ double Gene::Mutate_Stabil_Gaussian(int i, int j)
         exit(2);
     }       
 
-    double ran = RandomNumber();
-       
-    if(ran <= fNs){//non-synonymous mutation
+    //non-synonymous mutation
+    if(randomNumber() <= fNs){
+
         double temp = Ran_Gaussian(1.0, 1.7);
         double x = exp(-temp/kT);
 
-        this->dg_ *= x;
-        this->Na_ += 1;
+        dg_ *= x;
+        Na_ += 1;
 
         return x;
     }
     else{
-        this->Ns_ += 1;
+        Ns_ += 1;
 
         return 1;
     }
@@ -356,24 +352,23 @@ double Gene::Mutate_Select_Dist(int i, int j)
         std::cerr << "ERROR: Mutation site out of bounds."<< std::endl;
         exit(2);
     }       
-
-    double ran = RandomNumber();
        
-    if(ran <= fNs){//non-synonymous mutation
+    //non-synonymous mutation
+    if(randomNumber() <= fNs){
         double s = RandomNormal();
         double wf = f_ + s;
-        f_ = wf * f_;
+        f_ *= wf;
         Na_ += 1;
         return s;
     }
     else{
-        this->Ns_ += 1;
+        Ns_ += 1;
         return 1;
     }
 }
 
 /*
-This version of the mutation function gets the DDG value from the DDG matrix
+This version of the mutation function gets the selection coefficient value from the DMS matrix
 input by the user.
 INPUT: 
     i -> site to mutate
@@ -432,24 +427,24 @@ std::string Gene::Mutate_Select(int i, int j)
     }
 }
 
-void Gene::initGamma()
+void Gene::initGamma(double shape, double scale)
 {
-    Gene::gamma_.param(std::gamma_distribution<double>::param_type(Gene::shape_, Gene::scale_));
+    Gene::gamma_.param(std::gamma_distribution<>::param_type(shape, scale));
 }
 
-void Gene::initNormal()
+void Gene::initNormal(double mean, double stddev)
 {
-    Gene::normal_.param(std::normal_distribution<>::param_type(Gene::mean_, Gene::stdev_));
+    Gene::normal_.param(std::normal_distribution<>::param_type(mean, stddev));
 }
 
 double Gene::RandomGamma()
 {
-    return Gene::gamma_(engine);
+    return Gene::gamma_(g_rng);
 }
 
 double Gene::RandomNormal()
 {
-    return Gene::normal_(engine);
+    return Gene::normal_(g_rng);
 }
 
 
@@ -471,17 +466,23 @@ void Gene::Update_Sequences(const std::string DNAsequence)
 // Boltzmann probability of the gene product to be in the native state
 double Gene::Pnat()
 {
-    return this->dg()/(1+this->dg());
+    return dg_/(1+dg_);
 }
 
 // Number of functional copies in the cell
 double Gene::functional()
 {
-    return (this->conc)*this->Pnat();
+    return conc_*Pnat();
 }
 
 // Number of misfolded copies in the cell
 double Gene::misfolded()
 {
-    return (this->conc)*(1-Pnat());
+    return conc_*(1-Pnat());
+}
+
+// Contribution to normalizing factor based on infinitely stable fold
+double Gene::A_factor()
+{
+    return 1.0/conc_;
 }
