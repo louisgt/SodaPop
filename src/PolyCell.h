@@ -161,14 +161,12 @@ double PolyCell::metabolicOutput()
 // MULTIPLICATIVE FITNESS FUNCTION
 double PolyCell::multiplicative()
 {
-    double fitness = 1;
+    double fitness = 0;
     for (auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it)
     {
-        fitness *= gene_it->f();
-        if (fitness < 0)
-            return 0;
+        fitness += gene_it->f()*gene_it->e();
     }
-    return fitness;
+    return fitness/gene_count();
 }
 
 // NEUTRAL FITNESS FUNCTION
