@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
                 }
                 else if(normalArg.isSet())
                 {
+                    std::cout << "we are here" << std::endl;
                     double mean = alphaArg.getValue();
                     double stddev = betaArg.getValue();
                     Gene::initNormal(mean, stddev);
@@ -214,7 +215,12 @@ int main(int argc, char *argv[])
         Cell_arr = std::vector <PolyCell>(N,A);
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
              cell_it->ch_barcode(getBarcode());
-        } 
+        }
+        if(PolyCell::ff_ == 4){
+            for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+             cell_it->UpdateRates();
+            }
+        }
     }
     else{
         // ELSE IT MUST BE POPULATED CELL BY CELL FROM SNAP FILE
@@ -224,6 +230,11 @@ int main(int argc, char *argv[])
         while(count <Total_Cell_Count && !startsnap.eof()){
             Cell_arr.emplace_back(startsnap, genesPath);
             count++;  
+        }
+        if(PolyCell::ff_ == 4){
+            for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+             cell_it->UpdateRates();
+            }
         }
     }
     startsnap.close();
