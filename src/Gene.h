@@ -81,7 +81,7 @@ public:
         double f_;      //gene "fitness"
 
         double conc_;    //concentration
-        double e_;       //essentiality: 1-if directly involved in replication, 0-otherwise
+        double e_;       //essentiality: between 0 and 1, can be used as a coefficient
 
         static std::gamma_distribution<> gamma_;
         static std::normal_distribution<> normal_;     
@@ -136,6 +136,7 @@ Gene::Gene(std::fstream& gene_in)
 {
     std::string line;
     // Read gene file line by line
+    //f_= 1;
     while (!gene_in.eof()){
         getline(gene_in,line);
         std::string word;
@@ -356,8 +357,10 @@ double Gene::Mutate_Select_Dist(int i, int j)
     //non-synonymous mutation
     if(randomNumber() <= fNs){
         double s = RandomNormal();
-        double wf = f_ + s;
+        //std::cout << s << std::endl;
+        double wf = 1 + s;
         f_ *= wf;
+        //std::cout << f_ << std::endl;
         Na_ += 1;
         return s;
     }
