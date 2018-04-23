@@ -118,11 +118,16 @@ Cell::Cell(std::fstream & cell_in) {
             Gene A(gene_data);
             Gene_arr_.push_back(A);
             std::cout << "Inserted: " << word << std::endl;
+            std::cout << A.f() << std::endl;
 
             //Check if gene is correctly inserted
-            std::vector < Gene > ::iterator i = Gene_arr_.end();
+            std::vector <Gene>::iterator i = Gene_arr_.end();
             i--;
             std::cout << (*i).nseq() << std::endl;
+            if((*i).f()==0){
+                (*i).ch_f(0.999+randomNumber()*0.001);
+            }
+            std::cout << (*i).f() << std::endl;
             gene_data.close();
         }
     }
