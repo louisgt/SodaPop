@@ -151,7 +151,6 @@ int main(int argc, char *argv[])
                 }
                 else if(normalArg.isSet())
                 {
-                    std::cout << "we are here" << std::endl;
                     double mean = alphaArg.getValue();
                     double stddev = betaArg.getValue();
                     Gene::initNormal(mean, stddev);
@@ -227,6 +226,7 @@ int main(int argc, char *argv[])
         Cell_arr.reserve(N);
         int count = 0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
+        //auto cell_it = Cell_arr.begin();
         while(count <Total_Cell_Count && !startsnap.eof()){
             Cell_arr.emplace_back(startsnap, genesPath);
             count++;  
