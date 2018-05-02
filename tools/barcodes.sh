@@ -26,13 +26,13 @@ echo Working in $PREFIX.
 
 echo Extracting barcodes from $PREFIX/snapshots/...
 
-#### CONVERT BINARY SNAPSHOTS TO TEXT FILES
-# FILES=$PREFIX/snapshots/*.snap
-# for filename in $FILES
-# do
-# 	y=${filename%.001}
-# 	./sodasnap $filename $y.txt $LONG
-# done
+### CONVERT BINARY SNAPSHOTS TO TEXT FILES
+FILES=$PREFIX/snapshots/*.snap
+for filename in $FILES
+do
+	y=${filename%.001}
+	./sodasnap $filename $y.txt $LONG
+done
 
 #### EXTRACT AND SORT BARCODES
 rm -f $PREFIX/avg_fitness.txt
@@ -91,7 +91,7 @@ cat $PREFIX/barcodes/series$i.txt | cut -d " " -f 1,3- > $PREFIX/ALL_generations
 
 rm -f $PREFIX/barcodes/series*.txt
 
-rm -Rf $PREFIX/snapshots/*.snap
+rm -f $PREFIX/snapshots/*.snap
 
 #### PLOT RESULTS IN R SCRIPTS
 Rscript tools/polyclonal_structure.R /out/$OUT/ $DT
