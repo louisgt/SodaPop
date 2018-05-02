@@ -45,7 +45,7 @@ Copyright (C) 2018 Louis Gauthier
  */
 
 #define POPSIZEMAX 	1000000
-#define GENECOUNTMAX 	100
+#define GENECOUNTMAX 	10
 
 // for pretty printing of progress
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
@@ -802,7 +802,7 @@ void qread_Cell(std::fstream& IN, std::fstream& OUT)
     IN.read((char*)(&ns),sizeof(int));
     IN.read((char*)(&f),sizeof(double));
     
-    sprintf(buffer,"\tC\t%d\t%d\t%e", na, ns, f);
+    sprintf(buffer,"\t%d\t%d\t%e", na, ns, f);
     OUT << buffer;
 }
 
@@ -838,7 +838,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
     IN.read((char*)(&m),sizeof(double));
     IN.read((char*)(&gene_size),sizeof(int));
     
-    sprintf(buffer,"\tC\t%d\t%e\t%e", cell_index, f, m);
+    sprintf(buffer,"\t%d\t%e\t%e", cell_index, f, m);
     OUT << buffer << std::endl;
 
     for(int j=0; j<gene_size; j++){
