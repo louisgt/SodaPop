@@ -40,22 +40,42 @@ int main(int argc, char* argv[]) {
                 exit(1);
             }
             PolyCell A(temp);
-            if (flag == 1) {
-                A.ch_barcode(getBarcode());
-                Cell_arr.push_back(A);
-                temp.close();
+            switch(flag)
+            {
+                case 0: A.ch_barcode(getBarcode());         
+                        for (int i = 0; i < count; i++) {
+                            Cell_arr.push_back(A);
+                        }
                 break;
-            }
-            if (!flag) {
-                A.ch_barcode(getBarcode());
-                for (int i = 0; i < count; i++) {
-                    Cell_arr.push_back(A);
-                }
-            } else {
-                for (int i = 0; i < count; i++) {
-                    Cell_arr.push_back(A);
-                    Cell_arr.back().ch_barcode(getBarcode());
-                }
+
+                case 1: A.ch_barcode(getBarcode());
+                        Cell_arr.push_back(A);
+                        temp.close();
+                break;
+
+                case 2: for (int i = 0; i < count; i++) {
+                            Cell_arr.push_back(A);
+                            Cell_arr.back().ch_barcode(getBarcode());
+                        }
+                break;
+
+                case 3: A.ch_barcode(getBarcode());
+                        int nClusters = (count + 100 - 1) / 100;
+                        int remainder = count % 100;
+                        for (int k = 0; k < nClusters - 1; k++) {
+                            //edit fitness here (draw selection coefficient for clusters of 100 cells)
+                            for (int i = 0; i < 100; i++) {
+                                Cell_arr.push_back(A);
+                            }
+                        }
+                        if(remainder){
+                            //edit fitness here (draw selection coefficient for remainder)
+                            for (int i = 0; i < remainder; i++) {
+                                Cell_arr.push_back(A);
+                            }
+                        }
+                        
+                break;
             }
             temp.close();
         }
