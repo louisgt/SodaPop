@@ -17,9 +17,8 @@
 #include <functional>
 #include <iterator>
 #include <sys/stat.h>
-#include <random/include_headers.h>
-#include <random/gamma.h>
-#include <random/deviates.h>
+#include "lz4-dev/lz4.h"
+
 #include <errno.h>    // errno, ENOENT, EEXIST
 #if defined(_WIN32)
 #include <direct.h>   // _mkdir
@@ -119,7 +118,7 @@ std::string getBarcode();
 void InitMatrix();
 void ExtractDDGMatrix(std::string);
 void ExtractDMSMatrix(std::string);
-void LoadPrimordialGenes(const std::string&,const std::string&);
+int LoadPrimordialGenes(const std::string&,const std::string&);
 int StringDiff(const std::string&, const std::string&);
 std::string trim(const std::string&);
 bool isDirExist(const std::string&);
@@ -726,7 +725,7 @@ double Ran_Gaussian(const double mean, const double sigma)
 }
 
 // Loads primordial genes in a VectStr
-void LoadPrimordialGenes(const std::string& genelistfile, const std::string& genesPath)
+int LoadPrimordialGenes(const std::string& genelistfile, const std::string& genesPath)
 {  
     std::fstream genelistIN (genelistfile.c_str());
     if (!genelistIN.is_open()){
@@ -780,6 +779,7 @@ void LoadPrimordialGenes(const std::string& genelistfile, const std::string& gen
         }
     }
     assert( flag_AASeq==gc );
+    return gc;
 }
 
 // Reads a unit cell stored in binary format using Cell::dumpShort()
