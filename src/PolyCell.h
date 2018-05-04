@@ -244,10 +244,10 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     // save beneficial mutations to log
     // we could save all mutations with abs(s) >= some value x
     log << barcode().c_str() << "\t";
-    log << fixed;
+    log << std::fixed;
     log << mutation << "\t";
     log << s << "\t";
-    log << ctr << endl;
+    log << ctr << std::endl;
 }
 
 void PolyCell::ranmut_Gene()
@@ -306,7 +306,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
 {
     int x;
     double y;
-
+    
     OUT.write((char*)(&cell_index),sizeof(int));
     
     //cell ID
