@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     int GENERATION_CTR = 1;
     int GENERATION_MAX = GENERATION_CTR + 1;
     int MUTATION_CTR = 0;
+    int gene_count = 0;
     double N=1;
     int DT = 1;
     double TIME = 0;
@@ -132,7 +133,7 @@ int main(int argc, char *argv[])
             std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
             std::cout << "Loading primordial genes file ..." << std::endl;
-            LoadPrimordialGenes(geneListFile,genesPath);
+            gene_count = LoadPrimordialGenes(geneListFile,genesPath);
             // if matrix is given
             if(matrixArg.isSet())
             {
@@ -162,7 +163,7 @@ int main(int argc, char *argv[])
             std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
             std::cout << "Loading primordial genes file ..." << std::endl;
-            LoadPrimordialGenes(geneListFile,genesPath);
+            gene_count = LoadPrimordialGenes(geneListFile,genesPath);
             PolyCell::ff_ = fitArg.getValue();
             // if DDG matrix is given
             if(matrixArg.isSet())
@@ -272,7 +273,12 @@ int main(int argc, char *argv[])
         } 
     }
     
-    OUT2.close();   
+    OUT2.close();
+    //sprintf(buffer,"gzip %s",buffer.c_str());
+    std::string command = "gzip -f ";
+    command += buffer;
+    const char *cmd = command.c_str();
+    system(cmd);
 
     std::ofstream MUTATIONLOG;
     if(trackMutations){
@@ -395,34 +401,40 @@ int main(int argc, char *argv[])
         GENERATION_CTR++; 
         // save population snapshot every DT generations
         if( (GENERATION_CTR % DT) == 0){
-             sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
-
-             //Open snapshot file
-             std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
-             if (!OUT2.is_open()){
+            sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
+            //Open snapshot file
+            //OUT2 is target output stream
+            std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
+            if (!OUT2.is_open()){
                  std::cerr << "Snapshot file could not be opened";
                  exit(1);
-             }
+            }
       
-             double frame_time = GENERATION_CTR;
-             OUT2.write((char*)(&frame_time),sizeof(double));
-             OUT2.write((char*)(&TIME),sizeof(double));
-             OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
+            double frame_time = GENERATION_CTR;
+            OUT2.write((char*)(&frame_time),sizeof(double));
+            OUT2.write((char*)(&TIME),sizeof(double));
+            OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
-             if(useShort){
+            if(useShort){
                     for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                     cell_it->dumpShort(OUT2);
+                        cell_it->dumpShort(OUT2);
                 } 
-             }
-             else{
+            }
+            else{
                 int count=1;
                 for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+
                     cell_it->dump(OUT2,count);
                     count++;
                 }
-             }
+            }
               
-             OUT2.close();
+            OUT2.close();
+            //compress last written file with gzip
+            std::string command = "gzip -f ";
+            command += buffer;
+            const char *cmd = command.c_str();
+            system(cmd);
 
             // TO BE PROPERLY IMPLEMENTED
             //  sprintf(buffer,"%s/%s.gen%010d.parent",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
@@ -456,7 +468,7 @@ int main(int argc, char *argv[])
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
         std::string script = "tools/barcodes.sh";
-        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT)+" "+std::to_string((int) useShort);
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT)+" "+std::to_string((int) useShort)+" "+std::to_string(gene_count);
         const char *cmd = command.c_str();
         system(cmd);
     }
