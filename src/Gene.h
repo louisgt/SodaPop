@@ -136,7 +136,6 @@ Gene::Gene(std::fstream& gene_in)
 {
     std::string line;
     // Read gene file line by line
-    //f_= 1;
     while (!gene_in.eof()){
         getline(gene_in,line);
         std::string word;
@@ -357,10 +356,8 @@ double Gene::Mutate_Select_Dist(int i, int j)
     //non-synonymous mutation
     if(randomNumber() <= fNs){
         double s = RandomNormal();
-        //std::cout << s << std::endl;
         double wf = 1 + s;
         f_ *= wf;
-        //std::cout << f_ << std::endl;
         Na_ += 1;
         return s;
     }
