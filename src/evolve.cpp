@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
     bool trackMutations = false;
     bool createPop = false;
     bool useShort = false;
+    bool noMut = false;
 
     std::string inputType;
     std::string geneListFile, genesPath;
@@ -129,7 +130,10 @@ int main(int argc, char *argv[])
         if(inputType == "s")
         {
             PolyCell::fromS_ = true;
-            PolyCell::ff_ = 4;
+            if(fitArg.getValue()<4){
+                PolyCell::ff_ = fitArg.getValue();
+            }
+            else PolyCell::ff_ = 4;
             std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
             std::cout << "Loading primordial genes file ..." << std::endl;
@@ -192,6 +196,11 @@ int main(int argc, char *argv[])
         std::cerr << "File could not be open: "<< startSnapFile << std::endl;
         exit(2);
     }
+
+    if(PolyCell::ff_ == 6) {
+        noMut = true;
+        std::cout << "Mutations are not active." << std::endl;
+    }
     
     // header
     int Total_Cell_Count;
@@ -214,11 +223,11 @@ int main(int argc, char *argv[])
         PolyCell A(startsnap, genesPath);
         Cell_arr = std::vector <PolyCell>(N,A);
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-             cell_it->ch_barcode(getBarcode());
+            cell_it->ch_barcode(getBarcode());
         }
         if(PolyCell::ff_ == 4){
             for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-             cell_it->UpdateRates();
+                cell_it->UpdateRates();
             }
         }
     }
@@ -234,7 +243,7 @@ int main(int argc, char *argv[])
         }
         if(PolyCell::ff_ == 4){
             for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-             cell_it->UpdateRates();
+                cell_it->UpdateRates();
             }
         }
     }
@@ -274,14 +283,13 @@ int main(int argc, char *argv[])
     }
     
     OUT2.close();
-    //sprintf(buffer,"gzip %s",buffer.c_str());
     std::string command = "gzip -f ";
     command += buffer;
     const char *cmd = command.c_str();
     system(cmd);
 
     std::ofstream MUTATIONLOG;
-    if(trackMutations){
+    if(trackMutations && !noMut){
         // Open MUTATION LOG
         sprintf(buffer, "out/%s/MUTATION_LOG",outDir.c_str());
         MUTATIONLOG.open(buffer);
@@ -319,8 +327,7 @@ int main(int argc, char *argv[])
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
         Cell_temp.reserve(N*2);
-        // for each cell in the population
-
+        // for each cell in the population   
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it)
         {
             // fitness of cell j with respect to sum of population fitness
@@ -346,21 +353,23 @@ int main(int argc, char *argv[])
             // fill vector with k times the current cell
             std::fill_n(std::back_inserter(Cell_temp),n_progeny,(*cell_it));
 
+            if(!noMut){
             // after filling with children, go through each one for mutation
-            while(it < last){
-                // attempt mutation
-                if(it->mrate() * it->genome_size() > randomNumber())
-                {
-                    MUTATION_CTR++;
-                    if(trackMutations){
-                        // mutate and write mutation to file
-                        it->ranmut_Gene(MUTATIONLOG,GENERATION_CTR);
+                while(it < last){
+                    // attempt mutation
+                    if(it->mrate() * it->genome_size() > randomNumber())
+                    {
+                        MUTATION_CTR++;
+                        if(trackMutations){
+                            // mutate and write mutation to file
+                            it->ranmut_Gene(MUTATIONLOG,GENERATION_CTR);
+                        }
+                        else{
+                            it->ranmut_Gene();
+                        }       
                     }
-                    else{
-                        it->ranmut_Gene();
-                    }       
+                    std::advance(it,1);
                 }
-                std::advance(it,1);
             }
         }
 
