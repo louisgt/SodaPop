@@ -43,6 +43,9 @@ public:
     void change_ID(int a) {ID_ = a;}
     void setParent(uint32_t a) {parent_ = a;}
     void ch_barcode(std::string s) {barcode_ = s;}
+
+    void ch_Fitness(double f){fitness_ = f;}
+    const double fitness();
     
 protected:
     // organism barcode
@@ -60,6 +63,8 @@ protected:
     // current mutation rate
     double c_mrate_;
 
+    double fitness_;
+
     //Array of genes
     std::vector < Gene > Gene_arr_;
 
@@ -73,7 +78,8 @@ Cell::Cell():
     ID_(0),
     parent_(0),
     o_mrate_(0),
-    c_mrate_(0)
+    c_mrate_(0),
+    fitness_(0)
     {
         Gene_L_.reserve(GENECOUNTMAX);
         Gene_arr_.reserve(GENECOUNTMAX);
@@ -104,6 +110,10 @@ Cell::Cell(std::fstream & cell_in) {
             iss >> word;
             o_mrate_ = atof(word.c_str());
             c_mrate_ = atof(word.c_str());
+        }
+        else if (word == "fitness") {
+            iss >> word;
+            fitness_ = atof(word.c_str());
         } else if (word == "G") {
             //reading gene files; 
             //concentration and stability from gene file take precedence
@@ -121,11 +131,9 @@ Cell::Cell(std::fstream & cell_in) {
             //Check if gene is correctly inserted
             std::vector <Gene>::iterator i = Gene_arr_.end();
             i--;
-            std::cout << (*i).nseq() << std::endl;
             if((*i).f()==0){
                 (*i).ch_f(0.999+randomNumber()*0.001);
             }
-            std::cout << (*i).f() << std::endl;
             gene_data.close();
         }
     }
@@ -139,7 +147,7 @@ Cell::Cell(std::fstream & IN,
 
     char buffer[140];
     int cell_id, cell_index, gene_size;
-    double m, m0;
+    double m, f;
 
     IN.read((char*)(&cell_index), sizeof(int));
     IN.read((char*)(&cell_id), sizeof(int));
@@ -154,8 +162,8 @@ Cell::Cell(std::fstream & IN,
     IN.read(&buf[0], l);
     ch_barcode(std::string().assign(buf.begin(), buf.end()));
 
-    IN.read((char*)(&m0), sizeof(double));
-    o_mrate_ = m0;
+    IN.read((char*)(&f), sizeof(double));
+    fitness_ = f;
     IN.read((char*)(&m), sizeof(double));
     c_mrate_ = m;
     IN.read((char*)(&gene_size), sizeof(int));
@@ -199,6 +207,11 @@ Cell::Cell(std::fstream & IN,
         G.ch_Ns(Ns);
         Gene_arr_.push_back(G);
     }
+}
+
+const double Cell::fitness()
+{
+    return fitness_;
 }
 
 // Initialize the cummulative gene length array
