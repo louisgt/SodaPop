@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
     }
 
     int flag = atoi(argv[2]);
-    assert((flag == 0) | (flag == 1) | (flag == 2));
+    assert((flag == 0) | (flag == 1) | (flag == 2) | (flag == 3));
 
     char buffer[200];
     std::vector < PolyCell > Cell_arr;
@@ -22,6 +22,12 @@ int main(int argc, char* argv[]) {
         std::cerr << "File could not be opened";
         exit(1);
     }
+
+    if(flag==3){
+        Gene::initGamma(1.5, 0.0001);
+    }
+
+    double limit = 0.95;
 
     std::string line;
     Cell_arr.reserve(POPSIZEMAX);
@@ -60,16 +66,30 @@ int main(int argc, char* argv[]) {
                 break;
 
                 case 3: A.ch_barcode(getBarcode());
-                        int nClusters = (count + 100 - 1) / 100;
-                        int remainder = count % 100;
+                        int nClusters = (count + 10 - 1) / 10;
+                        int remainder = count % 10;
                         for (int k = 0; k < nClusters - 1; k++) {
-                            //edit fitness here (draw selection coefficient for clusters of 100 cells)
-                            for (int i = 0; i < 100; i++) {
+                            //edit fitness here (draw selection coefficient for clusters of 10 cells)
+                            //fetch selection coefficient
+                            double s = Gene::RandomGamma();
+                            if (randomNumber()<limit) s *= -1;
+                            //change fitness accordingly
+                            double nf = A.fitness() + s;
+                            //std::cout << nf << std::endl;
+                            A.ch_Fitness(nf);
+                            for (int i = 0; i < 10; i++) {
                                 Cell_arr.push_back(A);
                             }
                         }
                         if(remainder){
-                            //edit fitness here (draw selection coefficient for remainder)
+                            //edit fitness here (draw selection coefficient for clusters of 10 cells)
+                            //fetch selection coefficient
+                            double s = Gene::RandomGamma();
+                            if (randomNumber()<limit) s *= -1;
+                            //change fitness accordingly
+                            double nf = A.fitness() + s;
+                            //std::cout << nf << std::endl;
+                            A.ch_Fitness(nf);
                             for (int i = 0; i < remainder; i++) {
                                 Cell_arr.push_back(A);
                             }
