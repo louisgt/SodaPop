@@ -42,6 +42,7 @@ public:
     double metabolicOutput();
     double multiplicative();
     double neutral();
+    double noMut();
     void UpdateRates();
 
     void ranmut_Gene();
@@ -56,11 +57,7 @@ public:
     int Ns(){return Total_Ns_;}
     void UpdateNsNa();
 
-    void ch_Fitness(double f){fitness_ = f;}
-    const double fitness();
-
 protected:
-    double fitness_;
     int Total_Ns_;
     int Total_Na_;
     funcPtr fit;
@@ -112,6 +109,8 @@ void PolyCell::selectFitness()
         case 4: fit = &PolyCell::multiplicative;
             break;
         case 5: fit = &PolyCell::neutral;
+            break;
+        case 6: fit = &PolyCell::noMut;
             break;
         default:;
     }
@@ -175,9 +174,10 @@ double PolyCell::neutral()
     return 1;
 }
 
-const double PolyCell::fitness()
+// NEUTRAL FITNESS FUNCTION
+double PolyCell::noMut()
 {
-    return fitness_;
+    return fitness();
 }
 
 void PolyCell::UpdateRates()
@@ -332,6 +332,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         double c = gene_it->conc();
         double dg = -kT*log(gene_it->dg());
         double f = gene_it->f();
+        //std::cout << f << std::endl;
 
         int Ns = gene_it->Ns();
         int Na = gene_it->Na();
