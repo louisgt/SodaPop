@@ -7,7 +7,7 @@ POPSIZE=$3
 DT=$4
 FORMAT=$5
 GENE_COUNT=$6
-
+##GENE_COUNT=1
 LONG=0
 
 ##### CREATE DIRECTORIES FOR RESULTS
@@ -32,19 +32,19 @@ cd $PREFIX
 
 echo Extracting barcodes from $PREFIX/snapshots/...
 
-### CONVERT BINARY SNAPSHOTS TO TEXT FILES
+## CONVERT BINARY SNAPSHOTS TO TEXT FILES
 FILES=snapshots/*.snap.gz
 for filename in $FILES
 do
 	gunzip $filename
 	y="$(basename $filename .gz)"
-	./$HOME/sodasnap snapshots/$y snapshots/$y.txt $LONG
+	./$HOME/sodasnap snapshots/$y snapshots/$y.txt $FORMAT
 	rm snapshots/$y
 	gzip -f snapshots/$y.txt
 done
 
 FACTOR=2
-let "FACTOR += 2*$6"
+let "FACTOR += 2*$GENE_COUNT"
 
 COL=3
 let "COL += $FORMAT"
