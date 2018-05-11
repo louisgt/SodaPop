@@ -31,7 +31,7 @@ FILES=$PREFIX/snapshots/*.snap
 for filename in $FILES
 do
 	y=${filename%.001}
-	./sodasnap $filename $y.txt $LONG
+	./sodasnap $filename $y.txt $FORMAT
 done
 
 #### EXTRACT AND SORT BARCODES
