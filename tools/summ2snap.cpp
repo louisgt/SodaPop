@@ -24,10 +24,10 @@ int main(int argc, char* argv[]) {
     }
 
     if(flag==3){
-        Gene::initGamma(1.5, 0.0001);
+        Gene::initGamma(1.5, 0.0003);
     }
 
-    double limit = 0.95;
+    double limit = 0.90;
 
     std::string line;
     Cell_arr.reserve(POPSIZEMAX);
