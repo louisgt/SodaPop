@@ -17,9 +17,9 @@ message("R: Importing time series data...")
 generations = as.data.frame(read.csv(paste(dir,src,"ALL_generations.txt",sep=""), header = FALSE, sep =" "))
 
 message("R: Extracting rows to keep...")
-rows_to_keep = generations$V2 != 0
+rows_to_keep = generations$V5 != 0
 if(nrow(generations) > 100000){
-	rows_to_keep = generations$V3 != 0
+	rows_to_keep = generations$V7 != 0
 }
 generations = generations[rows_to_keep,]
 
@@ -55,6 +55,11 @@ c = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_line
 labs(x = "Generations",y="Count")
 c$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
 ggsave("clonal_trajectories.png", plot=c, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
+
+d = ggplot(FLUX, aes(x=factor(variable),y=log10(value),group=V1,colour=V1)) + geom_line() + theme_bw() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
+labs(x = "Generations",y="Count")
+d$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
+ggsave("log_clonal_trajectories.png", plot=d, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
 #ggsave("clonal_trajectories.eps", plot=c, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=600)
 #ggsave("clonal_structure.eps", plot=b, device=cairo_ps, fallback_resolution = 300, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=600)
