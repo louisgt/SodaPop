@@ -806,6 +806,50 @@ void qread_Cell(std::fstream& IN, std::fstream& OUT)
     OUT << buffer;
 }
 
+// Reads a unit cell stored in binary format using Cell::dumpSeq()
+void seqread_Cell(std::fstream& IN, std::fstream& OUT)
+{
+    char buffer[140];
+    int cell_index, gene_size;
+    double f;
+    std::string barcode;
+
+    IN.read((char*)(&cell_index),sizeof(int));
+
+    int l;
+    IN.read((char*)&l, sizeof(int));
+    std::vector<char> buf(l);
+    IN.read(&buf[0], l);
+    barcode.assign(buf.begin(), buf.end());
+
+    OUT << barcode;
+
+    IN.read((char*)(&f),sizeof(double));
+    IN.read((char*)(&gene_size),sizeof(int));
+    
+    sprintf(buffer,"\t%d\t%e", cell_index, f);
+    OUT << buffer << std::endl;
+
+    for(int j=0; j<gene_size; j++){
+        std::string DNAsequence;   
+        int Na, Ns;
+
+        IN.read((char*)(&Na),sizeof(int));
+        IN.read((char*)(&Ns),sizeof(int));
+
+        //read DNA sequence
+        int nl;
+        IN.read((char*)&nl, sizeof(int));
+        std::vector<char> buff(nl);
+        IN.read(&buff[0], nl);  
+        DNAsequence.assign(buff.begin(), buff.end());
+
+        sprintf(buffer,"%d\tG\t%d\t%d\t",j,Ns,Na);
+        OUT << buffer << std::endl;
+        OUT << DNAsequence << std::endl;
+    }
+}
+
 void read_Parent(std::fstream& IN, std::fstream& OUT)
 {
     uint32_t a;
