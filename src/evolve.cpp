@@ -267,6 +267,7 @@ int main(int argc, char *argv[])
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
             w_sum += cell_it->fitness();
             cell_it->dump(OUT2,idx);
+            //cell_it->dumpSeq(OUT2,idx);
             idx++;
             //(*k).setParent(k - Cell_arr.begin());
         } 
@@ -418,6 +419,7 @@ int main(int argc, char *argv[])
                 int count=1;
                 for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                     cell_it->dump(OUT2,count);
+                    //cell_it->dumpSeq(OUT2,count);
                     count++;
                 }
              }
