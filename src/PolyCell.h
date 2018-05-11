@@ -49,6 +49,7 @@ public:
     void change_exprlevel();
     void dump(std::fstream&, int);
     void dumpShort(std::fstream&);
+    void dumpSeq(std::fstream&, int);
     void dumpParent(std::fstream&);
     void PrintCell(int);
     
@@ -371,6 +372,41 @@ void PolyCell::dumpShort(std::fstream& OUT)
 
     y = fitness();         
     OUT.write((char*)(&y),sizeof(double));
+}
+
+// Dump cell summary to binary file
+void PolyCell::dumpSeq(std::fstream& OUT, int cell_index)
+{
+    int x;
+    double y;
+
+    OUT.write((char*)(&cell_index),sizeof(int));
+
+    int s = barcode().size();
+    OUT.write((char*)&s, sizeof(int));
+
+    OUT.write(barcode().c_str(), s);
+
+    y = fitness();         
+    OUT.write((char*)(&y),sizeof(double));
+
+    x = (int)(Gene_arr_.size());             
+    OUT.write((char*)(&x),sizeof(int));
+
+    for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+
+        int Ns = gene_it->Ns();
+        int Na = gene_it->Na();
+
+        OUT.write((char*)(&Na),sizeof(int));
+        OUT.write((char*)(&Ns),sizeof(int));
+
+        //Save length of nucleo sequence
+        std::string DNAsequence = gene_it->nseq();
+        int nl = DNAsequence.length();
+        OUT.write((char*)&nl, sizeof(int));
+        OUT.write(DNAsequence.data(), nl);
+    }
 }
 
 // Dump cell parent to binary file
