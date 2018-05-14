@@ -887,13 +887,14 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
     OUT << buffer << std::endl;
 
     for(int j=0; j<gene_size; j++){
-        double e, c, dg, f;
+        double e, c, dg, f, eff;
         int gene_nid, Ns, Na;
         std::string DNAsequence;
 
         IN.read((char*)(&gene_nid),sizeof(int));   
         IN.read((char*)(&e),sizeof(double));
         IN.read((char*)(&c),sizeof(double));
+        IN.read((char*)(&eff),sizeof(double));
         IN.read((char*)(&dg),sizeof(double));
         IN.read((char*)(&f),sizeof(double));
 
