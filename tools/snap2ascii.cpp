@@ -1,9 +1,8 @@
-
 #include "../src/global.h"
 
 int main(int argc, char * argv[]) {
     if (argc != 4) {
-        std::cerr << "sodasnap <snap-binary> <out-ascii> [ 0-full | 1-short | 2-DNA only]\n";
+        std::cerr << "sodasnap <snap-binary> <out-ascii> [ 0-full | 1-minimal | 2-DNA sequence ]\n";
         exit(1);
     }
 
@@ -11,7 +10,7 @@ int main(int argc, char * argv[]) {
     assert((flag == 0) | (flag == 1) | (flag == 2));
 
     int Total_Cell_Count;
-    double frame_time, T0;
+    double frame_time;
 
     //open binary file 
     std::fstream IN(argv[1], std::ios:: in | std::ios::binary);
@@ -28,9 +27,8 @@ int main(int argc, char * argv[]) {
 
     //Read header
     IN.read((char * )( & frame_time), sizeof(double));
-    IN.read((char * )( & T0), sizeof(double));
     IN.read((char * )( & Total_Cell_Count), sizeof(int));
-    OUT << frame_time << " " << T0 << " " << Total_Cell_Count << std::endl;
+    OUT << "Generation: " << frame_time << "\n" << "Population size: " << Total_Cell_Count << std::endl;
 
     //Read Cell array
     for (int i = 0; i < Total_Cell_Count; i++) {
@@ -41,7 +39,7 @@ int main(int argc, char * argv[]) {
                     break;
                 case 1: qread_Cell(IN, OUT);
                     break;
-                case 2: //DNA only
+                case 2: seqread_Cell(IN,OUT);
                     break;
                 case 3: //to be properly implemented
                         //read_Parent(IN,OUT);  
