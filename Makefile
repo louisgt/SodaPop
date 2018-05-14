@@ -11,12 +11,9 @@ SODAPOP = sodapop
 SNAP2ASCII = sodasnap
 SUMM2SNAP = sodasumm
 
-LZ4_DIR = ./include/lz4-dev/
 INSTALLDIR = /usr/local/bin
 
-.PHONY: lz4_code $(LZ4_DIR)
-
-all: $(SODAPOP) $(SNAP2ASCII) $(SUMM2SNAP) lz4_code
+all: $(SODAPOP) $(SNAP2ASCII) $(SUMM2SNAP)
 
 install:
 	@echo \#\#\# Installing binaries to $(INSTALLDIR)/...
@@ -33,14 +30,12 @@ uninstall:
 $(LZ4_DIR): 
 	make -C $@
 $(SODAPOP): sodapop.o rng.o
-	$(LINK) -o sodapop sodapop.o rng.o ./include/lz4-dev/lz4.o
+	$(LINK) -o sodapop sodapop.o rng.o
 $(SNAP2ASCII): snap2ascii.o
-	$(LINK) -o sodasnap snap2ascii.o rng.o ./include/lz4-dev/lz4.o
+	$(LINK) -o sodasnap snap2ascii.o rng.o
 $(SUMM2SNAP): summ2snap.o
-	$(LINK) -o sodasumm summ2snap.o rng.o ./include/lz4-dev/lz4.o
+	$(LINK) -o sodasumm summ2snap.o rng.o
 
-
-lz4_code: $(LZ4_DIR)
 
 rng.o: ./src/rng.cpp
 	$(COMPILE) -o rng.o ./src/rng.cpp
@@ -53,4 +48,3 @@ summ2snap.o: ./tools/summ2snap.cpp ./src/PolyCell.h
 
 clean:
 	rm -f *.o
-	make -C $(LZ4_DIR) clean

@@ -7,7 +7,6 @@ POPSIZE=$3
 DT=$4
 FORMAT=$5
 GENE_COUNT=$6
-##GENE_COUNT=1
 LONG=0
 
 ##### CREATE DIRECTORIES FOR RESULTS
@@ -36,7 +35,7 @@ echo Extracting barcodes from $PREFIX/snapshots/...
 FILES=snapshots/*.snap.gz
 for filename in $FILES
 do
-	gunzip $filename
+	gunzip -k $filename
 	y="$(basename $filename .gz)"
 	./$HOME/sodasnap snapshots/$y snapshots/$y.txt $FORMAT
 	rm snapshots/$y
@@ -106,7 +105,8 @@ cat barcodes/series$i.txt | cut -d " " -f 1,3- > ALL_generations.txt
 
 rm -f barcodes/series*.txt
 
-rm -f snapshots/*.snap
+# remove compressed binary snapshots
+#rm -f snapshots/*.snap.gz
 
 cd $HOME
 

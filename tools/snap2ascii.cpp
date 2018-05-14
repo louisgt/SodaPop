@@ -3,7 +3,7 @@
 
 int main(int argc, char * argv[]) {
     if (argc != 4) {
-        std::cerr << "sodasnap <snap-binary> <out-ascii> [ 0-full | 1-minimal ]\n";
+        std::cerr << "sodasnap <snap-binary> <out-ascii> [ 0-full | 1-short | 2-DNA only]\n";
         exit(1);
     }
 
@@ -35,14 +35,18 @@ int main(int argc, char * argv[]) {
     //Read Cell array
     for (int i = 0; i < Total_Cell_Count; i++) {
         OUT << std::endl;
-        if (!flag) {
-            read_Cell(IN, OUT);
-        } else if (flag == 1) {
-            qread_Cell(IN, OUT);
-        } else {
-            //to be properly implemented
-            //read_Parent(IN,OUT);
-        }
+        switch(flag)
+            {
+                case 0: read_Cell(IN, OUT);
+                    break;
+                case 1: qread_Cell(IN, OUT);
+                    break;
+                case 2: //DNA only
+                    break;
+                case 3: //to be properly implemented
+                        //read_Parent(IN,OUT);  
+                    break;
+            }
     }
     IN.close();
     OUT.close();
