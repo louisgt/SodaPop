@@ -331,6 +331,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         int gene_nid = gene_it->num();
         double s = gene_it->e();
         double c = gene_it->conc();
+        double eff = gene_it->eff();
         double dg = -kT*log(gene_it->dg());
         double f = gene_it->f();
         //std::cout << f << std::endl;
@@ -341,6 +342,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         OUT.write((char*)(&gene_nid),sizeof(int));
         OUT.write((char*)(&s),sizeof(double));
         OUT.write((char*)(&c),sizeof(double));
+        OUT.write((char*)(&eff),sizeof(double));
         OUT.write((char*)(&dg),sizeof(double));
         OUT.write((char*)(&f),sizeof(double));
         OUT.write((char*)(&Na),sizeof(int));
