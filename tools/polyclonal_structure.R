@@ -17,7 +17,7 @@ message("R: Importing time series data...")
 generations = as.data.frame(read.csv(paste(dir,src,"ALL_generations.txt",sep=""), header = FALSE, sep =" "))
 
 message("R: Extracting rows to keep...")
-rows_to_keep = generations$V5 != 0
+rows_to_keep = generations$V3 != 0
 if(nrow(generations) > 100000){
 	rows_to_keep = generations$V7 != 0
 }
