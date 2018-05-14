@@ -6,7 +6,7 @@ DESCRIPTION: Converts population summary to a snap file.
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cerr << "sodasumm <population summary> [ 0-full | 1-single cell | 2-randomize barcodes]\n";
+        std::cerr << "sodasumm <population summary> [ 0-full | 1-single cell | 2-randomize barcodes | 3-introduce variation]\n";
         exit(1);
     }
 
@@ -117,10 +117,8 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    double T0 = 0;
     double frame_time = 0;
     OUT.write((char*)(&frame_time), sizeof(double));
-    OUT.write((char*)(&T0), sizeof(double));
     OUT.write((char*)(&Total_Cell_Count), sizeof(int));
 
     int count = 0;
