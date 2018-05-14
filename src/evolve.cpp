@@ -213,6 +213,20 @@ int main(int argc, char *argv[])
     std::string outPath = buffer;
     std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
 
+    sprintf(buffer,"out/%s/command.log",outDir.c_str());
+    std::ofstream cmdlog;
+    cmdlog.open(buffer, std::ios::out | std::ios::trunc);
+    if(!cmdlog.is_open())
+    {
+        std::cerr << "Command log file could not be opened" << std::endl;
+        exit(1);
+    }
+
+    std::string args;
+    std::for_each( argv + 1, argv + argc , [&]( const char* c_str ){ args += std::string ( c_str ) + " "; } );
+    cmdlog << "sodapop " << args << std::endl;
+    cmdlog << std::endl;
+
     std::vector <PolyCell> Cell_arr;
     double w_sum = 0;
 
@@ -220,6 +234,7 @@ int main(int argc, char *argv[])
     // CREATE VECTOR WITH N IDENTICAL CELLS
     if(createPop){
         std::cout << "Creating a population of " << N << " cells ..." << std::endl;
+        cmdlog << "Creating a population of " << N << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
         Cell_arr = std::vector <PolyCell>(N,A);
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
@@ -236,6 +251,7 @@ int main(int argc, char *argv[])
         Cell_arr.reserve(N);
         int count = 0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
+        cmdlog << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
         //auto cell_it = Cell_arr.begin();
         while(count <Total_Cell_Count && !startsnap.eof()){
             Cell_arr.emplace_back(startsnap, genesPath);
@@ -251,6 +267,7 @@ int main(int argc, char *argv[])
 
 
     std::cout << "Saving initial population snapshot ... " << std::endl;
+    cmdlog << "Saving initial population snapshot ... " << std::endl;
     sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
 
     // Open snapshot file
@@ -335,6 +352,7 @@ int main(int argc, char *argv[])
     // OUT3.close();
     
     std::cout << "Starting evolution ..." << std::endl;
+    cmdlog << "Starting evolution ..." << std::endl;
 
     // PSEUDO WRIGHT-FISHER PROCESS
     while(GENERATION_CTR < GENERATION_MAX){
@@ -498,14 +516,16 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     MUTATIONLOG.close();
     std::cout << "Done." << std::endl;
+    cmdlog << "Done." << std::endl;
     std::cout << "Total number of mutation events: " << MUTATION_CTR << std::endl;
+    cmdlog << "Total number of mutation events: " << MUTATION_CTR << std::endl;
+    cmdlog.close();
 
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
         std::string script = "tools/barcodes.sh";
         std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT)+" "+std::to_string(encoding)+" "+std::to_string(gene_count);
         const char *cmd = command.c_str();
-        std::cout << cmd << std::endl;
         system(cmd);
     }
     return 0;
