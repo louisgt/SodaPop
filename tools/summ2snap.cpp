@@ -118,8 +118,10 @@ int main(int argc, char* argv[]) {
     }
 
     double frame_time = 0;
+    int encoding = 0;
     OUT.write((char*)(&frame_time), sizeof(double));
     OUT.write((char*)(&Total_Cell_Count), sizeof(int));
+    OUT.write((char*)(&encoding), sizeof(int));
 
     int count = 0;
     for (auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it) {
