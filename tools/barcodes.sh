@@ -5,9 +5,9 @@ OUT=$1
 MAXGEN=$2
 POPSIZE=$3
 DT=$4
-FORMAT=$5
+ENCODING=$5
 GENE_COUNT=$6
-LONG=0
+COL=3
 
 ##### CREATE DIRECTORIES FOR RESULTS
 rm -rf out/$OUT/barcodes; mkdir out/$OUT/barcodes
@@ -17,49 +17,55 @@ HOME=../..
 
 echo Begin analysis.
 
+FACTOR=2
+let "FACTOR += 2*$GENE_COUNT"
+
 ### implement: detect file encoding
 
-if [ "$FORMAT" -eq "$LONG" ]; then
-	echo Using long format.
-else
-	echo Using short format.
+if [ "$ENCODING" -eq "0" ]; then
+	echo Using long output format.
+	let "COL = 3"
+else if [ "$ENCODING" -eq "1" ]; then
+		echo Using short output format.
+		let "COL = 4"
+	 else 
+	 	echo Using DNA output format.
+	 	let "COL = 3"
+	 fi
 fi
 
 echo Gene count = $6.
-
 echo Working in $PREFIX.
-
 cd $PREFIX
 
-echo Extracting barcodes from $PREFIX/snapshots/...
-
+echo Gunzipping snapshots and converting to .txt...
 ## CONVERT BINARY SNAPSHOTS TO TEXT FILES
 FILES=snapshots/*.snap.gz
 for filename in $FILES
 do
 	gunzip -k $filename
 	y="$(basename $filename .gz)"
-	./$HOME/sodasnap snapshots/$y snapshots/$y.txt $FORMAT
+	./$HOME/sodasnap snapshots/$y snapshots/$y.txt $ENCODING
 	rm snapshots/$y
 	gzip -f snapshots/$y.txt
 done
 
-FACTOR=2
-let "FACTOR += 2*$GENE_COUNT"
-
-COL=3
-let "COL += $FORMAT"
-
+echo Extracting barcodes from $PREFIX/snapshots/...
 #### EXTRACT AND SORT BARCODES
 rm -f avg_fitness.txt
 FILES=snapshots/*.snap.txt.gz
 for filename in $FILES
 do
 	y=${filename%%.txt.gz}
-	gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
-	#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
-	gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
-	
+	if [ "$ENCODING" -eq "1" ]; then
+		gunzip -c $filename | awk 'NR>3 {print $0}' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
+		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
+		gunzip -c $filename | awk 'NR>3 {print $0}' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
+	else
+		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
+		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
+		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
+	fi
 done
 
 echo Parsing unique barcodes...
