@@ -47,6 +47,7 @@ public:
     const int AAlength(){return la_;}
     const std::string nseq(){return nucseq_;}
     const double dg(){return dg_;}
+    const double eff(){return eff_;}
     const double f(){return f_;}
     const int Ns(){return Ns_;}
     const int Na(){return Na_;}
@@ -60,12 +61,13 @@ public:
     double Pnat();
     double A_factor();
 
-    void ch_dg(const double a){ dg_ = a; }
-    void ch_f(const double a){ f_ = a; }
-    void ch_conc(const double c) {conc_ = c;}
-    void ch_Na(const int a){ Na_ = a; }
-    void ch_Ns(const int a){ Ns_ = a; }
-    void ch_e(const double e) {e_ = e;}
+    void ch_dg(const double a){dg_ = a;}
+    void ch_f(const double a){f_ = a;}
+    void ch_eff(const double a){eff_ = a;}
+    void ch_conc(const double c){conc_ = c;}
+    void ch_Na(const int a){Na_ = a;}
+    void ch_Ns(const int a){Ns_ = a;}
+    void ch_e(const double e){e_ = e;}
 
     private:
         int g_num_;     //numeric ID pointing to primordial gene
@@ -79,6 +81,7 @@ public:
         
         double dg_;     //stability
         double f_;      //gene "fitness"
+        double eff_;    //enzymatic efficiency
 
         double conc_;    //concentration
         double e_;       //essentiality: between 0 and 1, can be used as a coefficient
@@ -98,6 +101,7 @@ Gene::Gene(){
       Ns_ = 0;
       nucseq_ = ""; 
       dg_ = 1;
+      eff_ = 1;
       f_ = 1;
       conc_ = 1;
       e_ = 0;
@@ -124,6 +128,7 @@ Gene::Gene(const int g_num, const std::string nucseq, double conc) :
             exit(2);
         }           
         dg_= 1;
+        eff_ = 1;
         f_= 1;
         e_ = 0;
         Na_ = 0;
@@ -183,6 +188,11 @@ Gene::Gene(std::fstream& gene_in)
             iss>>word; 
             f_ = atof(word.c_str());
         }
+        else if (word == "EFF")
+        { 
+            iss>>word; 
+            eff_ = atof(word.c_str());
+        }
         else if (word == "//"){;}//do nothing
     }
     Na_ = 0; //default
@@ -200,6 +210,7 @@ Gene::Gene(const Gene& G)
     f_ = G.f_;
     conc_ = G.conc_;
     e_ = G.e_;
+    eff_ = G.eff_;
     Na_ = G.Na_;
     Ns_ = G.Ns_;
 }
@@ -227,6 +238,7 @@ Gene& Gene::operator=(const Gene& A)
         this->f_ = A.f_;
         this->conc_ = A.conc_;
         this->e_ = A.e_;
+        this->eff_ = A.eff_;
         this->Na_ = A.Na_;
         this->Ns_ = A.Ns_;
         (this->nucseq_).assign(A.nucseq_);
@@ -472,7 +484,7 @@ double Gene::Pnat()
 // Number of functional copies in the cell
 double Gene::functional()
 {
-    return conc_*Pnat();
+    return eff_*conc_*Pnat();
 }
 
 // Number of misfolded copies in the cell
