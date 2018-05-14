@@ -28,13 +28,13 @@ int main(int argc, char *argv[])
     int GENERATION_MAX = GENERATION_CTR + 1;
     int MUTATION_CTR = 0;
     int gene_count = 0;
-    double N=1;
+    int encoding = 0;
+    int N=1;
     int DT = 1;
     char buffer[200];
     bool enableAnalysis = false;
     bool trackMutations = false;
     bool createPop = false;
-    bool useShort = false;
     bool noMut = false;
 
     std::string inputType;
@@ -86,9 +86,9 @@ int main(int argc, char *argv[])
         
         // boolean switch to track mutations
         TCLAP::SwitchArg eventsArg("e","track-events","Track mutation events", cmd, false);
-        
-        // boolean switch to use short format for snapshots
-        TCLAP::SwitchArg shortArg("s","short-format","Use short format for population snapshots", cmd, false);
+
+        // sequence output selection
+        TCLAP::ValueArg<int> seqArg("s","seq-output","Sequence output format",false,0,"integer");
 
         // RNG seed
         TCLAP::ValueArg<unsigned long> seedArg("", "seed", "Seed value for RNG.", false, 0, "unsigned int (64-bit)");
@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
         cmd.add(startArg);
         cmd.add(libArg);
         cmd.add(fitArg);
+        cmd.add(seqArg);
         cmd.add(matrixArg);
         cmd.add(alphaArg);
         cmd.add(betaArg);
@@ -183,7 +184,7 @@ int main(int argc, char *argv[])
 
         enableAnalysis = analysisArg.getValue();
         trackMutations = eventsArg.getValue();
-        useShort = shortArg.getValue();
+        encoding = seqArg.getValue();
         createPop = initArg.getValue();
 
     }catch (TCLAP::ArgException &e){
@@ -202,10 +203,11 @@ int main(int argc, char *argv[])
     }
     
     // header
-    int Total_Cell_Count;
+    int Total_Cell_Count, dummy;
     double frame_time;
     startsnap.read((char*)(&frame_time),sizeof(double));
     startsnap.read((char*)(&Total_Cell_Count),sizeof(int));
+    startsnap.read((char*)(&dummy),sizeof(int));
 
     sprintf(buffer,"out/%s/snapshots",outDir.c_str());
     std::string outPath = buffer;
@@ -261,23 +263,39 @@ int main(int argc, char *argv[])
     Total_Cell_Count = Cell_arr.size();
     OUT2.write((char*)(&frame_time),sizeof(double));
     OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
+    OUT2.write((char*)(&encoding),sizeof(int));
 
-    if(useShort){
-        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-            w_sum += cell_it->fitness();
-            cell_it->dumpShort(OUT2);
-        } 
-    }
-    else{
-        int idx=1;
+    int idx;
+    switch(encoding){
+        case 0: //"normal" output format
+                idx=1;
+                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                    w_sum += cell_it->fitness();
+                    cell_it->dump(OUT2,idx);
+                    idx++;
+                    //(*k).setParent(k - Cell_arr.begin());
+                } 
+            break;
+        case 1: //"short" output format
+                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                    w_sum += cell_it->fitness();
+                    cell_it->dumpShort(OUT2);
+                }
+            break;
+        case 2: //DNA seq. output format
+                idx=1;
+                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                    w_sum += cell_it->fitness();
+                    cell_it->dumpSeq(OUT2,idx);
+                    idx++;
+                    //(*k).setParent(k - Cell_arr.begin());
+                } 
+            break;
+        case 3: //dump with parent data, to be implemented
+            break;
+    }   
+
         // dump snapshot of initial population and get sum of fitnesses
-        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-            w_sum += cell_it->fitness();
-            cell_it->dumpSeq(OUT2,idx);
-            idx++;
-            //(*k).setParent(k - Cell_arr.begin());
-        } 
-    }
     
     OUT2.close();
     std::string command = "gzip -f ";
@@ -419,20 +437,32 @@ int main(int argc, char *argv[])
             double frame_time = GENERATION_CTR;
             OUT2.write((char*)(&frame_time),sizeof(double));
             OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
+            OUT2.write((char*)(&encoding),sizeof(int));
 
-            if(useShort){
-                    for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                        cell_it->dumpShort(OUT2);
-                } 
-            }
-            else{
-                int count=1;
-                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-
-                    cell_it->dumpSeq(OUT2,count);
-                    count++;
-                }
-            }
+            int count;
+            switch(encoding){
+                case 0: //"normal" output format
+                        count=1;
+                        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                            cell_it->dump(OUT2,count);
+                            count++;
+                        }
+                    break;
+                case 1: //"short" output format
+                        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                            cell_it->dumpShort(OUT2);
+                        } 
+                    break;
+                case 2: //DNA seq. output format
+                        count=1;
+                        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                            cell_it->dumpSeq(OUT2,count);
+                            count++;
+                        }
+                    break;
+                case 3: //dump with parent data, to be implemented
+                    break;
+            }   
               
             OUT2.close();
             //compress last written file with gzip
@@ -473,8 +503,9 @@ int main(int argc, char *argv[])
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
         std::string script = "tools/barcodes.sh";
-        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT)+" "+std::to_string((int) useShort)+" "+std::to_string(gene_count);
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT)+" "+std::to_string(encoding)+" "+std::to_string(gene_count);
         const char *cmd = command.c_str();
+        std::cout << cmd << std::endl;
         system(cmd);
     }
     return 0;
