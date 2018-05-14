@@ -9,7 +9,7 @@ int main(int argc, char * argv[]) {
     int flag = atoi(argv[3]);
     assert((flag == 0) | (flag == 1) | (flag == 2));
 
-    int Total_Cell_Count;
+    int Total_Cell_Count, encoding;
     double frame_time;
 
     //open binary file 
@@ -28,12 +28,13 @@ int main(int argc, char * argv[]) {
     //Read header
     IN.read((char * )( & frame_time), sizeof(double));
     IN.read((char * )( & Total_Cell_Count), sizeof(int));
+    IN.read((char * )( & encoding), sizeof(int));
     OUT << "Generation: " << frame_time << "\n" << "Population size: " << Total_Cell_Count << std::endl;
 
     //Read Cell array
     for (int i = 0; i < Total_Cell_Count; i++) {
         OUT << std::endl;
-        switch(flag)
+        switch(encoding)
             {
                 case 0: read_Cell(IN, OUT);
                     break;
