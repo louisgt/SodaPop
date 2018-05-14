@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
     int gene_count = 0;
     double N=1;
     int DT = 1;
-    double TIME = 0;
     char buffer[200];
     bool enableAnalysis = false;
     bool trackMutations = false;
@@ -206,7 +205,6 @@ int main(int argc, char *argv[])
     int Total_Cell_Count;
     double frame_time;
     startsnap.read((char*)(&frame_time),sizeof(double));
-    startsnap.read((char*)(&TIME),sizeof(double));
     startsnap.read((char*)(&Total_Cell_Count),sizeof(int));
 
     sprintf(buffer,"out/%s/snapshots",outDir.c_str());
@@ -262,7 +260,6 @@ int main(int argc, char *argv[])
 
     Total_Cell_Count = Cell_arr.size();
     OUT2.write((char*)(&frame_time),sizeof(double));
-    OUT2.write((char*)(&TIME),sizeof(double));
     OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
     if(useShort){
@@ -276,7 +273,7 @@ int main(int argc, char *argv[])
         // dump snapshot of initial population and get sum of fitnesses
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
             w_sum += cell_it->fitness();
-            cell_it->dump(OUT2,idx);
+            cell_it->dumpSeq(OUT2,idx);
             idx++;
             //(*k).setParent(k - Cell_arr.begin());
         } 
@@ -421,7 +418,6 @@ int main(int argc, char *argv[])
       
             double frame_time = GENERATION_CTR;
             OUT2.write((char*)(&frame_time),sizeof(double));
-            OUT2.write((char*)(&TIME),sizeof(double));
             OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
 
             if(useShort){
@@ -433,7 +429,7 @@ int main(int argc, char *argv[])
                 int count=1;
                 for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
 
-                    cell_it->dump(OUT2,count);
+                    cell_it->dumpSeq(OUT2,count);
                     count++;
                 }
             }
