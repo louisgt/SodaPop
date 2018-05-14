@@ -2,12 +2,9 @@
 
 int main(int argc, char * argv[]) {
     if (argc != 4) {
-        std::cerr << "sodasnap <snap-binary> <out-ascii> [ 0-full | 1-minimal | 2-DNA sequence ]\n";
+        std::cerr << "sodasnap <snap-binary> <out-ascii>\n";
         exit(1);
     }
-
-    int flag = atoi(argv[3]);
-    assert((flag == 0) | (flag == 1) | (flag == 2));
 
     int Total_Cell_Count, encoding;
     double frame_time;
