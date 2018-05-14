@@ -17,6 +17,8 @@ HOME=../..
 
 echo Begin analysis.
 
+### implement: detect file encoding
+
 if [ "$FORMAT" -eq "$LONG" ]; then
 	echo Using long format.
 else
@@ -54,13 +56,9 @@ FILES=snapshots/*.snap.txt.gz
 for filename in $FILES
 do
 	y=${filename%%.txt.gz}
-	gunzip -c $filename | awk 'NR>1 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
+	gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
 	#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
-	if [ "$FORMAT" -eq "$LONG" ]; then
-		gunzip -c $filename | awk 'NR>1 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
-    else
-		gunzip -c $filename | awk 'NR>1 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
-    fi
+	gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
 	
 done
 
