@@ -26,14 +26,14 @@ Download and install [Cygwin](https://www.cygwin.com/) on your computer. This wi
 
 ## Contributing
 
-SodaPop is a work in progress. It can be expanded by implementing new features. It can certainly be further optimized for performance and memory. If you have ideas for additionnal features, or if you are interested in contributing to the software, please contact me at louis.gauthier AT umontreal.ca
+SodaPop is a work in progress. It can certainly be expanded by implementing new features, and it can also be further optimized for performance and memory. If you have ideas for additional features, or if you are interested in contributing to the software, please contact me at louis.gauthier AT umontreal.ca
 
 
 ## License
 
 Copyright (C) 2017 Louis Gauthier
 
-SodaPop is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+SodaPop is free software. You can redistribute it or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 SodaPop is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
