@@ -149,7 +149,7 @@ a:hover { text-decoration: underline; }
 
 .topbar	{ position:fixed; top:2%; right:2%; }
 
-.page-header { color: #6708FF; text-align: center; background-color: #6708FF; background-image: linear-gradient(120deg, #6708FF,#E01A63); }
+.page-header { color: #fff; text-align: center; background-color: #6708FF; background-image: linear-gradient(120deg, #6708FF,#E01A63); }
 @media screen and (min-width: 64em) { .page-header { padding: 5rem 6rem; } }
 @media screen and (min-width: 42em) and (max-width: 64em) { .page-header { padding: 3rem 4rem; } }
 @media screen and (max-width: 42em) { .page-header { padding: 2rem 1rem; } }
