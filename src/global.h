@@ -81,12 +81,12 @@ T remove_at(std::vector<T>&v, typename std::vector<T>::size_type n)
 N.B. The physically allowed value for mutational DDG is DGG_min to DGG_max.
 If the estimated energy is out of this range, the mutation is ignored.
 *****/
-const double ddG_min = -7.5;
+
+const double ddG_min = -10;
 const double ddG_max = 99;
 const double CONC_MAX = 1e15;
 const double kT = 0.5922; //defines the energy units
-const double COST = 1e-4; // see Geiler-Samerotte et al. 2011
-const double A_FACTOR = 0.005646; // see Serohijos & Shakhnovich 2013
+const double COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
 const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
 
 // exponent values are precalculated to be used readily
@@ -251,14 +251,17 @@ struct codon_to_prot{
           m["GTC"] = "V";
           m["GTG"] = "V";
           m["GTT"] = "V";
+          //STOP
           m["TAA"] = "X";
           m["TAC"] = "Y";
+          //STOP
           m["TAG"] = "X";
           m["TAT"] = "Y";
           m["TCA"] = "S";
           m["TCC"] = "S";
           m["TCG"] = "S";
           m["TCT"] = "S";
+          //STOP
           m["TGA"] = "X";
           m["TGC"] = "C";
           m["TGG"] = "W";
@@ -317,6 +320,7 @@ int GetIndexFromCodon(std::string in_codon)
     it = codon_to_num::cnum.find(in_codon);  
     if(it == codon_to_num::cnum.end()){
         std::cerr << "Invalid codon: "<< in_codon << std::endl;
+        std::cerr << "Nucleotide sequence must not contain STOP codons."<< std::endl;
         exit(2);
     }
     return it->second;
@@ -330,6 +334,7 @@ std::string GetProtFromNuc(std::string in_seq)
     if((ln % 3) != 0)
     {
         std::cerr << "Invalid length for nucleotide sequence: " << ln << std::endl;
+        std::cerr << "Nucleotide sequence length must be divisible by 3." << std::endl;
         exit(2);
     }
     int la=ln/3;   
@@ -342,6 +347,7 @@ std::string GetProtFromNuc(std::string in_seq)
         Iter = codon_to_prot::cprot.find(temp);
         if (Iter == codon_to_prot::cprot.end()){
           std::cerr << "Invalid codon: "<< temp << std::endl;
+          std::cerr << "Nucleotide sequence must not contain STOP codons."<< std::endl;
           exit(2);
         }   
         AA.append(codon_to_prot::cprot.at(temp));
@@ -444,8 +450,8 @@ std::string AdjacentBP(std::string a, int j){
 //Checks if codon b when mutated resulted in a STOP codon a.
 //If b is a STOP codon, it is replaced by 
 //Input: 	a, new codon
-//		b, old codon
-//		i, mutation site in codon (<3)
+//		    b, old codon
+//		    i, mutation site in codon (< 3)
 std::string n3_to_n3(std::string a, std::string b, int i){
   //double r = RandomNumber();
   double r = randomNumber();
@@ -495,7 +501,7 @@ std::string n3_to_n3(std::string a, std::string b, int i){
             break;
 
            default:
-            std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
+              std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
       }
   }
   else if (a == "TAG")
@@ -551,7 +557,7 @@ std::string n3_to_n3(std::string a, std::string b, int i){
               break;
 
              default:
-             std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
+                std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
        }
    }
    else if (a == "TGA")
@@ -607,7 +613,7 @@ std::string n3_to_n3(std::string a, std::string b, int i){
            break;
 
            default:
-            std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
+              std::cerr << "ERROR in translating STOP codon to NON-STOP codon." << std::endl;    
       }  
   }
   return a;
@@ -743,7 +749,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
             word = genesPath + word;
             std::fstream genefileIN (word.c_str(), std::fstream::in | std::fstream::out);
             if (!genefileIN.is_open()){
-                std::cerr << "File could not be open: "<< word <<std::endl;
+                std::cerr << "File could not be open: " << word << std::endl;
                 exit(2);
             }
             assert ( gc > 0);
