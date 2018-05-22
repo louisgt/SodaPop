@@ -45,7 +45,7 @@ for filename in $FILES
 do
 	gunzip -k $filename
 	y="$(basename $filename .gz)"
-	./$HOME/sodasnap snapshots/$y snapshots/$y.txt $ENCODING
+	./$HOME/sodasnap snapshots/$y snapshots/$y.txt
 	rm snapshots/$y
 	gzip -f snapshots/$y.txt
 done
@@ -109,7 +109,7 @@ cat barcodes/series$i.txt | cut -d " " -f 1,3- > ALL_generations.txt
 
 rm -f barcodes/series*.txt
 
-# remove compressed binary snapshots
+#remove compressed binary snapshots
 #rm -f snapshots/*.snap.gz
 
 cd $HOME
