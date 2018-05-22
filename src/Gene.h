@@ -248,7 +248,7 @@ Gene& Gene::operator=(const Gene& A)
 
 /*
 This version of the mutation function draws the DDG value from a gaussian distribution
-with a shifting mean to mimic sequence depletion.
+distribution parameters are hardcoded for now
 */
 double Gene::Mutate_Stabil_Gaussian(int i, int j)
 { 
@@ -270,7 +270,6 @@ double Gene::Mutate_Stabil_Gaussian(int i, int j)
     }
     else{
         Ns_ += 1;
-
         return 1;
     }
 }
@@ -295,7 +294,8 @@ std::string Gene::Mutate_Stabil(int i, int j)
     int aa_curr = GetIndexFromCodon(cdn_curr);
     std::string cdn_new = cdn_curr;
 
-    std::string s = PrimordialAASeq.at(g_num_);     
+    std::string s = PrimordialAASeq.at(g_num_);
+    // get amino acid from WT background   
     int aa_primo = GetIndexFromAA(s.at(resi));
 
     // get mutated bp
@@ -330,7 +330,7 @@ std::string Gene::Mutate_Stabil(int i, int j)
           Ns_ += 1;
           return "SILENT\tNA\tNA\tNA";
     }
-    else if(aa_primo == aa_new){//REVERT TO WT
+    else if(aa_primo == aa_new){//REVERT TO WT BACKGROUND
 
           double x_curr = matrix[g_num_][resi][aa_curr-1];
           assert( x_curr<DDG_min || x_curr>DDG_max); 
@@ -346,7 +346,7 @@ std::string Gene::Mutate_Stabil(int i, int j)
           assert( x_curr<DDG_min || x_curr>DDG_max); 
 
           // assign new DG value
-          // division account for wildtype background
+          // division accounts for mutation occuring on wildtype identity
           dg_ /= x_curr;
           dg_ *= x;
           nucseq_.replace(cdn_start, 3, cdn_new);
@@ -418,18 +418,12 @@ std::string Gene::Mutate_Select(int i, int j)
 
     // fetch primordial amino acid
 
-    //Ignore mutations to and from CYSTEINE
-    if( (aa_new==2) || (aa_curr==2)){
-        return "CYSTEINE\tNA\tNA\tNA";
-    }
-
     if( aa_curr == aa_new){//SILENT
           nucseq_.replace(cdn_start, 3, cdn_new);
           Ns_ += 1;
           return "SILENT\tNA\tNA\tNA";
     }
-    else{//TYPICAL NON-SYNONYMOUS 
-
+    else{// NON-SYNONYMOUS 
           // assign new fitness value
           double new_f = f_ + new_s;
           f_ = f_ * new_f;
@@ -459,7 +453,6 @@ double Gene::RandomNormal()
     return Gene::normal_(g_rng);
 }
 
-
 // Updates the current DNA sequence
 void Gene::Update_Sequences(const std::string DNAsequence)
 { 
@@ -468,6 +461,7 @@ void Gene::Update_Sequences(const std::string DNAsequence)
     if(l != ln_)
     {
         std::cerr << "ERROR: Replacing DNA sequence with a non-equal length DNA. "<< std::endl;
+        std::cerr << "Make sure the gene list you provided matches the genes in the cell files."<< std::endl;
         exit(2);
     }       
 
