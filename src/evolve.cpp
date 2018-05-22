@@ -312,7 +312,14 @@ int main(int argc, char *argv[])
             break;
     }   
 
-        // dump snapshot of initial population and get sum of fitnesses
+    // dump snapshot of initial population and get sum of fitnesses
+    for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+        w_sum += cell_it->fitness();
+        cell_it->dump(OUT2,idx);
+        //cell_it->dumpSeq(OUT2,idx);
+        idx++;
+        //(*k).setParent(k - Cell_arr.begin());
+    } 
     
     OUT2.close();
     std::string command = "gzip -f ";
@@ -355,7 +362,8 @@ int main(int argc, char *argv[])
     cmdlog << "Starting evolution ..." << std::endl;
 
     // PSEUDO WRIGHT-FISHER PROCESS
-    while(GENERATION_CTR < GENERATION_MAX){
+    while(GENERATION_CTR < GENERATION_MAX)
+    {
         printProgress(GENERATION_CTR*1.0/GENERATION_MAX);
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
@@ -461,7 +469,7 @@ int main(int argc, char *argv[])
                  std::cerr << "Snapshot file could not be opened";
                  exit(1);
             }
-      
+
             double frame_time = GENERATION_CTR;
             OUT2.write((char*)(&frame_time),sizeof(double));
             OUT2.write((char*)(&Total_Cell_Count),sizeof(int));

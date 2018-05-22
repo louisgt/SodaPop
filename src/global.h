@@ -835,6 +835,7 @@ void seqread_Cell(std::fstream& IN, std::fstream& OUT)
     IN.read((char*)(&gene_size),sizeof(int));
     
     sprintf(buffer,"\t%d\t%e\t%e\t", cell_index, f, m);
+
     OUT << buffer << std::endl;
 
     for(int j=0; j<gene_size; j++){
