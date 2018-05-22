@@ -170,7 +170,7 @@ a:hover { text-decoration: underline; }
 @media screen and (min-width: 42em) and (max-width: 64em) { .main-content { padding: 2rem 4rem; font-size: 1.2rem; } }
 @media screen and (max-width: 42em) { .main-content { padding: 2rem 1rem; font-size: 1.2rem; } }
 .main-content img { max-width: 70%; }
-.main-content h1, .main-content h2 { margin-top: 2rem; margin-bottom: 1rem; font-weight: bold; color: #1E6BB8; }
+.main-content h1, .main-content h2 { margin-top: 2rem; margin-bottom: 1rem; font-weight: bold; color: #6708FF; }
 .main-content h3, .main-content h4, .main-content h5, .main-content h6 { margin-top: 2rem; margin-bottom: 1rem; font-weight: normal; color: #1E6BB8; }
 .main-content p { margin-bottom: 1em; }
 .main-content code { padding: 2px 4px; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; font-size: 1.2rem; color: #567482; background-color: #f3f6fa; border-radius: 0.3rem; }
