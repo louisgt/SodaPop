@@ -63,10 +63,11 @@ protected:
     // current mutation rate
     double c_mrate_;
 
+    // organismal fitness
     double fitness_;
 
     //Array of genes
-    std::vector < Gene > Gene_arr_;
+    std::vector <Gene> Gene_arr_;
 
     //Cummulative sum of gene lengths (i.e. genome size)
     VectInt Gene_L_;
@@ -93,6 +94,7 @@ Cell::Cell(std::fstream & cell_in) {
     ch_barcode(getBarcode());
     setParent(0);
     std::string line;
+    // default genesPath, can be changed by user in command-line
     std::string genesPath = "files/genes/";
     while (!cell_in.eof()) {
         getline(cell_in, line);
@@ -131,6 +133,7 @@ Cell::Cell(std::fstream & cell_in) {
             //Check if gene is correctly inserted
             std::vector <Gene>::iterator i = Gene_arr_.end();
             i--;
+            // if gene fitness is null, assign a randomly fit value
             if((*i).f()==0){
                 (*i).ch_f(0.999+randomNumber()*0.001);
             }
