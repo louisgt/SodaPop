@@ -434,9 +434,19 @@ int main(int argc, char *argv[])
         // reset and update w_sum
         // update Ns and Na for each cell
         w_sum = 0;
+        double fittest = 0;
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-            w_sum += cell_it->fitness();
+            double current = cell_it->fitness();
+            w_sum += current;
+            if(current > fittest) fittest = current;
             cell_it->UpdateNsNa();
+        }
+        //normalize by fittest individual to prevent overflow
+        if(inputType == "s"){
+            w_sum = 0;
+            for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                w_sum += cell_it->normalizeFit(fittest);
+            }
         }
         
         // update generation counter
