@@ -48,6 +48,7 @@ public:
     void ranmut_Gene();
     void ranmut_Gene(std::ofstream&, int);
     void change_exprlevel();
+    double normalizeFit(double);
     void dump(std::fstream&, int);
     void dumpShort(std::fstream&);
     void dumpSeq(std::fstream&, int);
@@ -61,6 +62,7 @@ public:
 protected:
     int Total_Ns_;
     int Total_Na_;
+    // function pointer to select fitness function
     funcPtr fit;
 };
 
@@ -117,20 +119,21 @@ void PolyCell::selectFitness()
     }
 }
 
-// FLUX FITNESS FUNCTION
+// FOLDING-STABILITY BASED FLUX FITNESS FUNCTION
 double PolyCell::flux()
 {
     double sum_func = 0;
     double a = 0;
     //sum (concentration*Pnat) over all genes
     for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-        sum_func += 1/(gene_it->functional());
+        // efficiency * Pnat * abundance
+        sum_func += 1/(gene_it->eff()*gene_it->functional());
         a += gene_it->A_factor();
     }
     return a/sum_func;
 }
 
-// TOXICITY FITNESS FUNCTION
+// MISFOLDING TOXICITY FITNESS FUNCTION
 double PolyCell::toxicity()
 {
     double f = 0;
@@ -141,20 +144,23 @@ double PolyCell::toxicity()
     return exp(-(COST*f));
 }
 
-// METABOLIC FLUX FITNESS FUNCTION
+// COMBINED METABOLIC OUTPUT FITNESS FUNCTION
 double PolyCell::metabolicOutput()
 {
     double flux = 0;
     double toxicity = 0;
+    double a = 0;
     for (auto& it : Gene_arr_) {
-        flux += 1 / it.functional();
+        flux += 1 / (it.eff()*it.functional());
         toxicity += it.misfolded();
+        a += it.A_factor();
     }
 
-    flux = A_FACTOR / flux;
+    flux = a/flux;
     toxicity = COST * toxicity;
 
     double fitness = flux - toxicity;
+    // if toxicity > flux, return 0
     return (fitness < 0) ? 0 : fitness;
 }
 
@@ -300,6 +306,17 @@ void PolyCell::ranmut_Gene()
     }
          
     UpdateRates();
+}
+
+double PolyCell::normalizeFit(double fittest){
+    if(fittest <= 0) {
+        std::cerr << "Population collapse, average fitness is null.\n";
+        exit(1);
+    }
+    double newfit = (Gene_arr_.begin()->f())/fittest;
+    Gene_arr_.begin()->ch_f(newfit);
+    UpdateRates();
+    return newfit;
 }
 
 // Dump cell information to binary file
