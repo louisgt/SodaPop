@@ -136,7 +136,7 @@ ul {
 
 body { padding: 0; margin: 0; font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; line-height: 1.7; color: #485155; }
 
-a { color: #33AC77; text-decoration: none;font-weight: bold }
+a { color: #E01A63; text-decoration: none;font-weight: bold }
 a:hover { text-decoration: underline; }
 
 .btn { display: inline-block; margin-bottom: 1rem; color: #fff; background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); border-style: solid; border-width: 1px; border-radius: 0.3rem; transition: color 0.2s, background-color 0.2s, border-color 0.2s; }
