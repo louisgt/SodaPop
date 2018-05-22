@@ -1,7 +1,7 @@
 #include "../src/global.h"
 
 int main(int argc, char * argv[]) {
-    if (argc != 4) {
+    if (argc != 3) {
         std::cerr << "sodasnap <snap-binary> <out-ascii>\n";
         exit(1);
     }
