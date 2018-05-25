@@ -43,6 +43,7 @@ public:
     double multiplicative();
     double neutral();
     double noMut();
+    double fold();
     void UpdateRates();
 
     void ranmut_Gene();
@@ -103,34 +104,46 @@ void PolyCell::FillGene_L()
 void PolyCell::selectFitness()
 {
     switch(PolyCell::ff_){
-        case 1: fit = &PolyCell::flux;
+        case 1: fit = &PolyCell::fold;
             break;
-        case 2: fit = &PolyCell::toxicity;
+        case 2: fit = &PolyCell::flux;
             break;
-        case 3: fit = &PolyCell::metabolicOutput;
+        case 3: fit = &PolyCell::toxicity;
             break;
-        case 4: fit = &PolyCell::multiplicative;
+        case 4: fit = &PolyCell::metabolicOutput;
             break;
-        case 5: fit = &PolyCell::neutral;
+        case 5: fit = &PolyCell::multiplicative;
             break;
-        case 6: fit = &PolyCell::noMut;
+        case 6: fit = &PolyCell::neutral;
+            break;
+        case 7: fit = &PolyCell::noMut;
             break;
         default:;
     }
 }
 
 // FOLDING-STABILITY BASED FLUX FITNESS FUNCTION
+double PolyCell::fold()
+{
+    double sum_func = 0;
+    //sum (concentration*Pnat) over all genes
+    for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+        sum_func += gene_it->functional();
+    }
+    return sum_func;
+}
+
+// METABOLIC FLUX FITNESS FUNCTION
 double PolyCell::flux()
 {
     double sum_func = 0;
     double a = 0;
-    //sum (concentration*Pnat) over all genes
     for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
         // efficiency * Pnat * abundance
         sum_func += 1/(gene_it->eff()*gene_it->functional());
         a += gene_it->A_factor();
     }
-    return a/sum_func;
+    return static_cast<double>(a)/sum_func;
 }
 
 // MISFOLDING TOXICITY FITNESS FUNCTION
