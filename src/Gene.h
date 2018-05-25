@@ -93,49 +93,6 @@ public:
 std::gamma_distribution<> Gene::gamma_ = std::gamma_distribution<>(1.0, 1.0);
 std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(1.0, 1.0);
 
-Gene::Gene(){
-      g_num_ = 0;
-      ln_ = 0;
-      la_ = 0;
-      Na_ = 0;
-      Ns_ = 0;
-      nucseq_ = ""; 
-      dg_ = 1;
-      eff_ = 1;
-      f_ = 1;
-      conc_ = 1;
-      e_ = 0;
-}
-
-//Input: gene number, nuc. sequence, concentration
-Gene::Gene(const int g_num, const std::string nucseq, double conc) : 
-    g_num_(g_num),
-    nucseq_(nucseq),
-    conc_(conc)
-{
-    if((nucseq.length() % 3) != 0){
-        std::cerr << "Invalid length for nucleotide sequence: " << nucseq.length() << std::endl;
-        exit(2);
-    }
-    else{
-        ln_=nucseq.length();
-        la_=ln_/3;
-        std::string aaseq = GetProtFromNuc(nucseq);
-        //check for stop codons in midsequence
-        std::string::size_type loc = aaseq.find("X", 0 );
-        if(loc != std::string::npos){
-            std::cerr << "ERROR: DNA sequence has STOP codons in the middle"<<std::endl;
-            exit(2);
-        }           
-        dg_= 1;
-        eff_ = 1;
-        f_= 1;
-        e_ = 0;
-        Na_ = 0;
-        Ns_ = 0;
-    }
-}
-
 //Input: gene file
 Gene::Gene(std::fstream& gene_in)
 {
