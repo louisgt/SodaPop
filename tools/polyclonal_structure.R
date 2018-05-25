@@ -21,16 +21,21 @@ rows_to_keep = generations$V3 != 0
 if(nrow(generations) > 100000){
 	rows_to_keep = generations$V7 != 0
 }
-generations = generations[rows_to_keep,]
+generations_filtered = generations[rows_to_keep,]
 
 message("R: Importing average fitness trajectory...")
 avg_fitness <- read.csv(paste(dir,src,"avg_fitness.txt",sep=""), header = FALSE)
 avg_fitness$gen = as.numeric(row.names(avg_fitness))*dt-dt
 
-fixgen = (ncol(generations) - 2)*dt
-colnames(generations)[2:(ncol(generations))]=seq(0,fixgen, dt)
+fixgen = (ncol(generations_filtered) - 2)*dt
+colnames(generations_filtered)[2:(ncol(generations_filtered))]=seq(0,fixgen, dt)
 message("R: Melting dataframe...")
-FLUX = melt(generations, id='V1')
+FLUX = melt(generations_filtered, id='V1')
+
+fixgen_all = (ncol(generations) - 2)*dt
+colnames(generations)[2:(ncol(generations))]=seq(0,fixgen_all, dt)
+message("R: Melting dataframe...")
+FLUX_ALL = melt(generations, id='V1')
 
 message("R: Saving plot a to file...")
 
@@ -70,7 +75,6 @@ theme_Publication <- function(base_size=18, base_family="Helvetica") {
 }
 
 a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_Publication() + labs(x = "Generations",y="Average fitness")
-#a = ggplot(avg_fitness, aes(x=gen,y=V1)) + stat_smooth(linetype="dashed",color="black",size=0.6,span=0.1) + theme_bw() + labs(x = "Generations",y="Average fitness")
 ggsave("fitness.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
 message("R: Saving plot b to file...")
@@ -86,11 +90,13 @@ labs(x = "Generations",y="Count")
 c$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
 ggsave("clonal_trajectories.png", plot=c, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
-d = ggplot(FLUX, aes(x=factor(variable),y=log10(value),group=V1,colour=V1)) + geom_line() + theme_Publication() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
-labs(x = "Generations",y="Count")
+message("R: Saving plot d to file...")
+
+d = ggplot(FLUX_ALL, aes(x=factor(variable),y=log10(value),group=V1,colour=V1)) + geom_line() + theme_Publication() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
+labs(x = "Generations",y="Log10(Count)")
 d$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
 ggsave("log_clonal_trajectories.png", plot=d, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
-#ggsave("clonal_trajectories.eps", plot=c, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=600)
+#ggsave("log_clonal_trajectories.eps", plot=d, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=600)
 #ggsave("clonal_structure.eps", plot=b, device=cairo_ps, fallback_resolution = 300, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=600)
-#ggsave("combo.eps", arrangeGrob(c, b,ncol=2), path = paste(dir,src,"graph/",sep=""), width = 12, height = 5, dpi=600)
+#ggsave("combo.eps", arrangeGrob(b, d,ncol=2), path = paste(dir,src,"graph/",sep=""), width = 12, height = 5, dpi=600)
