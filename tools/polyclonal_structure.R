@@ -39,24 +39,54 @@ if(fixgen/step > 12){
 	step = dt*50
 }
 
-a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_bw() + labs(x = "Generations",y="Average fitness")
+#"publication ready" plot theme
+theme_Publication <- function(base_size=18, base_family="Helvetica") {
+  library(grid)
+  library(ggthemes)
+  (theme_foundation(base_size=base_size, base_family=base_family)
+    + theme(plot.title = element_text(face = "bold",
+                                      size = rel(1.2), hjust = 0.5),
+            text = element_text(),
+            panel.background = element_rect(colour = NA),
+            plot.background = element_rect(colour = NA),
+            panel.border = element_rect(fill = NA, colour = "black", size=1.5),
+            axis.title = element_text(face = "bold",size = rel(1)),
+            axis.title.y = element_text(angle=90,vjust =2),
+            axis.title.x = element_text(vjust = -0.2),
+            axis.text = element_text(), 
+            axis.line = element_line(colour="black"),
+            axis.ticks = element_line(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            legend.key = element_rect(colour = NA),
+            legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.key.size= unit(0.2, "cm"),
+            legend.title = element_text(face="italic"),
+            plot.margin=unit(c(10,5,5,5),"mm"),
+            strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+            strip.text = element_text(face="bold")
+    ))
+}
+
+a = ggplot(avg_fitness, aes(x=gen,y=V1)) + geom_line() + theme_Publication() + labs(x = "Generations",y="Average fitness")
 #a = ggplot(avg_fitness, aes(x=gen,y=V1)) + stat_smooth(linetype="dashed",color="black",size=0.6,span=0.1) + theme_bw() + labs(x = "Generations",y="Average fitness")
 ggsave("fitness.png", plot=last_plot(), path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
 message("R: Saving plot b to file...")
-b = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_area(aes(fill=V1),alpha=0.5) + theme_bw() + scale_color_discrete(guide=FALSE) + scale_fill_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) +
+b = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_area(aes(fill=V1),alpha=0.5) + theme_Publication() + scale_color_discrete(guide=FALSE) + scale_fill_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) +
   labs(x = "Generations",y="Count")
 b$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
 ggsave("clonal_structure.png", plot=b, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
 message("R: Saving plot c to file...")
 
-c = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_line() + theme_bw() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
+c = ggplot(FLUX, aes(x=factor(variable),y=value,group=V1,colour=V1)) + geom_line() + theme_Publication() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
 labs(x = "Generations",y="Count")
 c$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
 ggsave("clonal_trajectories.png", plot=c, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
-d = ggplot(FLUX, aes(x=factor(variable),y=log10(value),group=V1,colour=V1)) + geom_line() + theme_bw() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
+d = ggplot(FLUX, aes(x=factor(variable),y=log10(value),group=V1,colour=V1)) + geom_line() + theme_Publication() +  scale_color_discrete(guide=FALSE) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + 
 labs(x = "Generations",y="Count")
 d$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
 ggsave("log_clonal_trajectories.png", plot=d, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
