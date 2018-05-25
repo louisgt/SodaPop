@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     int MUTATION_CTR = 0;
     int gene_count = 0;
     int encoding = 0;
-    int N=1;
+    unsigned int N=1;
     int DT = 1;
     char buffer[200];
     bool enableAnalysis = false;
@@ -48,14 +48,14 @@ int main(int argc, char *argv[])
         TCLAP::CmdLine cmd("SodaPop: a multi-scale model of molecular evolution", ' ', "v1.0");
 
         // Define value arguments
-        TCLAP::ValueArg<int> maxArg("m","maxgen","Maximum number of generations",false,10000,"int");
+        TCLAP::ValueArg<int> maxArg("m","maxgen","Number of generations",false,10,"int");
         TCLAP::ValueArg<int> popArg("n","size","Initial population size",false,1,"int");
         TCLAP::ValueArg<int> dtArg("t","dt","Time interval for snapshots",false,1,"int");
 
         //files
         TCLAP::ValueArg<std::string> prefixArg("o","prefix","Prefix to be used for snapshot files",false,"sim","filename");
         TCLAP::ValueArg<std::string> geneArg("g","gene-list","Gene list file",true,"null","filename");
-        TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",false,"null","filename");
+        TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",true,"null","filename");
         TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",false,"files/genes/","filename");
 
         TCLAP::ValueArg<std::string> matrixArg("i","input","Input file defining the fitness landscape",false,"null","filename");
@@ -205,8 +205,11 @@ int main(int argc, char *argv[])
     // header
     int Total_Cell_Count, dummy;
     double frame_time;
+    //read frame time
     startsnap.read((char*)(&frame_time),sizeof(double));
+    //read number of cells in file
     startsnap.read((char*)(&Total_Cell_Count),sizeof(int));
+    //read file encoding
     startsnap.read((char*)(&dummy),sizeof(int));
 
     sprintf(buffer,"out/%s/snapshots",outDir.c_str());
@@ -316,7 +319,6 @@ int main(int argc, char *argv[])
     for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
         w_sum += cell_it->fitness();
         cell_it->dump(OUT2,idx);
-        //cell_it->dumpSeq(OUT2,idx);
         idx++;
         //(*k).setParent(k - Cell_arr.begin());
     } 
@@ -396,9 +398,11 @@ int main(int argc, char *argv[])
 
             if(!noMut){
             // after filling with children, go through each one for mutation
-                while(it < last){
-                    // attempt mutation
-                    if(it->mrate() * it->genome_size() > randomNumber())
+                do{
+                	std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
+                	int n_mutations = binMut(g_rng);
+                    // attempt n mutations
+                    for(int i=0;i<n_mutations;i++)
                     {
                         MUTATION_CTR++;
                         if(trackMutations){
@@ -409,11 +413,10 @@ int main(int argc, char *argv[])
                             it->ranmut_Gene();
                         }       
                     }
-                    std::advance(it,1);
-                }
+                    it++;
+                }while(it < last);
             }
         }
-
         // if the population is below N
         // randomly draw from progeny to pad
         while(Cell_temp.size() < N){
@@ -441,6 +444,7 @@ int main(int argc, char *argv[])
 
         // reset and update w_sum
         // update Ns and Na for each cell
+
         w_sum = 0;
         double fittest = 0;
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
@@ -458,7 +462,7 @@ int main(int argc, char *argv[])
         }
         
         // update generation counter
-        GENERATION_CTR++; 
+        GENERATION_CTR++;
         // save population snapshot every DT generations
         if( (GENERATION_CTR % DT) == 0){
             sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
