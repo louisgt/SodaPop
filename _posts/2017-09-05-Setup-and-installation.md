@@ -7,22 +7,23 @@ title: Setup and installation
 
 SodaPop is set of command-line tools written in the C++ programming language using the C++11 Standard.
 
-If you are not familiar with a command-line interface, we suggest you read the next section carefully. Otherwise, you may skip directly to the [Installation](#installation).
+If you are not familiar with a command-line interface, we suggest carefully read the following section. Otherwise, you can skip directly to the [Installation](#installation).
 
 ## Using the command-line
 
 The command-line interface is a powerful way to interact with the computer. In its simplest form, the command-line is a space where you type commands for the computer to execute. On Mac OS X, the command-line is an application called Terminal. It is located in the /Applications/Utilities/ folder. 
-The overwhelming majority of command-line programs follow the same simple syntax. A command can be broken down into three basic components:
+The overwhelming majority of command-line programs follow the same syntax. A command is broken down into three basic components:
 
   •	The utility: also known as the command. In some cases, you can use it without any flag or argument.  
   •	The flags: flags are like options. They allow you to modify the behavior of the utility.   
   •	The arguments: some utilities take arguments. These are commonly files, but they can be numbers, words or special characters.  
 
-Here is a simple command. We will break it down by component.
+Here is a simple command.
 
 ```bash
   ls -l Documents/
 ```  
+Breaking it down by component:
 
 **ls** is the utility. It lists the content of directories.  
 **-l** is a flag. It indicates that we want more information than is provided by default. In fact, think of the l as short for “long”. Flags are most often preceded by a hypen (‘-‘) and consist of single characters. Some flags can also be specified using a word preceded by a double hyphen (‘--‘). Using one or the other will have the same effect. For example, typing
