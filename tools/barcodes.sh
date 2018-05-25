@@ -6,6 +6,7 @@ MAXGEN=$2
 POPSIZE=$3
 DT=$4
 ENCODING=$5
+### Gene count *per cell*, not for the simulation as a whole
 GENE_COUNT=$6
 COL=3
 
@@ -16,6 +17,8 @@ PREFIX=out/$OUT
 HOME=../..
 
 echo Begin analysis.
+
+export LC_NUMERIC=C
 
 FACTOR=2
 let "FACTOR += 2*$GENE_COUNT"
