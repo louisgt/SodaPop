@@ -1,11 +1,11 @@
-Gene_Count	1
-G	0.gene 	DHFR
-//G	1.gene 	1SQL_A
-//G	2.gene 	1AI9_A_D1
-//G	3.gene 	1I2K
-//G	4.gene 	1I2K_D1
-//G	5.gene 	2BMB_A_D2
-//G	6.gene 	2BMB_A_D3
-//G	7.gene 	1O5Z_A_D1
-//G	8.gene 	1O5Z_A_D2
-//G	9.gene 	1AI9_A_D1
+Gene_Count	10
+G	0.gene
+G	1.gene
+G	2.gene
+G	3.gene
+G	4.gene
+G	5.gene
+G	6.gene
+G	7.gene
+G	8.gene
+G	9.gene
