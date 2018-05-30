@@ -7,7 +7,7 @@ dir = getwd()
 
 #### LOAD UTILITIES (INSTALL IF MISSING)
 if(!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
-pacman::p_load(ggplot2, reshape2)
+pacman::p_load(ggplot2, reshape2,grid,ggthemes)
 library(ggplot2)
 library(reshape2)
 
