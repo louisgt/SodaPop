@@ -33,11 +33,11 @@ int main(int argc, char * argv[]) {
         OUT << std::endl;
         switch(encoding)
             {
-                case 0: read_Cell(IN, OUT);
+                case 0: read_Cell(IN, OUT,false);
                     break;
                 case 1: qread_Cell(IN, OUT);
                     break;
-                case 2: seqread_Cell(IN,OUT);
+                case 2: read_Cell(IN,OUT,true);
                     break;
                 case 3: //to be properly implemented
                         //read_Parent(IN,OUT);  
