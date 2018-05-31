@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
     int idx;
     switch(encoding){
         case 0: //"normal" output format
-                idx=1;
+        case 2: idx=1;
                 for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                     w_sum += cell_it->fitness();
                     cell_it->dump(OUT2,idx);
@@ -302,27 +302,10 @@ int main(int argc, char *argv[])
                     cell_it->dumpShort(OUT2);
                 }
             break;
-        case 2: //DNA seq. output format
-                idx=1;
-                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                    w_sum += cell_it->fitness();
-                    cell_it->dumpSeq(OUT2,idx);
-                    idx++;
-                    //(*k).setParent(k - Cell_arr.begin());
-                } 
-            break;
         case 3: //dump with parent data, to be implemented
             break;
     }   
 
-    // dump snapshot of initial population and get sum of fitnesses
-    for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-        w_sum += cell_it->fitness();
-        cell_it->dump(OUT2,idx);
-        idx++;
-        //(*k).setParent(k - Cell_arr.begin());
-    } 
-    
     OUT2.close();
     std::string command = "gzip -f ";
     command += buffer;
@@ -481,8 +464,8 @@ int main(int argc, char *argv[])
 
             int count;
             switch(encoding){
-                case 0: //"normal" output format
-                        count=1;
+                case 0: //"normal" output format 
+                case 2: count=1;
                         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                             cell_it->dump(OUT2,count);
                             count++;
@@ -492,13 +475,6 @@ int main(int argc, char *argv[])
                         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                             cell_it->dumpShort(OUT2);
                         } 
-                    break;
-                case 2: //DNA seq. output format
-                        count=1;
-                        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                            cell_it->dumpSeq(OUT2,count);
-                            count++;
-                        }
                     break;
                 case 3: //dump with parent data, to be implemented
                     break;
