@@ -364,7 +364,6 @@ void PolyCell::dump(std::fstream& OUT, int cell_index)
         double eff = gene_it->eff();
         double dg = -kT*log(gene_it->dg());
         double f = gene_it->f();
-        //std::cout << f << std::endl;
 
         int Ns = gene_it->Ns();
         int Na = gene_it->Na();
