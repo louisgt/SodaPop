@@ -868,7 +868,7 @@ void read_Parent(std::fstream& IN, std::fstream& OUT)
 }
 
 // Reads a unit cell stored in binary format using Cell::dump()
-void read_Cell(std::fstream& IN, std::fstream& OUT)
+void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
 {
     char buffer[140];
     int cell_id, cell_index, gene_size;
@@ -917,7 +917,8 @@ void read_Cell(std::fstream& IN, std::fstream& OUT)
 
         sprintf(buffer,"%d\tG\t%e\t%e\t%e\t%d\t%d\t",j, c, dg, f, Na, Ns);
         OUT << buffer << std::endl;
-        OUT << GetProtFromNuc(DNAsequence) << std::endl;
+        if(DNA) OUT << DNAsequence << std::endl;
+        else OUT << GetProtFromNuc(DNAsequence) << std::endl;
     } 
 }
 
