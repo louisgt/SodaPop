@@ -435,7 +435,7 @@ double Gene::Pnat()
 // Number of functional copies in the cell
 double Gene::functional()
 {
-    return eff_*conc_*Pnat();
+    return conc_*Pnat();
 }
 
 // Number of misfolded copies in the cell
