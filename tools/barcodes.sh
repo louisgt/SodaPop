@@ -63,11 +63,11 @@ do
 	if [ "$ENCODING" -eq "1" ]; then
 		gunzip -c $filename | awk 'NR>3 {print $0}' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
 		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
-		gunzip -c $filename | awk 'NR>3 {print $0}' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
+		gunzip -c $filename | awk 'NR>3 {print $0}' - | awk -v N=$3 -v C=$COL '{sum += $C} END {printf "%.9f\n",sum/N}' - >> avg_fitness.txt
 	else
 		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
 		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
-		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {print sum/N}' - >> avg_fitness.txt
+		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {printf "%.9f\n",sum/N}' - >> avg_fitness.txt
 	fi
 done
 
