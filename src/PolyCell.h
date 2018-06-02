@@ -68,7 +68,7 @@ protected:
 };
 
 // By default the fitness function is set to neutral
-int PolyCell::ff_ = 5;
+int PolyCell::ff_ = 6;
 bool PolyCell::useDist_ = false;
 bool PolyCell::fromS_ = false;
 
