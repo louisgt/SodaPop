@@ -135,7 +135,7 @@ Cell::Cell(std::fstream & cell_in) {
             i--;
             // if gene fitness is null, assign a randomly fit value
             if((*i).f()==0){
-                (*i).ch_f(0.999+randomNumber()*0.001);
+                (*i).ch_f(0.95+randomNumber()*0.02);
             }
             gene_data.close();
         }
