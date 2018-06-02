@@ -890,7 +890,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
     IN.read((char*)(&m),sizeof(double));
     IN.read((char*)(&gene_size),sizeof(int));
     
-    sprintf(buffer,"\t%d\t%e\t%e\t", cell_index, f, m);
+    sprintf(buffer,"\t%d\t%.9f\t%e\t", cell_index, f, m);
     OUT << buffer << std::endl;
 
     for(int j=0; j<gene_size; j++){
@@ -905,8 +905,8 @@ void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
         IN.read((char*)(&dg),sizeof(double));
         IN.read((char*)(&f),sizeof(double));
 
-        IN.read((char*)(&Ns),sizeof(int));
         IN.read((char*)(&Na),sizeof(int));
+        IN.read((char*)(&Ns),sizeof(int));
         
         //read DNA sequence
         int nl;
@@ -915,7 +915,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
         IN.read(&buff[0], nl);  
         DNAsequence.assign(buff.begin(), buff.end());
 
-        sprintf(buffer,"%d\tG\t%e\t%e\t%e\t%d\t%d\t",j, c, dg, f, Na, Ns);
+        sprintf(buffer,"%d\tG\t%e\t%.8f\t%.9f\t%d\t%d\t",j, c, dg, f, Na, Ns);
         OUT << buffer << std::endl;
         if(DNA) OUT << DNAsequence << std::endl;
         else OUT << GetProtFromNuc(DNAsequence) << std::endl;
