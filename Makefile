@@ -27,23 +27,30 @@ uninstall:
 	$(RM) -r $(INSTALLDIR)/$(SNAP2ASCII)
 	$(RM) -r $(INSTALLDIR)/$(SUMM2SNAP)
 
-$(LZ4_DIR): 
-	make -C $@
-$(SODAPOP): sodapop.o rng.o
-	$(LINK) -o sodapop sodapop.o rng.o
+# link
+$(SODAPOP): sodapop.o rng.o gene.o cell.o polycell.o global.o
+	$(LINK) sodapop.o rng.o gene.o cell.o polycell.o global.o -o sodapop
 $(SNAP2ASCII): snap2ascii.o
-	$(LINK) -o sodasnap snap2ascii.o rng.o
-$(SUMM2SNAP): summ2snap.o
-	$(LINK) -o sodasumm summ2snap.o rng.o
+	$(LINK) -o sodasnap snap2ascii.o rng.o global.o
+$(SUMM2SNAP): summ2snap.o rng.o gene.o cell.o polycell.o global.o
+	$(LINK) -o sodasumm summ2snap.o rng.o global.o gene.o cell.o polycell.o
 
-
+# compile different units
 rng.o: ./src/rng.cpp
 	$(COMPILE) -o rng.o ./src/rng.cpp
-sodapop.o: ./src/evolve.cpp ./src/Gene.h ./src/Cell.h ./src/global.h
+gene.o: ./src/Gene.cpp
+	$(COMPILE) -o gene.o ./src/Gene.cpp
+cell.o: ./src/Cell.cpp
+	$(COMPILE) -o cell.o ./src/Cell.cpp
+polycell.o: ./src/PolyCell.cpp
+	$(COMPILE) -o polycell.o ./src/PolyCell.cpp
+global.o: ./src/global.cpp
+	$(COMPILE) -o global.o ./src/global.cpp
+sodapop.o: ./src/evolve.cpp
 	$(COMPILE) -o sodapop.o ./src/evolve.cpp
-snap2ascii.o: ./tools/snap2ascii.cpp ./src/global.h
+snap2ascii.o: ./tools/snap2ascii.cpp ./src/global.cpp
 	$(COMPILE) -o snap2ascii.o ./tools/snap2ascii.cpp
-summ2snap.o: ./tools/summ2snap.cpp ./src/PolyCell.h 
+summ2snap.o: ./tools/summ2snap.cpp ./src/PolyCell.cpp
 	$(COMPILE) -o summ2snap.o ./tools/summ2snap.cpp
 
 clean:
