@@ -1,4 +1,7 @@
 #include "PolyCell.h"
+#include "Cell.h"
+#include "Gene.h"
+#include "global.h"
 #include <tclap/CmdLine.h>
 #include <unistd.h>
 #include "rng.h"
@@ -138,6 +141,8 @@ int main(int argc, char *argv[])
             InitMatrix();
             std::cout << "Loading primordial genes file ..." << std::endl;
             gene_count = LoadPrimordialGenes(geneListFile,genesPath);
+            std::cout << gene_count << std::endl;
+            std::cout << PrimordialAASeq.at(0) << std::endl;
             // if matrix is given
             if(matrixArg.isSet())
             {
@@ -353,16 +358,14 @@ int main(int argc, char *argv[])
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
         Cell_temp.reserve(N*2);
-        // for each cell in the population   
+        // for each cell in the population
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it)
         {
             // fitness of cell j with respect to sum of population fitness
             double relative_fitness = cell_it->fitness()/w_sum;
-
             // probability parameter of binomial distribution
             std::binomial_distribution<> binCell(N, relative_fitness);
             // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
-            
             int n_progeny = binCell(g_rng);
             
             // if nil, the cell will be wiped from the population
@@ -375,7 +378,6 @@ int main(int argc, char *argv[])
             auto last = it + n_progeny;
 
             cell_it->setParent(cell_it - Cell_arr.begin());
-
             // fill vector with k times the current cell
             std::fill_n(std::back_inserter(Cell_temp),n_progeny,(*cell_it));
 
