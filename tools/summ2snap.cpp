@@ -1,4 +1,6 @@
 #include "../src/PolyCell.h"
+#include "../src/Cell.h"
+#include "../src/Gene.h"
 
 /*
 DESCRIPTION: Converts population summary to a snap file.
