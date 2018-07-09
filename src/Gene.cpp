@@ -1,6 +1,8 @@
 // Gene.cpp
 #include "Gene.h"
 
+extern double avg_DG;
+
 std::gamma_distribution<> Gene::gamma_ = std::gamma_distribution<>(1.0, 1.0);
 std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(1.0, 1.0);
 
@@ -218,6 +220,11 @@ std::string Gene::Mutate_Stabil(int i, int j)
 
           // assign new DG value
           // division accounts for mutation occuring on wildtype identity
+
+          double diff = DDG_mean()-avg_DG;
+
+          x *= exp(-diff/kT);
+
           dg_ /= x_curr;
           dg_ *= x;
           if(-kT*log(dg_) > 0){
@@ -340,6 +347,11 @@ void Gene::Update_Sequences(const std::string DNAsequence)
     }       
 
     nucseq_ = DNAsequence;
+}
+
+double Gene::DDG_mean()
+{
+    return -0.3*-kT*log(dg_)-0.12;
 }
 
 // from Privalov 1979 (see also: Serohijos & Shakhnovich 2013)
