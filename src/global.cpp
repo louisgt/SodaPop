@@ -1,6 +1,26 @@
 #include "global.h"
 
 VectStr PrimordialAASeq;
+double avg_DG = 0;
+
+const double ddG_min = -10;
+const double ddG_max = 99;
+const double CONC_MAX = 1e15;
+const double kT = 0.5922; //defines the energy units
+const double COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
+const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
+
+// exponent values are precalculated to be used readily
+const double DDG_min = exp(-1*(ddG_min)/kT);
+const double DDG_max = exp(-1*(ddG_max)/kT);
+const int Bigbuffer_max = 80;
+double PI  = 3.141592653589793238463;
+
+// If the mutation is to a stop codon
+// DG_mutant is set to 99 kcal/mol 
+// -> all copies are effectively aggregated
+const double DG_STOP = exp(-1*(99)/kT);
+
 double matrix[max_gene][max_resi][20];
 
 /******* GENETIC CODE MAPPINGS *******/
@@ -531,7 +551,7 @@ void InitMatrix()
 }
 
 // extracts values from the DDG file and stores them in the matrix
-void ExtractPDDGMatrix(std::string filepath)
+double ExtractPDDGMatrix(std::string filepath)
 {
     std::fstream temp(filepath);
     if(!temp.is_open()){
@@ -540,6 +560,8 @@ void ExtractPDDGMatrix(std::string filepath)
     }
     std::string line;
     int gene_num = 0;
+    double sum = 0;
+    int idx = 0;
     while(!temp.eof()){
         std::string word;
         getline(temp,line);
@@ -552,6 +574,8 @@ void ExtractPDDGMatrix(std::string filepath)
             for(int j = 0; iss>>word; j++){
                 //extract DDG values
                 double x = atof(word.c_str());
+                sum +=x;
+                idx++;
                 matrix[gene_num][i-1][j] = exp(-x/kT);
             }
         }
@@ -561,6 +585,8 @@ void ExtractPDDGMatrix(std::string filepath)
         }
     }
     temp.close();
+    avg_DG = sum/idx;
+    return avg_DG;
 }
 
 void ExtractDMSMatrix(std::string filepath)
