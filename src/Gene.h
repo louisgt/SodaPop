@@ -25,11 +25,10 @@ Copyright (C) 2018 Louis Gauthier
 
 class Gene 
 {
-    Cell *myCell;
 public:
     Gene();
     Gene(std::fstream&,Cell *);
-    Gene(const Gene&,Cell *); //copy constructor 
+    Gene(const Gene&);
     ~Gene(); 
   
     bool operator==(Gene&);
@@ -75,7 +74,8 @@ public:
     void ch_Ns(const int a){Ns_ = a;}
     void ch_e(const double e){e_ = e;}
 
-    Cell *GetCell();
+    Cell *GetCell() const;
+    const void setCell(Cell*);
 
     private:
         int g_num_;     //numeric ID pointing to primordial gene
@@ -93,6 +93,8 @@ public:
 
         double conc_;    //concentration
         double e_;       //essentiality: between 0 and 1, can be used as a coefficient
+
+        Cell *myCell_;
 
         static std::gamma_distribution<> gamma_;
         static std::normal_distribution<> normal_;     

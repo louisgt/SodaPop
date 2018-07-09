@@ -7,7 +7,7 @@ std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(1.0, 1.0);
 //Input: gene file
 Gene::Gene(std::fstream& gene_in,Cell *parent)
 {
-    myCell = parent;
+    myCell_ = parent;
     std::string line;
     // Read gene file line by line
     while (!gene_in.eof()){
@@ -68,10 +68,9 @@ Gene::Gene(std::fstream& gene_in,Cell *parent)
     Ns_ = 0;
 }
 
-// copy constructor
-Gene::Gene(const Gene& G,Cell *parent)
+// // copy constructor
+Gene::Gene(const Gene& G)
 {
-	myCell = parent;
     g_num_ = G.g_num_;
     ln_ = G.ln_;
     la_ = G.la_;
@@ -226,7 +225,7 @@ std::string Gene::Mutate_Stabil(int i, int j)
           dg_ /= x_curr;
           dg_ *= x;
           if(-kT*log(dg_) > 0){
-            myCell->ch_Fitness(0);
+            myCell_->ch_Fitness(0);
           }
           nucseq_.replace(cdn_start, 3, cdn_new);
           Na_ += 1;
@@ -377,7 +376,12 @@ double Gene::A_factor()
     return 1.0/conc_;
 }
 
-inline Cell *Gene::GetCell()
+Cell *Gene::GetCell() const
 {
-    return myCell;
+    return myCell_;
+}
+
+const void Gene::setCell(Cell *C)
+{
+    myCell_ = C;
 }
