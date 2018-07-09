@@ -1,8 +1,6 @@
 // Gene.cpp
 #include "Gene.h"
 
-extern double avg_DG;
-
 std::gamma_distribution<> Gene::gamma_ = std::gamma_distribution<>(1.0, 1.0);
 std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(1.0, 1.0);
 
