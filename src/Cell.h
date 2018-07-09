@@ -31,10 +31,10 @@ public:
     Cell();
     Cell(std::fstream & );
     Cell(std::fstream & ,const std::string & );
-    Cell(const Cell&); //copy constructor 
 
     int total_mutations(const int & );
     void FillGene_L();
+    void linkGenes();
 
     virtual void UpdateRates() = 0;
     virtual void dump(std::fstream & , int) = 0;

@@ -141,22 +141,29 @@ Cell::Cell(std::fstream & IN,
     }
 }
 
-// copy constructor
-Cell::Cell(const Cell& C)
+void Cell::linkGenes()
 {
-    barcode_ = C.barcode_;
-    ID_ = C.ID_;
-    parent_ = C.parent_;
-    o_mrate_ = C.o_mrate_;
-    c_mrate_ = C.c_mrate_;
-    fitness_ = C.fitness_;
-    Gene_L_ = C.Gene_L_;
-    std::vector < Gene > ::iterator i;
-    for (auto cell_it = C.Gene_arr_.begin(); cell_it != C.Gene_arr_.end(); cell_it++) {
-        Gene A(*cell_it,this);
-        Gene_arr_.push_back(A);
+    for(auto gene_it = this->Gene_arr_.begin(); gene_it != this->Gene_arr_.end(); gene_it++) {
+        gene_it->setCell(this);
     }
 }
+
+// // copy constructor
+// Cell::Cell(const Cell& C)
+// {
+//     barcode_ = C.barcode_;
+//     ID_ = C.ID_;
+//     parent_ = C.parent_;
+//     o_mrate_ = C.o_mrate_;
+//     c_mrate_ = C.c_mrate_;
+//     fitness_ = C.fitness_;
+//     Gene_L_ = C.Gene_L_;
+//     std::vector < Gene > ::iterator i;
+//     for (auto cell_it = C.Gene_arr_.begin(); cell_it != C.Gene_arr_.end(); cell_it++) {
+//         Gene A(*cell_it,this);
+//         Gene_arr_.push_back(A);
+//     }
+// }
 
 const double Cell::fitness()
 {
