@@ -1,7 +1,4 @@
 #include "PolyCell.h"
-#include "Cell.h"
-#include "Gene.h"
-#include "global.h"
 #include <tclap/CmdLine.h>
 #include <unistd.h>
 #include "rng.h"
@@ -32,6 +29,7 @@ int main(int argc, char *argv[])
     int MUTATION_CTR = 0;
     int gene_count = 0;
     int encoding = 0;
+    double avg_DG = 0;
     unsigned int N=1;
     int DT = 1;
     char buffer[200];
@@ -179,7 +177,8 @@ int main(int argc, char *argv[])
             {
                 matrixFile = matrixArg.getValue();
                 std::cout << "Extracting PDDG matrix ..." << std::endl;
-                ExtractPDDGMatrix(matrixFile.c_str());
+                avg_DG = ExtractPDDGMatrix(matrixFile.c_str());
+                std::cout << "Average ∆∆G is " << avg_DG << " ..." << std::endl;
             }
             else
             {
