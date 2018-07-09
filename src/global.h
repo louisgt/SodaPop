@@ -85,28 +85,30 @@ N.B. The physically allowed value for mutational DDG is DGG_min to DGG_max.
 If the estimated energy is out of this range, the mutation is ignored.
 *****/
 
-const double ddG_min = -10;
-const double ddG_max = 99;
-const double CONC_MAX = 1e15;
-const double kT = 0.5922; //defines the energy units
-const double COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
-const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
+extern const double ddG_min;
+extern const double ddG_max;
+extern const double CONC_MAX ;
+extern const double kT; //defines the energy units
+extern const double COST; // misfolding cost, see Geiler-Samerotte et al. 2011
+extern const double fNs; //fraction of non-synonymous substitutions in a typical protein
 
 // exponent values are precalculated to be used readily
-const double DDG_min = exp(-1*(ddG_min)/kT);
-const double DDG_max = exp(-1*(ddG_max)/kT);
-const int Bigbuffer_max = 80;
-constexpr double PI  = 3.141592653589793238463;
+extern const double DDG_min;
+extern const double DDG_max;
+extern const int Bigbuffer_max;
+extern double PI;
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
 // -> all copies are effectively aggregated
-const double DG_STOP = exp(-1*(99)/kT);
+extern const double DG_STOP;
 
 // Create a 3D matrix for fitness landscape
 const int max_gene = 1200;
 const int max_resi = 640;
 extern double matrix[max_gene][max_resi][20];
+
+extern double avg_DG;
 
 /******* FUNCTION DECLARATIONS *******/
 int GetIndexFromAA(std::string);
@@ -120,8 +122,7 @@ std::string getBarcode();
 double Ran_Gaussian(const double, const double);
 std::string AdjacentBP(std::string, int);
 void InitMatrix();
-void ExtractPDDGMatrix(std::string);
-void ExtractDDGMatrix(std::string);
+double ExtractPDDGMatrix(std::string);
 void ExtractDMSMatrix(std::string);
 int LoadPrimordialGenes(const std::string&,const std::string&);
 int StringDiff(const std::string&, const std::string&);
