@@ -29,7 +29,7 @@ uninstall:
 
 # link
 $(SODAPOP): sodapop.o rng.o global.o gene.o cell.o polycell.o 
-	$(LINK) sodapop.o rng.o global.o gene.o cell.o polycell.o  -o sodapop
+	$(LINK) sodapop.o rng.o global.o gene.o cell.o polycell.o -o sodapop
 $(SNAP2ASCII): snap2ascii.o
 	$(LINK) -o sodasnap snap2ascii.o rng.o global.o
 $(SUMM2SNAP): summ2snap.o rng.o gene.o cell.o polycell.o global.o
