@@ -23,15 +23,6 @@ PolyCell::PolyCell(std::fstream& f, const std::string& s) : Cell(f,s)
   	this->FillGene_L();
 }
 
-PolyCell::PolyCell(const PolyCell& C) : Cell(C)
-{
-    selectFitness();
-    Total_Ns_ = C.Total_Ns_;
-    Total_Na_ = C.Total_Na_;
-    // Fill gene length array
-    this->FillGene_L();
-}  
-
 // Initialize the cumulative gene length array
 void PolyCell::FillGene_L()
 {

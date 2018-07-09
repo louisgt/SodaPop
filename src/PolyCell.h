@@ -31,7 +31,6 @@ public:
     PolyCell();
     PolyCell(std::fstream&);                
     PolyCell(std::fstream&, const std::string&);
-    PolyCell(const PolyCell&); //copy constructor 
 
     void FillGene_L();
 
