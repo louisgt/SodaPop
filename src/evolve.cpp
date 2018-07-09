@@ -380,6 +380,13 @@ int main(int argc, char *argv[])
             // fill vector with k times the current cell
             std::fill_n(std::back_inserter(Cell_temp),n_progeny,(*cell_it));
 
+            auto link = it;
+
+            do{
+                link->linkGenes();
+                link++;
+            }while(link < last);
+
             if(!noMut){
             // after filling with children, go through each one for mutation
                 do{
