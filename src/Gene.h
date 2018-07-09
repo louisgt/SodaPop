@@ -6,7 +6,6 @@
 
 class Cell;
 
-
 /*SodaPop
 Copyright (C) 2018 Louis Gauthier
 
@@ -66,6 +65,7 @@ public:
     double misfolded();
     double Pnat();
     double A_factor();
+    double DDG_mean();
 
     void ch_dg(const double a){dg_ = a;}
     void ch_f(const double a){f_ = a;}
