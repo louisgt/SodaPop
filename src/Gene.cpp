@@ -163,8 +163,8 @@ std::string Gene::Mutate_Stabil(int i, int j)
     int aa_curr = GetIndexFromCodon(cdn_curr);
     std::string cdn_new = cdn_curr;
 
-    std::string s = PrimordialAASeq.at(0);
-    // get amino acid from WT background   
+    std::string s = PrimordialAASeq.at(g_num_);
+    // get amino acid from WT background
     int aa_primo = GetIndexFromAA(s.at(resi));
 
     // get mutated bp
@@ -221,6 +221,8 @@ std::string Gene::Mutate_Stabil(int i, int j)
           double diff = DDG_mean()-avg_DG;
 
           x *= exp(-diff/kT);
+
+          //std::cout << -kT*log(dg_) << "\t" << -kT*log(x) << std::endl;
 
           dg_ /= x_curr;
           dg_ *= x;
