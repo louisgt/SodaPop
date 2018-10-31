@@ -13,6 +13,7 @@ COL=3
 ##### CREATE DIRECTORIES FOR RESULTS
 rm -rf out/$OUT/barcodes; mkdir out/$OUT/barcodes
 rm -rf out/$OUT/graph; mkdir out/$OUT/graph
+rm -rf out/$OUT/gene; mkdir out/$OUT/gene
 PREFIX=out/$OUT
 HOME=../..
 
@@ -64,10 +65,22 @@ do
 		gunzip -c $filename | awk 'NR>3 {print $0}' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
 		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
 		gunzip -c $filename | awk 'NR>3 {print $0}' - | awk -v N=$3 -v C=$COL '{sum += $C} END {printf "%.9f\n",sum/N}' - >> avg_fitness.txt
+
+		#### FOR EACH GENE, CALCULATE MEAN STABILITY
+		for i in $( seq 0 $((GENE_COUNT-1)) )
+		do
+			gunzip -c $filename | grep -w ^"$i" | awk -F ' ' -v N=$3 '{sum += $4} END {printf "%.9f\n",sum/N}' >> gene/stabil_$i.txt
+		done
 	else
 		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
 		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
 		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {printf "%.9f\n",sum/N}' - >> avg_fitness.txt
+
+		#### FOR EACH GENE, CALCULATE MEAN STABILITY
+		for i in $( seq 0 $((GENE_COUNT-1)) )
+		do
+			gunzip -c $filename | grep -w ^"$i" | awk -F ' ' -v N=$3 '{sum += $4} END {printf "%.9f\n",sum/N}' >> gene/stabil_$i.txt
+		done
 	fi
 done
 

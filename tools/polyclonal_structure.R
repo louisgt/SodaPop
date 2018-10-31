@@ -7,9 +7,10 @@ dir = getwd()
 
 #### LOAD UTILITIES (INSTALL IF MISSING)
 if(!require("pacman")) install.packages("pacman",repos = "http://cran.us.r-project.org")
-pacman::p_load(ggplot2, reshape2,grid,ggthemes)
+pacman::p_load(ggplot2,reshape2,grid,ggthemes,viridis)
 library(ggplot2)
 library(reshape2)
+library(viridis)
 
 message("R: Importing time series data...")
 
@@ -27,6 +28,19 @@ message("R: Importing average fitness trajectory...")
 avg_fitness <- read.csv(paste(dir,src,"avg_fitness.txt",sep=""), header = FALSE)
 avg_fitness$gen = as.numeric(row.names(avg_fitness))*dt-dt
 
+message("R: Importing average stability trajectory...")
+stabil_0 <- read.csv(paste(dir,src,"gene/stabil_0.txt",sep=""), header = FALSE)
+stabil_1 <- read.csv(paste(dir,src,"gene/stabil_1.txt",sep=""), header = FALSE)
+stabil_2 <- read.csv(paste(dir,src,"gene/stabil_2.txt",sep=""), header = FALSE)
+stabil_3 <- read.csv(paste(dir,src,"gene/stabil_3.txt",sep=""), header = FALSE)
+stabil_4 <- read.csv(paste(dir,src,"gene/stabil_4.txt",sep=""), header = FALSE)
+stabil_5 <- read.csv(paste(dir,src,"gene/stabil_5.txt",sep=""), header = FALSE)
+stabil_6 <- read.csv(paste(dir,src,"gene/stabil_6.txt",sep=""), header = FALSE)
+stabil_7 <- read.csv(paste(dir,src,"gene/stabil_7.txt",sep=""), header = FALSE)
+stabil_8 <- read.csv(paste(dir,src,"gene/stabil_8.txt",sep=""), header = FALSE)
+stabil_9 <- read.csv(paste(dir,src,"gene/stabil_9.txt",sep=""), header = FALSE)
+
+
 fixgen = (ncol(generations_filtered) - 2)*dt
 colnames(generations_filtered)[2:(ncol(generations_filtered))]=seq(0,fixgen, dt)
 message("R: Melting dataframe...")
@@ -36,6 +50,13 @@ fixgen_all = (ncol(generations) - 2)*dt
 colnames(generations)[2:(ncol(generations))]=seq(0,fixgen_all, dt)
 message("R: Melting dataframe...")
 FLUX_ALL = melt(generations, id='V1')
+
+df = cbind(stabil_0,stabil_1,stabil_2,stabil_3,stabil_4,stabil_5,stabil_6,stabil_7,stabil_8,stabil_9)
+tf = as.data.frame(t(df))
+colnames(tf)[1:(ncol(tf))]=seq(0,fixgen, dt)
+tf$Gene = c(0,1,2,3,4,5,6,7,8,9)
+#tf$Gene = c(0)
+GENE = melt(tf, id='Gene')
 
 message("R: Saving plot a to file...")
 
@@ -96,6 +117,11 @@ d = ggplot(FLUX_ALL, aes(x=factor(variable),y=log10(value),group=V1,colour=V1)) 
 labs(x = "Generations",y="Log10(Count)")
 d$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
 ggsave("log_clonal_trajectories.png", plot=d, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
+
+e = ggplot(GENE, aes(x=factor(variable),y=value,group=factor(Gene),colour=factor(Gene))) + geom_line(size = 1) + scale_color_viridis_d(name = "Gene ID") + theme_Publication() + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) +
+labs(x = "Generations",y="Stability (∆G, kcal/mol)")
+e$theme$plot.margin = unit(c(0.5,1,0.5,0.5),"cm")
+ggsave("stability_trajectories.png", plot=e, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=300)
 
 #ggsave("log_clonal_trajectories.eps", plot=d, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=600)
 #ggsave("clonal_structure.eps", plot=b, device=cairo_ps, fallback_resolution = 300, path = paste(dir,src,"graph/",sep=""), width = 11, height = 8.5, dpi=600)
