@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
         exit(2);
     }
 
-    if(PolyCell::ff_ == 6) {
+    if(PolyCell::ff_ == 7) {
         noMut = true;
         std::cout << "Mutations are not active." << std::endl;
     }
@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
             cell_it->ch_barcode(getBarcode());
         }
-        if(PolyCell::ff_ == 4){
+        if(PolyCell::ff_ == 5){
             for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                 cell_it->UpdateRates();
             }
@@ -264,7 +264,7 @@ int main(int argc, char *argv[])
             Cell_arr.emplace_back(startsnap, genesPath);
             count++;  
         }
-        if(PolyCell::ff_ == 4){
+        if(PolyCell::ff_ == 5){
             for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                 cell_it->UpdateRates();
             }
