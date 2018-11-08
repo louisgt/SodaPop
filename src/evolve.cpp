@@ -356,7 +356,12 @@ int main(int argc, char *argv[])
         printProgress(GENERATION_CTR*1.0/GENERATION_MAX);
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
-        Cell_temp.reserve(N*2);
+        if(N<10000){
+            Cell_temp.reserve(N*5);
+        }
+        else{
+            Cell_temp.reserve(N*2);
+        }
         // for each cell in the population
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it)
         {
