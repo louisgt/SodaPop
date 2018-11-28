@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
     int MUTATION_CTR = 0;
     int gene_count = 0;
     int encoding = 0;
-    double avg_DG = 0;
     unsigned int N=1;
     int DT = 1;
     char buffer[200];
@@ -40,7 +39,8 @@ int main(int argc, char *argv[])
 
     std::string inputType;
     std::string geneListFile, genesPath;
-    std::string outDir, startSnapFile, matrixFile;
+    std::string outDir, startSnapFile;
+    std::vector<std::string> matrixVec;
 
     // Wrap everything in a try block
     // errors in input are caught and explained to user
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> startArg("p","pop-desc","Population description file",true,"null","filename");
         TCLAP::ValueArg<std::string> libArg("l","gene-lib","Gene library directory",false,"files/genes/","filename");
 
-        TCLAP::ValueArg<std::string> matrixArg("i","input","Input file defining the fitness landscape",false,"null","filename");
+        TCLAP::MultiArg<std::string> matrixArg("i","input","Input file(s) defining the fitness landscape",false,"filepath(s)");
         
         // fitness function
         TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"integer ID");
@@ -144,9 +144,10 @@ int main(int argc, char *argv[])
             // if matrix is given
             if(matrixArg.isSet())
             {
-                matrixFile = matrixArg.getValue();
+                matrixVec = matrixArg.getValue();
+                assert(matrixVec.size()==1);
                 std::cout << "Extracting DMS matrix ..." << std::endl;
-                ExtractDMSMatrix(matrixFile.c_str());
+                ExtractDMSMatrix(matrixVec.front().c_str());
             }
             else
             {
@@ -175,10 +176,20 @@ int main(int argc, char *argv[])
             // if DDG matrix is given
             if(matrixArg.isSet())
             {
-                matrixFile = matrixArg.getValue();
-                std::cout << "Extracting PDDG matrix ..." << std::endl;
-                avg_DG = ExtractPDDGMatrix(matrixFile.c_str());
-                std::cout << "Average ∆∆G is " << avg_DG << " ..." << std::endl;
+                matrixVec = matrixArg.getValue();
+                int nMat = matrixVec.size();
+                switch(nMat){
+                    case 2:
+                        std::cout << "Extracting DDG_binding matrix ..." << std::endl;
+                        bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),true);
+                        std::cout << "Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
+                    case 1:
+                        std::cout << "Extracting DDG_folding matrix ..." << std::endl;
+                        fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),false);
+                        std::cout << "Average ∆∆G_folding is " << fold_DG << " ..." << std::endl;
+                        break;
+                }
+                
             }
             else
             {

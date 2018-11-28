@@ -218,7 +218,7 @@ std::string Gene::Mutate_Stabil(int i, int j)
           // assign new DG value
           // division accounts for mutation occuring on wildtype identity
 
-          double diff = DDG_mean()-avg_DG;
+          double diff = DDG_mean()-fold_DG;
 
           x *= exp(-diff/kT);
 

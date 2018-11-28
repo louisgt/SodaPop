@@ -1,7 +1,8 @@
 #include "global.h"
 
 VectStr PrimordialAASeq;
-double avg_DG = 0;
+double fold_DG = 0;
+double bind_DG = 0;
 
 const double ddG_min = -10;
 const double ddG_max = 99;
@@ -22,6 +23,7 @@ double PI  = 3.141592653589793238463;
 const double DG_STOP = exp(-1*(99)/kT);
 
 double matrix[max_gene][max_resi][20];
+double matrix_supp[max_gene][max_resi][20];
 
 /******* GENETIC CODE MAPPINGS *******/
 // these const mappings are hard-coded and populated at compile-time
@@ -546,16 +548,18 @@ void InitMatrix()
 {
     for(int i = 0; i != max_gene; ++i)
       for(int j = 0; j != max_resi; ++j)
-        for(int k = 0; k != 20; ++k)
-          matrix[i][j][k] = 1; //i.e., exp(-0/kT) = 1
+        for(int k = 0; k != 20; ++k){
+            matrix[i][j][k] = 1; //i.e., exp(-0/kT) = 1
+            matrix_supp[i][j][k] = 1; // maybe it would make more sense here to set it to inf
+        }    
 }
 
 // extracts values from the DDG file and stores them in the matrix
-double ExtractPDDGMatrix(std::string filepath)
+double ExtractDDGMatrix(std::string filepath, bool supp_mat)
 {
     std::fstream temp(filepath);
     if(!temp.is_open()){
-        std::cerr << "File could not be open: "<< filepath << std::endl;
+        std::cerr << "File could not be opened: "<< filepath << std::endl;
         exit(2);
     }
     std::string line;
@@ -576,7 +580,12 @@ double ExtractPDDGMatrix(std::string filepath)
                 double x = atof(word.c_str());
                 sum +=x;
                 idx++;
-                matrix[gene_num][i-1][j] = exp(-x/kT);
+                if(supp_mat){
+                    matrix_supp[gene_num][i-1][j] = exp(-x/kT);
+                }
+                else{
+                    matrix[gene_num][i-1][j] = exp(-x/kT);
+                }
             }
         }
         else if ( word == "Gene_NUM"){
@@ -585,8 +594,7 @@ double ExtractPDDGMatrix(std::string filepath)
         }
     }
     temp.close();
-    avg_DG = sum/idx;
-    return avg_DG;
+    return sum/idx;
 }
 
 void ExtractDMSMatrix(std::string filepath)

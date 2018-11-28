@@ -107,8 +107,10 @@ extern const double DG_STOP;
 const int max_gene = 1200;
 const int max_resi = 640;
 extern double matrix[max_gene][max_resi][20];
+extern double matrix_supp[max_gene][max_resi][20];
 
-extern double avg_DG;
+extern double fold_DG;
+extern double bind_DG;
 
 /******* FUNCTION DECLARATIONS *******/
 int GetIndexFromAA(std::string);
@@ -122,7 +124,7 @@ std::string getBarcode();
 double Ran_Gaussian(const double, const double);
 std::string AdjacentBP(std::string, int);
 void InitMatrix();
-double ExtractPDDGMatrix(std::string);
+double ExtractDDGMatrix(std::string,bool);
 void ExtractDMSMatrix(std::string);
 int LoadPrimordialGenes(const std::string&,const std::string&);
 int StringDiff(const std::string&, const std::string&);
