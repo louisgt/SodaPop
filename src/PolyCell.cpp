@@ -51,6 +51,8 @@ void PolyCell::selectFitness()
             break;
         case 7: fit = &PolyCell::noMut;
             break;
+        case 8: fit = &PolyCell::growthRate;
+            break;
         default:;
     }
 }
@@ -127,10 +129,22 @@ double PolyCell::neutral()
     return 1;
 }
 
-// NEUTRAL FITNESS FUNCTION
+// TURN OFF MUTATIONS
 double PolyCell::noMut()
 {
     return fitness();
+}
+
+// FOLDING-STABILITY BASED FLUX FITNESS FUNCTION
+double PolyCell::growthRate()
+{
+    double sum = 0;
+    //sum (concentration*Pnat) over all genes
+    for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
+        sum += gene_it->functional()*gene_it->eff();
+    }
+    double fit = PREFACTOR/sum;
+    return 1/(fit+1);
 }
 
 void PolyCell::UpdateRates()
