@@ -91,6 +91,7 @@ extern const double CONC_MAX ;
 extern const double kT; //defines the energy units
 extern const double COST; // misfolding cost, see Geiler-Samerotte et al. 2011
 extern const double fNs; //fraction of non-synonymous substitutions in a typical protein
+extern const double PREFACTOR; // prefactor for growth rate fitness function
 
 // exponent values are precalculated to be used readily
 extern const double DDG_min;
