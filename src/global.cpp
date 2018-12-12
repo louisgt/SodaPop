@@ -10,6 +10,7 @@ const double CONC_MAX = 1e15;
 const double kT = 0.5922; //defines the energy units
 const double COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
 const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
+const double PREFACTOR = 16000
 
 // exponent values are precalculated to be used readily
 const double DDG_min = exp(-1*(ddG_min)/kT);
@@ -580,12 +581,24 @@ double ExtractDDGMatrix(std::string filepath, bool supp_mat)
                 double x = atof(word.c_str());
                 sum +=x;
                 idx++;
-                if(supp_mat){
-                    matrix_supp[gene_num][i-1][j] = exp(-x/kT);
-                }
-                else{
+                //if(supp_mat){
+                    //matrix_supp[gene_num][i-1][j] = exp(-x/kT);
+                //}
+                //else{
                     matrix[gene_num][i-1][j] = exp(-x/kT);
-                }
+                //}
+            }
+        }
+        else if ( word == "rCat"){
+            iss >> word;
+            //residue index
+            int i = atoi(word.c_str());
+            for(int j = 0; iss>>word; j++){
+                //extract DDG values
+                double x = atof(word.c_str());
+                sum +=x;
+                idx++;
+                matrix_supp[gene_num][i-1][j] = x;
             }
         }
         else if ( word == "Gene_NUM"){
