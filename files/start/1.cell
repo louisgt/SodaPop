@@ -1,14 +1,14 @@
 //remarks; if no values in the field, leave empty
 org_id  1
-mrate   2.16e-6
+mrate   2.16e-7
 //field, id
 G	0
-G	1
-G	2
-G	3
-G	4
-G	5
-G	6
-G	7
-G	8
-G	9
+//G	1
+//G	2
+//G	3
+//G	4
+//G	5
+//G	6
+//G	7
+//G	8
+//G	9
