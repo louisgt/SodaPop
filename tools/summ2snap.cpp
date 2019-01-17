@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
                 case 3: A.ch_barcode(getBarcode());
                         int nClusters = (count + 10 - 1) / 10;
                         int remainder = count % 10;
-                        for (int k = 0; k < nClusters - 1; k++) {
+                        for (int k = 0; k < nClusters; k++) {
                             //edit fitness here (draw selection coefficient for clusters of 10 cells)
                             //fetch selection coefficient
                             double s = Gene::RandomGamma();

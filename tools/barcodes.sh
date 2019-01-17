@@ -131,6 +131,6 @@ rm -f barcodes/series*.txt
 cd $HOME
 
 #### PLOT RESULTS IN R SCRIPTS
-Rscript tools/polyclonal_structure.R /out/$OUT/ $DT
+Rscript tools/polyclonal_structure.R /out/$OUT/ $DT $GENE_COUNT
 
 echo Done.
