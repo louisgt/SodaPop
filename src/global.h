@@ -77,35 +77,35 @@ N.B. The physically allowed value for mutational DDG is DGG_min to DGG_max.
 If the estimated energy is out of this range, the mutation is ignored.
 *****/
 
-const int POPSIZEMAX = 1000000;
-const int GENECOUNTMAX = 10;
-const int PBWIDTH = 70;
+int const POPSIZEMAX = 1000000;
+int const GENECOUNTMAX = 10;
+int const PBWIDTH = 70;
 
 // for pretty printing of progress
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 
-extern const double ddG_min;
-extern const double ddG_max;
-extern const double CONC_MAX ;
-extern const double kT; //defines the energy units
-extern const double COST; // misfolding cost, see Geiler-Samerotte et al. 2011
-extern const double fNs; //fraction of non-synonymous substitutions in a typical protein
-extern const double PREFACTOR; // prefactor for growth rate fitness function
+extern double const ddG_min;
+extern double const ddG_max;
+extern double const CONC_MAX ;
+extern double const kT; //defines the energy units
+extern double const COST; // misfolding cost, see Geiler-Samerotte et al. 2011
+extern double const fNs; //fraction of non-synonymous substitutions in a typical protein
+extern double const PREFACTOR; // prefactor for growth rate fitness function
 
 // exponent values are precalculated to be used readily
-extern const double DDG_min;
-extern const double DDG_max;
-extern const int Bigbuffer_max;
-extern double PI;
+extern double const DDG_min;
+extern double const DDG_max;
+extern int const Bigbuffer_max;
+extern double const PI;
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
 // -> all copies are effectively aggregated
-extern const double DG_STOP;
+extern double const DG_STOP;
 
 // Create a 3D matrix for fitness landscape
-const int max_gene = 1200;
-const int max_resi = 640;
+int const max_gene = 1200;
+int const max_resi = 640;
 extern double matrix[max_gene][max_resi][20];
 extern double matrix_supp[max_gene][max_resi][20];
 
@@ -121,12 +121,12 @@ int CheckBP(std::string);
 std::string n3_to_n3(std::string, std::string, int);
 std::string getBarcode();
 //double RandomNumber();
-double Ran_Gaussian(const double, const double);
+double Ran_Gaussian(double const, double const);
 std::string AdjacentBP(std::string, int);
 void InitMatrix();
 double ExtractDDGMatrix(std::string,bool);
 void ExtractDMSMatrix(std::string);
-int LoadPrimordialGenes(const std::string&,const std::string&);
+int LoadPrimordialGenes(const std::string&, const std::string&);
 int StringDiff(const std::string&, const std::string&);
 std::string trim(const std::string&);
 bool isDirExist(const std::string&);

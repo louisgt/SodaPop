@@ -4,24 +4,24 @@ VectStr PrimordialAASeq;
 double fold_DG = 0;
 double bind_DG = 0;
 
-const double ddG_min = -10;
-const double ddG_max = 99;
-const double CONC_MAX = 1e15;
-const double kT = 0.5922; //defines the energy units
-const double COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
-const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
-const double PREFACTOR = 16000;
+double const ddG_min = -10;
+double const ddG_max = 99;
+double const CONC_MAX = 1e15;
+double const kT = 0.5922; //defines the energy units
+double const COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
+double const fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
+double const PREFACTOR = 16000;
 
 // exponent values are precalculated to be used readily
-const double DDG_min = exp(-1*(ddG_min)/kT);
-const double DDG_max = exp(-1*(ddG_max)/kT);
-const int Bigbuffer_max = 80;
-double PI  = 3.141592653589793238463;
+double const DDG_min = exp(-1*(ddG_min)/kT);
+double const DDG_max = exp(-1*(ddG_max)/kT);
+int const Bigbuffer_max = 80;
+double const PI  = 3.141592653589793238463;
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
 // -> all copies are effectively aggregated
-const double DG_STOP = exp(-1*(99)/kT);
+double const DG_STOP = exp(-1*(99)/kT);
 
 double matrix[max_gene][max_resi][20];
 double matrix_supp[max_gene][max_resi][20];
@@ -205,13 +205,13 @@ struct prot_to_num{
           m["X"] = 21;//STOP
           return m;
         }
-    static const std::map<std::string,int> pnum;
+    static std::map<std::string,int> const pnum;
 };
 
 // populate genetic code mappings
-const std::map<std::string,int> codon_to_num::cnum = codon_to_num::create_map();
-const std::map<std::string,int> prot_to_num::pnum = prot_to_num::create_map();
-const std::map<std::string,std::string> codon_to_prot::cprot = codon_to_prot::create_map();
+std::map<std::string,int> const codon_to_num::cnum = codon_to_num::create_map();
+std::map<std::string,int> const prot_to_num::pnum = prot_to_num::create_map();
+std::map<std::string,std::string> const codon_to_prot::cprot = codon_to_prot::create_map();
 
 /******* MAPPING FUNCTIONS *******/
 
@@ -642,7 +642,7 @@ void ExtractDMSMatrix(std::string filepath)
     temp.close();
 }
 
-double Ran_Gaussian(const double mean, const double sigma)
+double Ran_Gaussian(double const mean, double const sigma)
 {
     double x, y, r2;
     do{
