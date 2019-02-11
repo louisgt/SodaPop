@@ -45,14 +45,6 @@ Copyright (C) 2018 Louis Gauthier
     along with SodaPop.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define POPSIZEMAX 	1000000
-#define GENECOUNTMAX 	10
-
-// for pretty printing of progress
-#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-#define PBWIDTH 70
-
-
 /******** CONTAINERS AND ITERATORS ********/
 
 typedef std::vector<int> VectInt;
@@ -84,6 +76,13 @@ T remove_at(std::vector<T>&v, typename std::vector<T>::size_type n)
 N.B. The physically allowed value for mutational DDG is DGG_min to DGG_max.
 If the estimated energy is out of this range, the mutation is ignored.
 *****/
+
+const int POPSIZEMAX = 1000000;
+const int GENECOUNTMAX = 10;
+const int PBWIDTH = 70;
+
+// for pretty printing of progress
+#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 
 extern const double ddG_min;
 extern const double ddG_max;
