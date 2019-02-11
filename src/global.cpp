@@ -10,7 +10,7 @@ const double CONC_MAX = 1e15;
 const double kT = 0.5922; //defines the energy units
 const double COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
 const double fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
-const double PREFACTOR = 16000
+const double PREFACTOR = 16000;
 
 // exponent values are precalculated to be used readily
 const double DDG_min = exp(-1*(ddG_min)/kT);

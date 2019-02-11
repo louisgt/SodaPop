@@ -32,6 +32,8 @@ public:
     Cell(std::fstream & );
     Cell(std::fstream & ,const std::string & );
 
+    virtual ~Cell(){};
+
     int total_mutations(const int & );
     void FillGene_L();
     void linkGenes();

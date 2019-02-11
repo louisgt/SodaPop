@@ -43,6 +43,7 @@ public:
     double neutral();
     double noMut();
     double fold();
+    double growthRate();
     void UpdateRates();
 
     void ranmut_Gene();

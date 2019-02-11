@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         TCLAP::MultiArg<std::string> matrixArg("i","input","Input file(s) defining the fitness landscape",false,"filepath(s)");
         
         // fitness function
-        TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,1,"integer ID");
+        TCLAP::ValueArg<int> fitArg("f","fitness","Fitness function",false,5,"integer ID");
         
         // boolean switch to use DDG as input type
         TCLAP::ValueArg<std::string> inputArg("","sim-type","Define simulation type\n<s> (from selection coefficient, DMS or otherwise)\n<stability> (from DDG matrix or distribution)", false,"s","string");
@@ -131,16 +131,15 @@ int main(int argc, char *argv[])
         if(inputType == "s")
         {
             PolyCell::fromS_ = true;
-            if(fitArg.getValue()<4){
+            if(fitArg.getValue()<5){
                 PolyCell::ff_ = fitArg.getValue();
             }
-            else PolyCell::ff_ = 4;
+            else PolyCell::ff_ = 5;
             std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
             std::cout << "Loading primordial genes file ..." << std::endl;
             gene_count = LoadPrimordialGenes(geneListFile,genesPath);
-            std::cout << gene_count << std::endl;
-            std::cout << PrimordialAASeq.at(0) << std::endl;
+            std::cout << "Gene count: " << gene_count << std::endl;
             // if matrix is given
             if(matrixArg.isSet())
             {
