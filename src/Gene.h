@@ -46,25 +46,24 @@ public:
 
     void Update_Sequences(std::string);
 
-    const int num(){return g_num_;}
-    const int length(){return ln_;}
-    const int AAlength(){return la_;}
-    const std::string nseq(){return nucseq_;}
-    const double dg(){return dg_;}
-    const double eff(){return eff_;}
-    const double f(){return f_;}
-    const int Ns(){return Ns_;}
-    const int Na(){return Na_;}
+    int num() const {return g_num_;}
+    int length() const {return ln_;}
+    int AAlength() const {return la_;}
+    std::string nseq() const {return nucseq_;}
+    double dg() const {return dg_;}
+    double eff() const {return eff_;}
+    double f() const {return f_;}
+    int Ns() const {return Ns_;}
+    int Na() const {return Na_;}
 
     double conc() const {return conc_;}
     double e() const {return e_;}
 
-    double CheckDG();
-    double functional();
-    double misfolded();
-    double Pnat();
-    double A_factor();
-    double DDG_mean();
+    double functional() const;
+    double misfolded() const;
+    double Pnat() const;
+    double A_factor() const;
+    double DDG_mean() const;
 
     void ch_dg(const double a){dg_ = a;}
     void ch_f(const double a){f_ = a;}

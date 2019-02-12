@@ -21,7 +21,7 @@ Copyright (C) 2018 Louis Gauthier
 
 class PolyCell: public Cell
 {
-    typedef double(PolyCell::*funcPtr)(void);
+    typedef double(PolyCell::*funcPtr)(void) const;
 
 public:
     static int ff_;
@@ -36,33 +36,35 @@ public:
 
     // Fitness functions
     void selectFitness();
-    double flux();
-    double toxicity();
-    double metabolicOutput();
-    double multiplicative();
-    double neutral();
-    double noMut();
-    double fold();
-    double growthRate();
+    double flux() const;
+    double toxicity() const;
+    double metabolicOutput() const;
+    double multiplicative() const;
+    double neutral() const;
+    double noMut() const;
+    double fold() const;
+    double growthRate() const;
     void UpdateRates();
 
     void ranmut_Gene();
     void ranmut_Gene(std::ofstream&, int);
     void change_exprlevel();
     double normalizeFit(double);
-    void dump(std::fstream&, int);
-    void dumpShort(std::fstream&);
-    void dumpSeq(std::fstream&, int);
-    void dumpParent(std::fstream&);
-    void PrintCell(int);
+    void dump(std::fstream&, int) const;
+    void dumpShort(std::fstream&) const;
+    void dumpSeq(std::fstream&, int) const;
+    void dumpParent(std::fstream&) const;
+
+    void PrintCell(int) const;
     
-    int Na(){return Total_Na_;}
-    int Ns(){return Total_Ns_;}
+    int Na() const {return Total_Na_;}
+    int Ns() const {return Total_Ns_;}
     void UpdateNsNa();
 
 protected:
     int Total_Ns_;
     int Total_Na_;
+
     // function pointer to select fitness function
     funcPtr fit;
 };

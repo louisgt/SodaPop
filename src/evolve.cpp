@@ -254,12 +254,13 @@ int main(int argc, char *argv[])
         cmdlog << "Creating a population of " << N << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
         Cell_arr = std::vector <PolyCell>(N,A);
-        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-            cell_it->ch_barcode(getBarcode());
+        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+        for (auto& cell : Cell_arr) {
+            cell.ch_barcode(getBarcode());
         }
         if(PolyCell::ff_ == 5){
-            for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                cell_it->UpdateRates();
+            for (auto& cell : Cell_arr) {
+                cell.UpdateRates();
             }
         }
     }
@@ -275,8 +276,8 @@ int main(int argc, char *argv[])
             count++;  
         }
         if(PolyCell::ff_ == 5){
-            for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                cell_it->UpdateRates();
+            for (auto& cell : Cell_arr) {
+                cell.UpdateRates();
             }
         }
     }
@@ -303,17 +304,16 @@ int main(int argc, char *argv[])
     switch(encoding){
         case 0: //"normal" output format
         case 2: idx=1;
-                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                    w_sum += cell_it->fitness();
-                    cell_it->dump(OUT2,idx);
-                    idx++;
-                    //(*k).setParent(k - Cell_arr.begin());
+                //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                for (const auto& cell : Cell_arr) {
+                    w_sum += cell.fitness();
+                    cell.dump(OUT2,idx++);
                 } 
             break;
         case 1: //"short" output format
-                for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                    w_sum += cell_it->fitness();
-                    cell_it->dumpShort(OUT2);
+                for (const auto& cell : Cell_arr) {
+                    w_sum += cell.fitness();
+                    cell.dumpShort(OUT2);
                 }
             break;
         case 3: //dump with parent data, to be implemented
@@ -336,26 +336,6 @@ int main(int argc, char *argv[])
             exit(1);
         }
     }
-
-    // sprintf(buffer,"%s/%s.gen%010d.parent",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
-
-    //  //Open snapshot file
-    //  std::fstream OUT3(buffer, std::ios::out | std::ios::binary);
-    //  if (!OUT3.is_open()){
-    //      std::cerr << "Snapshot file could not be opened";
-    //      exit(1);
-    //  }
-
-    //  frame_time = GENERATION_CTR;
-    //  OUT3.write((char*)(&frame_time),sizeof(double));
-    //  OUT3.write((char*)(&TIME),sizeof(double));
-    //  OUT3.write((char*)(&Total_Cell_Count),sizeof(int));
-
-    //  for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-    //          (*k).dumpParent(OUT3);
-    // } 
-
-    // OUT3.close();
     
     std::cout << "Starting evolution ..." << std::endl;
     cmdlog << "Starting evolution ..." << std::endl;
@@ -408,7 +388,7 @@ int main(int argc, char *argv[])
                 	std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
                 	int n_mutations = binMut(g_rng);
                     // attempt n mutations
-                    for(int i=0;i<n_mutations;i++)
+                    for(int i=0;i<n_mutations;++i)
                     {
                         MUTATION_CTR++;
                         if(trackMutations){
@@ -453,17 +433,19 @@ int main(int argc, char *argv[])
 
         w_sum = 0;
         double fittest = 0;
-        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-            double current = cell_it->fitness();
+        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+        for (auto& cell : Cell_arr) {
+            double current = cell.fitness();
             w_sum += current;
-            if(current > fittest) fittest = current;
-            cell_it->UpdateNsNa();
+            if(current > fittest) 
+                fittest = current;
+            cell.UpdateNsNa();
         }
         //normalize by fittest individual to prevent overflow
         if(inputType == "s"){
             w_sum = 0;
-            for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                w_sum += cell_it->normalizeFit(fittest);
+            for (auto& cell : Cell_arr) {
+                w_sum += cell.normalizeFit(fittest);
             }
         }
         
@@ -489,14 +471,16 @@ int main(int argc, char *argv[])
             switch(encoding){
                 case 0: //"normal" output format 
                 case 2: count=1;
-                        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                            cell_it->dump(OUT2,count);
-                            count++;
+                        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                        for (const auto& cell : Cell_arr) {
+                            cell.dump(OUT2,count++);
+                            //count++;
                         }
                     break;
                 case 1: //"short" output format
-                        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                            cell_it->dumpShort(OUT2);
+                        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+                        for (const auto& cell : Cell_arr) {
+                            cell.dumpShort(OUT2);
                         } 
                     break;
                 case 3: //dump with parent data, to be implemented
@@ -510,26 +494,6 @@ int main(int argc, char *argv[])
             const char *cmd = command.c_str();
             system(cmd);
 
-            // TO BE PROPERLY IMPLEMENTED
-            //  sprintf(buffer,"%s/%s.gen%010d.parent",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
-
-            //  //Open snapshot file
-            //  std::fstream OUT3(buffer, std::ios::out | std::ios::binary);
-            //  if (!OUT3.is_open()){
-            //      std::cerr << "Snapshot file could not be opened";
-            //      exit(1);
-            //  }
-      
-            //  frame_time = GENERATION_CTR;
-            //  OUT3.write((char*)(&frame_time),sizeof(double));
-            //  OUT3.write((char*)(&TIME),sizeof(double));
-            //  OUT3.write((char*)(&Total_Cell_Count),sizeof(int));
-
-            //  for(std::vector<PolyCell>::iterator k = Cell_arr.begin(); k != Cell_arr.end(); ++k){
-            //          (*k).dumpParent(OUT3);
-            // } 
-
-            // OUT3.close();
          }
     }
 

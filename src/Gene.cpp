@@ -348,32 +348,32 @@ void Gene::Update_Sequences(const std::string DNAsequence)
     nucseq_ = DNAsequence;
 }
 
-double Gene::DDG_mean()
+double Gene::DDG_mean() const
 {
     return -0.3*-kT*log(dg_)-0.12;
 }
 
 // from Privalov 1979 (see also: Serohijos & Shakhnovich 2013)
 // Boltzmann probability of the gene product to be in the native state
-double Gene::Pnat()
+double Gene::Pnat() const
 {
     return dg_/(1+dg_);
 }
 
 // Number of functional copies in the cell
-double Gene::functional()
+double Gene::functional() const
 {
     return conc_*Pnat();
 }
 
 // Number of misfolded copies in the cell
-double Gene::misfolded()
+double Gene::misfolded() const
 {
     return conc_*(1-Pnat());
 }
 
 // Contribution to normalizing factor based on infinitely stable fold
-double Gene::A_factor()
+double Gene::A_factor() const
 {
     return 1.0/conc_;
 }

@@ -39,22 +39,22 @@ public:
     void linkGenes();
 
     virtual void UpdateRates() = 0;
-    virtual void dump(std::fstream & , int) = 0;
-    virtual void PrintCell(int) = 0;
+    virtual void dump(std::fstream & , int) const = 0;
+    virtual void PrintCell(int) const = 0;
 
-    const int ID() {return ID_;}
-    uint32_t parent() {return parent_;}
-    const double mrate() {return c_mrate_;}
-    const int gene_count() {return Gene_arr_.size();}
-    const int genome_size() {return Gene_L_.back();}
-    const std::string barcode() {return barcode_;}
+    int ID() const {return ID_;}
+    uint32_t parent() const {return parent_;}
+    double mrate() const {return c_mrate_;}
+    int gene_count() const {return Gene_arr_.size();}
+    int genome_size() const {return Gene_L_.back();}
+    std::string barcode() const {return barcode_;}
+    double fitness() const;
 
     void change_ID(int a) {ID_ = a;}
     void setParent(uint32_t a) {parent_ = a;}
     void ch_barcode(std::string s) {barcode_ = s;}
 
     void ch_Fitness(double f){fitness_ = f;}
-    const double fitness();
     
 protected:
     // organism barcode

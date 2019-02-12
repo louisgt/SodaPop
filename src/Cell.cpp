@@ -165,7 +165,7 @@ void Cell::linkGenes()
 //     }
 // }
 
-const double Cell::fitness()
+double Cell::fitness() const
 {
     return fitness_;
 }
@@ -174,8 +174,9 @@ const double Cell::fitness()
 void Cell::FillGene_L() {
     int sum = 0;
     std::vector < Gene > ::iterator i;
-    for (auto cell_it = Gene_arr_.begin(); cell_it != Gene_arr_.end(); ++cell_it) {
-        sum += cell_it->length();
+    //for (auto cell_it = Gene_arr_.begin(); cell_it != Gene_arr_.end(); ++cell_it) {
+    for (const auto& gene : Gene_arr_) {
+        sum += gene.length();
         Gene_L_.push_back(sum);
     }
 }
@@ -192,9 +193,10 @@ int Cell::total_mutations(const int & spec) {
     int s = 0;
     int a = 0;
 
-    for (auto cell_it = Gene_arr_.begin(); cell_it != Gene_arr_.end(); ++cell_it) {
-        int Ns = cell_it -> Ns();
-        int Na = cell_it -> Na();
+    //for (auto cell_it = Gene_arr_.begin(); cell_it != Gene_arr_.end(); ++cell_it) {
+    for (const auto& gene : Gene_arr_) {
+        int Ns = gene.Ns();
+        int Na = gene.Na();
         s += Ns;
         a += Na;
         sa += (Ns + Na);
