@@ -29,7 +29,7 @@
 #include "rng.h"
 
 /*SodaPop
-Copyright (C) 2018 Louis Gauthier
+Copyright (C) 2019 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -84,17 +84,18 @@ int const PBWIDTH = 70;
 // for pretty printing of progress
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 
-extern double const ddG_min;
-extern double const ddG_max;
+extern double const ddG_low_bound;
+extern double const ddG_high_bound;
 extern double const CONC_MAX ;
 extern double const kT; //defines the energy units
-extern double const COST; // misfolding cost, see Geiler-Samerotte et al. 2011
-extern double const fNs; //fraction of non-synonymous substitutions in a typical protein
+extern double const MISFOLDING_COST; // misfolding cost, see Geiler-Samerotte et al. 2011
+extern double const fNS; //fraction of non-synonymous substitutions in a typical protein
 extern double const PREFACTOR; // prefactor for growth rate fitness function
 
 // exponent values are precalculated to be used readily
 extern double const DDG_min;
 extern double const DDG_max;
+
 extern int const Bigbuffer_max;
 extern double const PI;
 
@@ -104,10 +105,11 @@ extern double const PI;
 extern double const DG_STOP;
 
 // Create a 3D matrix for fitness landscape
-int const max_gene = 1200;
-int const max_resi = 640;
-extern double matrix[max_gene][max_resi][20];
-extern double matrix_supp[max_gene][max_resi][20];
+int const gene_number = 100;
+int const res_number = 1200;
+
+extern double matrix[gene_number][res_number][20];
+extern double matrix_supp[gene_number][res_number][20];
 
 extern double fold_DG;
 extern double bind_DG;

@@ -3,7 +3,7 @@
 #include "Cell.h"
 
 /*SodaPop
-Copyright (C) 2018 Louis Gauthier
+Copyright (C) 2019 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

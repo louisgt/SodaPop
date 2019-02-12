@@ -5,7 +5,7 @@
 
 /*SodaPop
 
-Copyright (C) 2018 Louis Gauthier
+Copyright (C) 2019 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,13 +24,13 @@ Copyright (C) 2018 Louis Gauthier
 int main(int argc, char *argv[])
 {
     // these variables will hold the parameters input (or not) by the user
-    int GENERATION_CTR = 1;
-    int GENERATION_MAX = GENERATION_CTR + 1;
+    int CURRENT_GEN = 1;
+    int MAX_GEN = CURRENT_GEN + 1;
     int MUTATION_CTR = 0;
-    int gene_count = 0;
-    int encoding = 0;
-    unsigned int N=1;
-    int DT = 1;
+    int GENE_COUNT = 0;
+    int ENCODING = 0;
+    unsigned int POP_SIZE=1;
+    int STEP = 1;
     char buffer[200];
     bool enableAnalysis = false;
     bool trackMutations = false;
@@ -113,9 +113,9 @@ int main(int argc, char *argv[])
         cmd.parse(argc, argv);
 
         // Get values from args. 
-        GENERATION_MAX = maxArg.getValue();
-        N = popArg.getValue();
-        DT = dtArg.getValue();
+        MAX_GEN = maxArg.getValue();
+        POP_SIZE = popArg.getValue();
+        STEP = dtArg.getValue();
 
         geneListFile = geneArg.getValue();
         outDir = prefixArg.getValue();
@@ -136,8 +136,8 @@ int main(int argc, char *argv[])
             else 
                 PolyCell::ff_ = 5;
             InitMatrix();
-            gene_count = LoadPrimordialGenes(geneListFile,genesPath);
-            std::cout << "Gene count: " << gene_count << std::endl;
+            GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
+            std::cout << "Gene count: " << GENE_COUNT << std::endl;
             // if matrix is given
             if(matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
         }
         else if(inputType == "stability"){
             InitMatrix();
-            gene_count = LoadPrimordialGenes(geneListFile,genesPath);
+            GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
             PolyCell::ff_ = fitArg.getValue();
             // if DDG matrix is given
             if(matrixArg.isSet()){
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 
         enableAnalysis = analysisArg.getValue();
         trackMutations = eventsArg.getValue();
-        encoding = seqArg.getValue();
+        ENCODING = seqArg.getValue();
         createPop = initArg.getValue();
 
     }catch (TCLAP::ArgException &e){
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
     startsnap.read((char*)(&frame_time),sizeof(double));
     //read number of cells in file
     startsnap.read((char*)(&Total_Cell_Count),sizeof(int));
-    //read file encoding
+    //read file ENCODING
     startsnap.read((char*)(&dummy),sizeof(int));
 
     sprintf(buffer,"out/%s/snapshots",outDir.c_str());
@@ -235,10 +235,10 @@ int main(int argc, char *argv[])
     // IF POPULATION IS INITIALLY MONOCLONAL
     // CREATE VECTOR WITH N IDENTICAL CELLS
     if(createPop){
-        std::cout << "Creating a population of " << N << " cells ..." << std::endl;
-        cmdlog << "Creating a population of " << N << " cells ..." << std::endl;
+        std::cout << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
+        cmdlog << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
-        Cell_arr = std::vector <PolyCell>(N,A);
+        Cell_arr = std::vector <PolyCell>(POP_SIZE,A);
         //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
         for (auto& cell : Cell_arr) {
             cell.ch_barcode(getBarcode());
@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
     }
     else{
         // ELSE IT MUST BE POPULATED CELL BY CELL FROM SNAP FILE
-        Cell_arr.reserve(N);
+        Cell_arr.reserve(POP_SIZE);
         int count = 0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
         cmdlog << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
 
     std::cout << "Saving initial population snapshot ... " << std::endl;
     cmdlog << "Saving initial population snapshot ... " << std::endl;
-    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
+    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), CURRENT_GEN); 
 
     // Open snapshot file
     std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
@@ -283,10 +283,10 @@ int main(int argc, char *argv[])
     Total_Cell_Count = Cell_arr.size();
     OUT2.write((char*)(&frame_time),sizeof(double));
     OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
-    OUT2.write((char*)(&encoding),sizeof(int));
+    OUT2.write((char*)(&ENCODING),sizeof(int));
 
     int idx;
-    switch(encoding){
+    switch(ENCODING){
         case 0: //"normal" output format
         case 2: idx=1;
                 //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
@@ -326,22 +326,22 @@ int main(int argc, char *argv[])
     cmdlog << "Starting evolution ..." << std::endl;
 
     // PSEUDO WRIGHT-FISHER PROCESS
-    while(GENERATION_CTR < GENERATION_MAX){
-        printProgress(GENERATION_CTR*1.0/GENERATION_MAX);
+    while(CURRENT_GEN < MAX_GEN){
+        printProgress(CURRENT_GEN*1.0/MAX_GEN);
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
-        if(N<10000){
-            Cell_temp.reserve(N*5);
+        if(POP_SIZE<10000){
+            Cell_temp.reserve(POP_SIZE*5);
         }
         else{
-            Cell_temp.reserve(N*2);
+            Cell_temp.reserve(POP_SIZE*2);
         }
         // for each cell in the population
         for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
             // fitness of cell j with respect to sum of population fitness
             double relative_fitness = cell_it->fitness()/w_sum;
             // probability parameter of binomial distribution
-            std::binomial_distribution<> binCell(N, relative_fitness);
+            std::binomial_distribution<> binCell(POP_SIZE, relative_fitness);
             // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
             int n_progeny = binCell(g_rng);
             
@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
                         MUTATION_CTR++;
                         if(trackMutations){
                             // mutate and write mutation to file
-                            it->ranmut_Gene(MUTATIONLOG,GENERATION_CTR);
+                            it->ranmut_Gene(MUTATIONLOG,CURRENT_GEN);
                         }
                         else{
                             it->ranmut_Gene();
@@ -387,14 +387,14 @@ int main(int argc, char *argv[])
         }
         // if the population is below N
         // randomly draw from progeny to pad
-        while(Cell_temp.size() < N){
+        while(Cell_temp.size() < POP_SIZE){
             auto cell_it = Cell_temp.begin();
             Cell_temp.emplace_back(*(cell_it + randomNumber()*Cell_temp.size()));
         }
 
-        if(Cell_temp.size() > N){
+        if(Cell_temp.size() > POP_SIZE){
             std::shuffle(Cell_temp.begin(), Cell_temp.end(), g_rng);
-            Cell_temp.resize(N);
+            Cell_temp.resize(POP_SIZE);
         }
 
         //alternative to shuffling
@@ -405,7 +405,7 @@ int main(int argc, char *argv[])
         }*/
 
         Total_Cell_Count = (int)(Cell_temp.size());
-        assert(Total_Cell_Count == N);
+        assert(Total_Cell_Count == POP_SIZE);
         
         // swap population with initial vector
         Cell_arr.swap(Cell_temp);
@@ -432,10 +432,10 @@ int main(int argc, char *argv[])
         }
         
         // update generation counter
-        GENERATION_CTR++;
-        // save population snapshot every DT generations
-        if( (GENERATION_CTR % DT) == 0){
-            sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), GENERATION_CTR); 
+        CURRENT_GEN++;
+        // save population snapshot every STEP generations
+        if( (CURRENT_GEN % STEP) == 0){
+            sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), CURRENT_GEN); 
             //Open snapshot file
             //OUT2 is target output stream
             std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
@@ -444,13 +444,13 @@ int main(int argc, char *argv[])
                  exit(1);
             }
 
-            double frame_time = GENERATION_CTR;
+            double frame_time = CURRENT_GEN;
             OUT2.write((char*)(&frame_time),sizeof(double));
             OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
-            OUT2.write((char*)(&encoding),sizeof(int));
+            OUT2.write((char*)(&ENCODING),sizeof(int));
 
             int count;
-            switch(encoding){
+            switch(ENCODING){
                 case 0: //"normal" output format 
                 case 2: count=1;
                         //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
@@ -479,7 +479,7 @@ int main(int argc, char *argv[])
          }
     }
 
-    printProgress(GENERATION_CTR/GENERATION_MAX);
+    printProgress(CURRENT_GEN/MAX_GEN);
     std::cout << std::endl;
     MUTATIONLOG.close();
     std::cout << "Done." << std::endl;
@@ -491,7 +491,7 @@ int main(int argc, char *argv[])
     // if the user toggled analysis, call shell script
     if(enableAnalysis){
         std::string script = "tools/barcodes.sh";
-        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(GENERATION_MAX)+" "+std::to_string(N)+" "+std::to_string(DT)+" "+std::to_string(encoding)+" "+std::to_string(gene_count);
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(MAX_GEN)+" "+std::to_string(POP_SIZE)+" "+std::to_string(STEP)+" "+std::to_string(ENCODING)+" "+std::to_string(GENE_COUNT);
         const char *cmd = command.c_str();
         system(cmd);
     }

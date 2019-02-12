@@ -9,15 +9,15 @@ Cell::Cell():
     c_mrate_(0),
     fitness_(0)
     {
-        Gene_L_.reserve(GENECOUNTMAX);
-        Gene_arr_.reserve(GENECOUNTMAX);
+        geneBlocks_.reserve(GENECOUNTMAX);
+        genomeVec_.reserve(GENECOUNTMAX);
     }
 
 // Construct from cell file
 Cell::Cell(std::fstream & cell_in) {
     char buffer[140];
-    Gene_L_.reserve(GENECOUNTMAX);
-    Gene_arr_.reserve(GENECOUNTMAX);
+    geneBlocks_.reserve(GENECOUNTMAX);
+    genomeVec_.reserve(GENECOUNTMAX);
     ch_barcode(getBarcode());
     setParent(0);
     std::string line;
@@ -55,10 +55,10 @@ Cell::Cell(std::fstream & cell_in) {
                 exit(2);
             }
             Gene A(gene_data,this);
-            Gene_arr_.push_back(A);
+            genomeVec_.push_back(A);
 
             //Check if gene is correctly inserted
-            std::vector <Gene>::iterator i = Gene_arr_.end();
+            std::vector <Gene>::iterator i = genomeVec_.end();
             i--;
             // if gene fitness is null, assign a randomly fit value
             if((*i).f()==0){
@@ -72,8 +72,8 @@ Cell::Cell(std::fstream & cell_in) {
 // Constructs from a unit cell stored in binary 
 Cell::Cell(std::fstream & IN,
     const std::string & genesPath) {
-    Gene_L_.reserve(GENECOUNTMAX);
-    Gene_arr_.reserve(GENECOUNTMAX);
+    geneBlocks_.reserve(GENECOUNTMAX);
+    genomeVec_.reserve(GENECOUNTMAX);
 
     char buffer[140];
     int cell_id, cell_index, gene_size;
@@ -137,13 +137,13 @@ Cell::Cell(std::fstream & IN,
         G.Update_Sequences(DNAsequence);
         G.ch_Na(Na);
         G.ch_Ns(Ns);
-        Gene_arr_.push_back(G);
+        genomeVec_.push_back(G);
     }
 }
 
 void Cell::linkGenes()
 {
-    for(auto gene_it = this->Gene_arr_.begin(); gene_it != this->Gene_arr_.end(); gene_it++) {
+    for(auto gene_it = this->genomeVec_.begin(); gene_it != this->genomeVec_.end(); gene_it++) {
         gene_it->setCell(this);
     }
 }
@@ -157,11 +157,11 @@ void Cell::linkGenes()
 //     o_mrate_ = C.o_mrate_;
 //     c_mrate_ = C.c_mrate_;
 //     fitness_ = C.fitness_;
-//     Gene_L_ = C.Gene_L_;
+//     geneBlocks_ = C.geneBlocks_;
 //     std::vector < Gene > ::iterator i;
-//     for (auto cell_it = C.Gene_arr_.begin(); cell_it != C.Gene_arr_.end(); cell_it++) {
+//     for (auto cell_it = C.genomeVec_.begin(); cell_it != C.genomeVec_.end(); cell_it++) {
 //         Gene A(*cell_it,this);
-//         Gene_arr_.push_back(A);
+//         genomeVec_.push_back(A);
 //     }
 // }
 
@@ -174,10 +174,10 @@ double Cell::fitness() const
 void Cell::FillGene_L() {
     int sum = 0;
     std::vector < Gene > ::iterator i;
-    //for (auto cell_it = Gene_arr_.begin(); cell_it != Gene_arr_.end(); ++cell_it) {
-    for (const auto& gene : Gene_arr_) {
-        sum += gene.length();
-        Gene_L_.push_back(sum);
+    //for (auto cell_it = genomeVec_.begin(); cell_it != genomeVec_.end(); ++cell_it) {
+    for (const auto& gene : genomeVec_) {
+        sum += gene.geneLength();
+        geneBlocks_.push_back(sum);
     }
 }
 
@@ -193,8 +193,8 @@ int Cell::total_mutations(const int & spec) {
     int s = 0;
     int a = 0;
 
-    //for (auto cell_it = Gene_arr_.begin(); cell_it != Gene_arr_.end(); ++cell_it) {
-    for (const auto& gene : Gene_arr_) {
+    //for (auto cell_it = genomeVec_.begin(); cell_it != genomeVec_.end(); ++cell_it) {
+    for (const auto& gene : genomeVec_) {
         int Ns = gene.Ns();
         int Na = gene.Na();
         s += Ns;

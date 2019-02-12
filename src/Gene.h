@@ -7,7 +7,7 @@
 class Cell;
 
 /*SodaPop
-Copyright (C) 2018 Louis Gauthier
+Copyright (C) 2019 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,10 +46,10 @@ public:
 
     void Update_Sequences(std::string);
 
-    int num() const {return g_num_;}
-    int length() const {return ln_;}
-    int AAlength() const {return la_;}
-    std::string nseq() const {return nucseq_;}
+    int num() const {return gene_idx_;}
+    int geneLength() const {return gene_len_;}
+    int protLength() const {return prot_len_;}
+    std::string geneSeq() const {return gene_seq_;}
     double dg() const {return dg_;}
     double eff() const {return eff_;}
     double f() const {return f_;}
@@ -77,14 +77,14 @@ public:
     const void setCell(Cell*);
 
     private:
-        int g_num_;     //numeric ID pointing to primordial gene
-        int ln_;        //length nuc seq
-        int la_;        //length aa seq
+        int gene_idx_;     //numeric ID pointing to primordial gene
+        int gene_len_;        //length nuc seq
+        int prot_len_;        //length aa seq
 
         int Na_;        //number of non-synonymous substitutions
         int Ns_;        //number of sysnonymous substitutions
         
-        std::string nucseq_;    //nucleotide sequence
+        std::string gene_seq_;    //nucleotide sequence
         
         double dg_;     //stability
         double f_;      //gene "fitness"

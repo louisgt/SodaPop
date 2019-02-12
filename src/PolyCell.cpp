@@ -28,10 +28,10 @@ void PolyCell::FillGene_L()
 {
     int sum = 0;
     std::vector<Gene>::iterator i;
-    //for(i = Gene_arr_.begin(); i != Gene_arr_.end(); ++i){
-    for (auto& gene : Gene_arr_){
-        sum+= gene.length();
-        Gene_L_.push_back(sum);
+    //for(i = genomeVec_.begin(); i != genomeVec_.end(); ++i){
+    for (auto& gene : genomeVec_){
+        sum+= gene.geneLength();
+        geneBlocks_.push_back(sum);
     }
 }
 
@@ -63,8 +63,8 @@ double PolyCell::fold() const
 {
     double sum_func = 0;
     //sum (concentration*Pnat) over all genes
-    //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-    for (const auto& gene : Gene_arr_) {
+    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+    for (const auto& gene : genomeVec_) {
         sum_func += gene.functional();
     }
     return sum_func;
@@ -75,8 +75,8 @@ double PolyCell::flux() const
 {
     double sum_func = 0;
     double a = 0;
-    //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-    for (const auto& gene : Gene_arr_) {
+    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+    for (const auto& gene : genomeVec_) {
         // efficiency * Pnat * abundance
         sum_func += 1/(gene.eff()*gene.functional());
         a += gene.A_factor();
@@ -89,11 +89,11 @@ double PolyCell::toxicity() const
 {
     double f = 0;
     //sum (concentration*(1-Pnat)) over all genes
-    //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-    for (const auto& gene : Gene_arr_) {
+    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+    for (const auto& gene : genomeVec_) {
         f += gene.misfolded();
     }
-    return exp(-(COST*f));
+    return exp(-(MISFOLDING_COST*f));
 }
 
 // COMBINED METABOLIC OUTPUT FITNESS FUNCTION
@@ -102,15 +102,15 @@ double PolyCell::metabolicOutput() const
     double flux = 0;
     double toxicity = 0;
     double a = 0;
-    //for (auto& it : Gene_arr_) {
-    for (const auto& gene : Gene_arr_) {
+    //for (auto& it : genomeVec_) {
+    for (const auto& gene : genomeVec_) {
         flux += 1 / (gene.eff()*gene.functional());
         toxicity += gene.misfolded();
         a += gene.A_factor();
     }
 
     flux = a/flux;
-    toxicity = COST * toxicity;
+    toxicity = MISFOLDING_COST * toxicity;
 
     double fitness = flux - toxicity;
     // if toxicity > flux, return 0
@@ -121,8 +121,8 @@ double PolyCell::metabolicOutput() const
 double PolyCell::multiplicative() const
 {
     double fitness = 0;
-    //for (auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it)
-    for (const auto& gene : Gene_arr_){
+    //for (auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it)
+    for (const auto& gene : genomeVec_){
         fitness += gene.f()*gene.e();
     }
     return fitness/gene_count();
@@ -145,8 +145,8 @@ double PolyCell::growthRate() const
 {
     double sum = 0;
     //sum (concentration*Pnat) over all genes
-    //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-    for (const auto& gene : Gene_arr_) {
+    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+    for (const auto& gene : genomeVec_) {
         sum += gene.functional()*gene.eff();
     }
     double fit = PREFACTOR/sum;
@@ -161,20 +161,20 @@ void PolyCell::UpdateRates()
 void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 {
     // get genome size
-    int L = Gene_L_.back();
+    int L = geneBlocks_.back();
 
     // pick random site to mutate
 
     int site = (int) ( L * randomNumber());
 
     // find the corresponding gene
-    std::vector<Gene>::iterator j = Gene_arr_.begin();
-    VectInt_citerator k = Gene_L_.begin();
+    std::vector<Gene>::iterator j = genomeVec_.begin();
+    VectInt_citerator k = geneBlocks_.begin();
 
     if(site >= (*k)){
     // random number generated is greater than
     // the cumulative sum of genes
-         for(k = Gene_L_.begin(); k != Gene_L_.end(); ++k){
+         for(k = geneBlocks_.begin(); k != geneBlocks_.end(); ++k){
              if( site< (*k) ) 
                 break;
              j++; 
@@ -221,20 +221,20 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 void PolyCell::ranmut_Gene()
 {
     // get genome size
-    int L = Gene_L_.back();
+    int L = geneBlocks_.back();
     // pick random site to mutate
 
     int site = (int) ( L * randomNumber());
 
     // find the corresponding gene
-    std::vector<Gene>::iterator j = Gene_arr_.begin();
-    VectInt_citerator k = Gene_L_.begin();
+    std::vector<Gene>::iterator j = genomeVec_.begin();
+    VectInt_citerator k = geneBlocks_.begin();
 
 
     if(site >= (*k)){
     // random number generated is greater than
     // the cumulative sum of genes
-         for(k = Gene_L_.begin(); k != Gene_L_.end(); ++k){
+         for(k = geneBlocks_.begin(); k != geneBlocks_.end(); ++k){
              if(site< (*k) )
                 break;
              j++; 
@@ -270,8 +270,8 @@ double PolyCell::normalizeFit(double fittest){
         std::cerr << "Population collapse, average fitness is null.\n";
         exit(1);
     }
-    double newfit = (Gene_arr_.begin()->f())/fittest;
-    Gene_arr_.begin()->ch_f(newfit);
+    double newfit = (genomeVec_.begin()->f())/fittest;
+    genomeVec_.begin()->ch_f(newfit);
     UpdateRates();
     return newfit;
 }
@@ -298,11 +298,11 @@ void PolyCell::dump(std::fstream& OUT, int cell_index) const
     y = c_mrate_;		 	 
     OUT.write((char*)(&y),sizeof(double));
 
-    x = (int)(Gene_arr_.size());		 	 
+    x = (int)(genomeVec_.size());		 	 
     OUT.write((char*)(&x),sizeof(int));
 
-   //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-   for (const auto& gene : Gene_arr_) {
+   //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+   for (const auto& gene : genomeVec_) {
         int gene_nid = gene.num();
         double s = gene.e();
         double c = gene.conc();
@@ -323,7 +323,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index) const
         OUT.write((char*)(&Ns),sizeof(int));
 
         //Save length of nucleo sequence
-        std::string DNAsequence = gene.nseq();
+        std::string DNAsequence = gene.geneSeq();
         int nl = DNAsequence.length();
         OUT.write((char*)&nl, sizeof(int));
         OUT.write(DNAsequence.data(), nl);
@@ -373,11 +373,11 @@ void PolyCell::dumpSeq(std::fstream& OUT, int cell_index) const
     y = c_mrate_;            
     OUT.write((char*)(&y),sizeof(double));
 
-    x = (int)(Gene_arr_.size());             
+    x = (int)(genomeVec_.size());             
     OUT.write((char*)(&x),sizeof(int));
 
-    //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-    for (const auto& gene : Gene_arr_) {
+    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+    for (const auto& gene : genomeVec_) {
 
         int Ns = gene.Ns();
         int Na = gene.Na();
@@ -386,7 +386,7 @@ void PolyCell::dumpSeq(std::fstream& OUT, int cell_index) const
         OUT.write((char*)(&Ns),sizeof(int));
 
         //Save length of nucleo sequence
-        std::string DNAsequence = gene.nseq();
+        std::string DNAsequence = gene.geneSeq();
         int nl = DNAsequence.length();
         OUT.write((char*)&nl, sizeof(int));
         OUT.write(DNAsequence.data(), nl);
@@ -405,8 +405,8 @@ void PolyCell::UpdateNsNa()
 {
     int new_Na = 0;
     int new_Ns = 0;
-    //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-    for (auto& gene : Gene_arr_){
+    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+    for (auto& gene : genomeVec_){
         new_Na += gene.Na();
         new_Ns += gene.Ns();
     }
@@ -418,10 +418,10 @@ void PolyCell::UpdateNsNa()
 void PolyCell::PrintCell(int cell_ndx) const
 {
       char buffer[140];
-      sprintf(buffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), (int)Gene_arr_.size());  
+      sprintf(buffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), (int)genomeVec_.size());  
       std::cout << buffer << std::endl;
-      //for(auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it){
-      for (const auto& gene : Gene_arr_) {
+      //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
+      for (const auto& gene : genomeVec_) {
         int gene_nid = gene.num();
         double e = gene.e();
         double c = gene.conc();

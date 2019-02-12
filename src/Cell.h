@@ -9,7 +9,7 @@
 class Gene;
 
 /*SodaPop
-Copyright (C) 2018 Louis Gauthier
+Copyright (C) 2019 Louis Gauthier
 
     SodaPop is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -45,8 +45,8 @@ public:
     int ID() const {return ID_;}
     uint32_t parent() const {return parent_;}
     double mrate() const {return c_mrate_;}
-    int gene_count() const {return Gene_arr_.size();}
-    int genome_size() const {return Gene_L_.back();}
+    int gene_count() const {return genomeVec_.size();}
+    int genome_size() const {return geneBlocks_.back();}
     std::string barcode() const {return barcode_;}
     double fitness() const;
 
@@ -76,10 +76,10 @@ protected:
     double fitness_;
 
     //Array of genes
-    std::vector <Gene> Gene_arr_;
+    std::vector <Gene> genomeVec_;
 
     //Cummulative sum of gene lengths (i.e. genome size)
-    VectInt Gene_L_;
+    VectInt geneBlocks_;
     
 };
 #endif

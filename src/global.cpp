@@ -4,17 +4,17 @@ VectStr PrimordialAASeq;
 double fold_DG = 0;
 double bind_DG = 0;
 
-double const ddG_min = -10;
-double const ddG_max = 99;
+double const ddG_low_bound = -10;
+double const ddG_high_bound = 99;
 double const CONC_MAX = 1e15;
 double const kT = 0.5922; //defines the energy units
-double const COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
-double const fNs = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
+double const MISFOLDING_COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
+double const fNS = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
 double const PREFACTOR = 16000;
 
 // exponent values are precalculated to be used readily
-double const DDG_min = exp(-1*(ddG_min)/kT);
-double const DDG_max = exp(-1*(ddG_max)/kT);
+double const DDG_min = exp(-1*(ddG_low_bound)/kT);
+double const DDG_max = exp(-1*(ddG_high_bound)/kT);
 int const Bigbuffer_max = 80;
 double const PI  = 3.141592653589793238463;
 
@@ -23,8 +23,8 @@ double const PI  = 3.141592653589793238463;
 // -> all copies are effectively aggregated
 double const DG_STOP = exp(-1*(99)/kT);
 
-double matrix[max_gene][max_resi][20];
-double matrix_supp[max_gene][max_resi][20];
+double matrix[gene_number][res_number][20];
+double matrix_supp[gene_number][res_number][20];
 
 /******* GENETIC CODE MAPPINGS *******/
 // these const mappings are hard-coded and populated at compile-time
@@ -562,8 +562,8 @@ std::string getBarcode()
 void InitMatrix()
 {
     std::cout << "Initializing matrix ..." << std::endl;
-    for(int i = 0; i != max_gene; ++i)
-      for(int j = 0; j != max_resi; ++j)
+    for(int i = 0; i != gene_number; ++i)
+      for(int j = 0; j != res_number; ++j)
         for(int k = 0; k != 20; ++k){
             matrix[i][j][k] = 1; //i.e., exp(-0/kT) = 1
             matrix_supp[i][j][k] = 1; // maybe it would make more sense here to set it to inf
