@@ -103,79 +103,79 @@ struct codon_to_num{
 };
 
 struct codon_to_prot{
-    static std::map<std::string,std::string> create_map()
+    static std::map<std::string,char> create_map()
         {
-          std::map<std::string,std::string> m;
-          m["AAA"] = "K";
-          m["AAC"] = "N";
-          m["AAG"] = "K";
-          m["AAT"] = "N";
-          m["ACA"] = "T";
-          m["ACC"] = "T";
-          m["ACG"] = "T";
-          m["ACT"] = "T";
-          m["AGA"] = "R";
-          m["AGC"] = "S";
-          m["AGG"] = "R";
-          m["AGT"] = "S";
-          m["ATA"] = "I";
-          m["ATC"] = "I";
-          m["ATG"] = "M";
-          m["ATT"] = "I";
-          m["CAA"] = "Q";
-          m["CAC"] = "H";
-          m["CAG"] = "Q";
-          m["CAT"] = "H";
-          m["CCA"] = "P";
-          m["CCC"] = "P";
-          m["CCG"] = "P";
-          m["CCT"] = "P";
-          m["CGA"] = "R";
-          m["CGC"] = "R";
-          m["CGG"] = "R";
-          m["CGT"] = "R";
-          m["CTA"] = "L";
-          m["CTC"] = "L";
-          m["CTG"] = "L";
-          m["CTT"] = "L";
-          m["GAA"] = "E";
-          m["GAC"] = "D";
-          m["GAG"] = "E";
-          m["GAT"] = "D";
-          m["GCA"] = "A";
-          m["GCC"] = "A";
-          m["GCG"] = "A";
-          m["GCT"] = "A";
-          m["GGA"] = "G";
-          m["GGC"] = "G";
-          m["GGG"] = "G";
-          m["GGT"] = "G";
-          m["GTA"] = "V";
-          m["GTC"] = "V";
-          m["GTG"] = "V";
-          m["GTT"] = "V";
+          std::map<std::string,char> m;
+          m["AAA"] = 'K';
+          m["AAC"] = 'N';
+          m["AAG"] = 'K';
+          m["AAT"] = 'N';
+          m["ACA"] = 'T';
+          m["ACC"] = 'T';
+          m["ACG"] = 'T';
+          m["ACT"] = 'T';
+          m["AGA"] = 'R';
+          m["AGC"] = 'S';
+          m["AGG"] = 'R';
+          m["AGT"] = 'S';
+          m["ATA"] = 'I';
+          m["ATC"] = 'I';
+          m["ATG"] = 'M';
+          m["ATT"] = 'I';
+          m["CAA"] = 'Q';
+          m["CAC"] = 'H';
+          m["CAG"] = 'Q';
+          m["CAT"] = 'H';
+          m["CCA"] = 'P';
+          m["CCC"] = 'P';
+          m["CCG"] = 'P';
+          m["CCT"] = 'P';
+          m["CGA"] = 'R';
+          m["CGC"] = 'R';
+          m["CGG"] = 'R';
+          m["CGT"] = 'R';
+          m["CTA"] = 'L';
+          m["CTC"] = 'L';
+          m["CTG"] = 'L';
+          m["CTT"] = 'L';
+          m["GAA"] = 'E';
+          m["GAC"] = 'D';
+          m["GAG"] = 'E';
+          m["GAT"] = 'D';
+          m["GCA"] = 'A';
+          m["GCC"] = 'A';
+          m["GCG"] = 'A';
+          m["GCT"] = 'A';
+          m["GGA"] = 'G';
+          m["GGC"] = 'G';
+          m["GGG"] = 'G';
+          m["GGT"] = 'G';
+          m["GTA"] = 'V';
+          m["GTC"] = 'V';
+          m["GTG"] = 'V';
+          m["GTT"] = 'V';
           //STOP
-          m["TAA"] = "X";
-          m["TAC"] = "Y";
+          m["TAA"] = 'X';
+          m["TAC"] = 'Y';
           //STOP
-          m["TAG"] = "X";
-          m["TAT"] = "Y";
-          m["TCA"] = "S";
-          m["TCC"] = "S";
-          m["TCG"] = "S";
-          m["TCT"] = "S";
+          m["TAG"] = 'X';
+          m["TAT"] = 'Y';
+          m["TCA"] = 'S';
+          m["TCC"] = 'S';
+          m["TCG"] = 'S';
+          m["TCT"] = 'S';
           //STOP
-          m["TGA"] = "X";
-          m["TGC"] = "C";
-          m["TGG"] = "W";
-          m["TGT"] = "C";
-          m["TTA"] = "L";
-          m["TTC"] = "F";
-          m["TTG"] = "L";
-          m["TTT"] = "F";
+          m["TGA"] = 'X';
+          m["TGC"] = 'C';
+          m["TGG"] = 'W';
+          m["TGT"] = 'C';
+          m["TTA"] = 'L';
+          m["TTC"] = 'F';
+          m["TTG"] = 'L';
+          m["TTT"] = 'F';
           return m;
         }
-    static const std::map<std::string,std::string> cprot;
+    static const std::map<std::string,char> cprot;
 };
 
 struct prot_to_num{
@@ -211,7 +211,7 @@ struct prot_to_num{
 // populate genetic code mappings
 std::map<std::string,int> const codon_to_num::cnum = codon_to_num::create_map();
 std::map<std::string,int> const prot_to_num::pnum = prot_to_num::create_map();
-std::map<std::string,std::string> const codon_to_prot::cprot = codon_to_prot::create_map();
+std::map<std::string,char> const codon_to_prot::cprot = codon_to_prot::create_map();
 
 /******* MAPPING FUNCTIONS *******/
 
@@ -241,18 +241,18 @@ std::string GetProtFromNuc(std::string in_seq)
     }
     int la=ln/3;   
     std::string AA="";
-    for (int i=0; i<la;i++){
+    for (int i=0; i<la;++i){
         std::string temp=in_seq.substr(i*3,3);
         
         //check for valid code
-        std::map <std::string, std::string> :: const_iterator Iter;
+        std::map <std::string, char> :: const_iterator Iter;
         Iter = codon_to_prot::cprot.find(temp);
         if (Iter == codon_to_prot::cprot.end()){
           std::cerr << "Invalid codon: "<< temp << std::endl;
           std::cerr << "Nucleotide sequence must not contain STOP codons."<< std::endl;
           exit(2);
         }   
-        AA.append(codon_to_prot::cprot.at(temp));
+        AA.push_back(codon_to_prot::cprot.at(temp));
     }
     return AA;
 }
@@ -306,44 +306,25 @@ int GetIndexFromAA(char aa){
     return m[aa];
 }
 
-// verifies validity of nucleotide
-// input: a single nucleotide
-// output: nucleotide number from index
-int CheckBP(std::string a){
-    std::map <std::string, int> A;
-    A["A"] = 1;
-    A["T"] = 2;
-    A["G"] = 3;
-    A["C"] = 4;
-
-    std::map <std::string, int> :: const_iterator Iter;
-    Iter = A.find(a);
-    if (Iter == A.end()){
-        std::cerr << "Invalid nucleotide: " << a << std::endl;
-        exit(2);
-    }
-    return A[a];
-}
-
 // returns the next or second to next bp from a given nucleotide
-std::string AdjacentBP(std::string a, int j){
+const char AdjacentBP(char a, int j){
  
     if ( j > 2 ){
         std::cerr << "Invalid bp distance. Error in AdjacentBP(). "<< j << std::endl;
         exit(2);
     }
 
-    std::map <std::string, int> A;
-    A["A"] = 0;
-    A["T"] = 1;
-    A["G"] = 2;
-    A["C"] = 3;
+    std::map <char, int> A;
+    A['A'] = 0;
+    A['T'] = 1;
+    A['G'] = 2;
+    A['C'] = 3;
 
-    std::map <int, std::string> B;
-    B[0] = "A";
-    B[1] = "T";
-    B[2] = "G";
-    B[3] = "C";
+    std::map <int, char> B;
+    B[0] = 'A';
+    B[1] = 'T';
+    B[2] = 'G';
+    B[3] = 'C';
 
     int x = (A[a] + j + 1) % 4; 	//get (j+1) nucleotide from a
     return B[x];
@@ -540,7 +521,7 @@ std::string n3_to_n3(std::string a, std::string b, int i){
 std::string getBarcode()
 {
     char seq [16];
-    for (int i = 0; i < 15; i++){
+    for (int i = 0; i < 15; ++i){
         if (randomNumber()<0.5){
             if (randomNumber()<0.5){
                 seq[i] = 'G';
@@ -592,11 +573,11 @@ double ExtractDDGMatrix(std::string filepath, Matrix_Type m)
             iss >> word;
             //residue index
             int i = atoi(word.c_str());
-            for (int j = 0; iss>>word; j++){
+            for (int j = 0; iss>>word; ++j){
                 //extract DDG values
                 double x = atof(word.c_str());
                 sum +=x;
-                idx++;
+                ++idx;
                 //if(m){
                     //matrix_supp[gene_num][i-1][j] = exp(-x/kT);
                 //}
@@ -609,11 +590,11 @@ double ExtractDDGMatrix(std::string filepath, Matrix_Type m)
             iss >> word;
             //residue index
             int i = atoi(word.c_str());
-            for (int j = 0; iss>>word; j++){
+            for (int j = 0; iss>>word; ++j){
                 //extract DDG values
                 double x = atof(word.c_str());
                 sum +=x;
-                idx++;
+                ++idx;
                 matrix_supp[gene_num][i-1][j] = x;
             }
         }
@@ -645,7 +626,7 @@ void ExtractDMSMatrix(std::string filepath)
             iss >> word;
             //residue index
             int i = atoi(word.c_str());
-            for (int j = 0; iss>>word; j++){
+            for (int j = 0; iss>>word; ++j){
                 //extract DMS values
                 double x = atof(word.c_str());
                 matrix[gene_num][i-1][j] = x;
@@ -714,7 +695,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
                       iss >> w;
                       std::string aaseq=GetProtFromNuc(w);
                       //check stop codons in midsequence
-                      size_t loc = aaseq.find("X", 0);
+                      size_t loc = aaseq.find('X', 0);
                       assert( loc == std::string::npos ); // no match
                       VectStr_iterator iter = PrimordialAASeq.begin();
                       PrimordialAASeq.insert(iter+gn, aaseq); 
@@ -783,7 +764,7 @@ void seqread_Cell(std::fstream& IN, std::fstream& OUT)
 
     OUT << buffer << std::endl;
 
-    for (int j=0; j<gene_size; j++){
+    for (int j=0; j<gene_size; ++j){
         std::string DNAsequence;   
         int Na, Ns;
 
@@ -838,7 +819,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
     sprintf(buffer,"\t%d\t%.9f\t%e\t", cell_index, f, m);
     OUT << buffer << std::endl;
 
-    for (int j=0; j<gene_size; j++){
+    for (int j=0; j<gene_size; ++j){
         double e, c, dg, f, eff;
         int gene_nid, Ns, Na;
         std::string DNAsequence;
@@ -873,7 +854,7 @@ int StringDiff(const std::string& A, const std::string& B)
     unsigned int L = A.length();
     assert(L == B.length());
     int ctr = 0;  
-    for (unsigned int i =0; i<L; i++){
+    for (unsigned int i =0; i<L; ++i){
         if ( A.at(i) != B.at(i)) 
           ctr+=1; 
     } 
@@ -951,15 +932,15 @@ bool makePath(const std::string& path)
 
 void printProgress (double progress)
 {
-    std::cout << "[";
+    std::cout << '[';
     int pos = PBWIDTH * progress;
     for (int i = 0; i < PBWIDTH; ++i){
         if (i < pos)
-          std::cout << "=";
+          std::cout << '=';
         else if (i == pos) 
-          std::cout << "+";
+          std::cout << '+';
         else 
-          std::cout << " ";
+          std::cout << ' ';
     }
 
     std::cout << "] " << int(progress * 100.0) << " %\r";

@@ -31,7 +31,7 @@ Gene::Gene(std::fstream& gene_in,Cell *parent)
                   std::string aaseq=GetProtFromNuc(gene_seq_);
 
                   //check stop codons in midsequence
-                  std::string::size_type loc = aaseq.find("X", 0 );
+                  std::string::size_type loc = aaseq.find('X', 0 );
                   if (loc != std::string::npos){
                         std::cerr << "ERROR: DNA sequence has STOP codons in the middle"<<std::endl;
                         exit(2);
@@ -168,10 +168,10 @@ std::string Gene::Mutate_Stabil(int i, int j)
     int aa_primo = GetIndexFromAA(s.at(resi));
 
     // get mutated bp
-    std::string bp = AdjacentBP(cdn_curr.substr(cdn_ndx, 1), j); //new BP
+    char bp = AdjacentBP(cdn_curr.at(cdn_ndx), j); //new BP
    
     // mutate codon
-    cdn_new.replace(cdn_ndx, 1, bp);
+    cdn_new.replace(cdn_ndx, 1, 1, bp);
     // check for stop codon
     cdn_new = n3_to_n3(cdn_new, cdn_curr, cdn_ndx);
     // get new amino acid
@@ -282,10 +282,10 @@ std::string Gene::Mutate_Select(int i, int j)
     std::string s = PrimordialAASeq.at(gene_idx_);     
 
     // get mutated bp
-    std::string bp = AdjacentBP( cdn_curr.substr(cdn_ndx, 1), j); //new BP
+    char bp = AdjacentBP( cdn_curr.at(cdn_ndx), j); //new BP
    
     // mutate codon
-    cdn_new.replace(cdn_ndx, 1, bp);
+    cdn_new.replace(cdn_ndx, 1, 1, bp);
     // check for stop codon
     cdn_new = n3_to_n3(cdn_new, cdn_curr, cdn_ndx);
     // get new amino acid

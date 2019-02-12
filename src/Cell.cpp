@@ -99,7 +99,7 @@ Cell::Cell(std::fstream & IN,
     IN.read((char*)(&gene_size), sizeof(int));
 
     //read gene info
-    for (int j = 0; j < gene_size; j++) {
+    for (int j = 0; j < gene_size; ++j) {
         double e, c, dg, f, eff;
         int gene_nid, Ns, Na;
         std::string DNAsequence;

@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
         //auto cell_it = Cell_arr.begin();
         while (count <Total_Cell_Count && !startsnap.eof()){
             Cell_arr.emplace_back(startsnap, genesPath);
-            count++;  
+            ++count;  
         }
         if (PolyCell::ff_ == 5){
             for (auto& cell : Cell_arr) {
@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
 
             do{
                 link->linkGenes();
-                link++;
+                ++link;
             }while(link < last);
 
             if (!noMut){
@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
                 	int n_mutations = binMut(g_rng);
                     // attempt n mutations
                     for (int i=0;i<n_mutations;++i){
-                        MUTATION_CTR++;
+                        ++MUTATION_CTR;
                         if (trackMutations){
                             // mutate and write mutation to file
                             it->ranmut_Gene(MUTATIONLOG,CURRENT_GEN);
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
                             it->ranmut_Gene();
                         }       
                     }
-                    it++;
+                    ++it;
                 }while(it < last);
             }
         }
@@ -435,7 +435,7 @@ int main(int argc, char *argv[])
         }
         
         // update generation counter
-        CURRENT_GEN++;
+        ++CURRENT_GEN;
         // save population snapshot every STEP generations
         if( (CURRENT_GEN % STEP) == 0){
             sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), CURRENT_GEN); 
