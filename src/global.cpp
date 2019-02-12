@@ -4,19 +4,19 @@ VectStr PrimordialAASeq;
 double fold_DG = 0;
 double bind_DG = 0;
 
-double const ddG_low_bound = -10;
-double const ddG_high_bound = 99;
-double const CONC_MAX = 1e15;
-double const kT = 0.5922; //defines the energy units
-double const MISFOLDING_COST = 1e-4; // misfolding cost, see Geiler-Samerotte et al. 2011
-double const fNS = 0.775956284; //fraction of non-synonymous substitutions in a typical protein
-double const PREFACTOR = 16000;
+const double ddG_low_bound(-10);
+const double ddG_high_bound(99);
+const double CONC_MAX(1e15);
+const double kT(0.5922); //defines the energy units
+const double MISFOLDING_COST(1e-4); // misfolding cost, see Geiler-Samerotte et al. 2011
+const double fNS(0.775956284); //fraction of non-synonymous substitutions in a typical protein
+const double PREFACTOR(16000);
 
 // exponent values are precalculated to be used readily
 double const DDG_min = exp(-1*(ddG_low_bound)/kT);
 double const DDG_max = exp(-1*(ddG_high_bound)/kT);
-int const Bigbuffer_max = 80;
-double const PI  = 3.141592653589793238463;
+const int Bigbuffer_max(80);
+const double PI(3.141592653589793238463);
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
@@ -571,7 +571,7 @@ void InitMatrix()
 }
 
 // extracts values from the DDG file and stores them in the matrix
-double ExtractDDGMatrix(std::string filepath, bool supp_mat)
+double ExtractDDGMatrix(std::string filepath, Matrix_Type m)
 {
     std::fstream temp(filepath);
     if (!temp.is_open()){
@@ -597,7 +597,7 @@ double ExtractDDGMatrix(std::string filepath, bool supp_mat)
                 double x = atof(word.c_str());
                 sum +=x;
                 idx++;
-                //if(supp_mat){
+                //if(m){
                     //matrix_supp[gene_num][i-1][j] = exp(-x/kT);
                 //}
                 //else{

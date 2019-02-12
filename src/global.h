@@ -77,9 +77,9 @@ N.B. The physically allowed value for mutational DDG is DGG_min to DGG_max.
 If the estimated energy is out of this range, the mutation is ignored.
 *****/
 
-int const POPSIZEMAX = 1000000;
-int const GENECOUNTMAX = 10;
-int const PBWIDTH = 70;
+const int POPSIZEMAX(1000000);
+const int GENECOUNTMAX(10);
+const int PBWIDTH(70);
 
 // for pretty printing of progress
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
@@ -105,14 +105,19 @@ extern double const PI;
 extern double const DG_STOP;
 
 // Create a 3D matrix for fitness landscape
-int const gene_number = 100;
-int const res_number = 1200;
+const int gene_number(100);
+const int res_number(1200);
 
 extern double matrix[gene_number][res_number][20];
 extern double matrix_supp[gene_number][res_number][20];
 
 extern double fold_DG;
 extern double bind_DG;
+
+enum Matrix_Type {
+    is_folding,
+    is_binding
+};
 
 /******* FUNCTION DECLARATIONS *******/
 int GetIndexFromAA(std::string);
@@ -126,7 +131,7 @@ std::string getBarcode();
 double Ran_Gaussian(double const, double const);
 std::string AdjacentBP(std::string, int);
 void InitMatrix();
-double ExtractDDGMatrix(std::string,bool);
+double ExtractDDGMatrix(std::string,Matrix_Type);
 void ExtractDMSMatrix(std::string);
 int LoadPrimordialGenes(const std::string&, const std::string&);
 int StringDiff(const std::string&, const std::string&);

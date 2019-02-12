@@ -170,10 +170,10 @@ int main(int argc, char *argv[])
                 int nMat = matrixVec.size();
                 switch (nMat){
                     case 2:
-                        bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),true);
+                        bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_binding);
                         std::cout << "Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
                     case 1:
-                        fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),false);
+                        fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_folding);
                         std::cout << "Average ∆∆G_folding is " << fold_DG << " ..." << std::endl;
                         break;
                 }
