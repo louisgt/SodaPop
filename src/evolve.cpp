@@ -128,9 +128,9 @@ int main(int argc, char *argv[])
             setRngSeed(seedArg.getValue());
 
         std::cout << "Begin ... " << std::endl;
-        if(inputType == "s"){
+        if (inputType == "s"){
             PolyCell::fromS_ = true;
-            if(fitArg.getValue()<5){
+            if (fitArg.getValue()<5){
                 PolyCell::ff_ = fitArg.getValue();
             }
             else 
@@ -139,34 +139,34 @@ int main(int argc, char *argv[])
             GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
             std::cout << "Gene count: " << GENE_COUNT << std::endl;
             // if matrix is given
-            if(matrixArg.isSet()){
+            if (matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
                 assert(matrixVec.size()==1);
                 ExtractDMSMatrix(matrixVec.front().c_str());
             }
             else{
                 PolyCell::useDist_ = true;
-                if(gammaArg.isSet()){
+                if (gammaArg.isSet()){
                     double shape = alphaArg.getValue();
                     double scale = betaArg.getValue();
                     Gene::initGamma(shape, scale);
                 }
-                else if(normalArg.isSet()){
+                else if (normalArg.isSet()){
                     double mean = alphaArg.getValue();
                     double stddev = betaArg.getValue();
                     Gene::initNormal(mean, stddev);
                 }
             }
         }
-        else if(inputType == "stability"){
+        else if (inputType == "stability"){
             InitMatrix();
             GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
             PolyCell::ff_ = fitArg.getValue();
             // if DDG matrix is given
-            if(matrixArg.isSet()){
+            if (matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
                 int nMat = matrixVec.size();
-                switch(nMat){
+                switch (nMat){
                     case 2:
                         bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),true);
                         std::cout << "Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
         exit(2);
     }
 
-    if(PolyCell::ff_ == 7) {
+    if (PolyCell::ff_ == 7) {
         noMut = true;
         std::cout << "Mutations are not active." << std::endl;
     }
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
     sprintf(buffer,"out/%s/command.log",outDir.c_str());
     std::ofstream cmdlog;
     cmdlog.open(buffer, std::ios::out | std::ios::trunc);
-    if(!cmdlog.is_open()){
+    if (!cmdlog.is_open()){
         std::cerr << "Command log file could not be opened" << std::endl;
         exit(1);
     }
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 
     // IF POPULATION IS INITIALLY MONOCLONAL
     // CREATE VECTOR WITH N IDENTICAL CELLS
-    if(createPop){
+    if (createPop){
         std::cout << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
         cmdlog << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
         PolyCell A(startsnap, genesPath);
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
         for (auto& cell : Cell_arr) {
             cell.ch_barcode(getBarcode());
         }
-        if(PolyCell::ff_ == 5){
+        if (PolyCell::ff_ == 5){
             for (auto& cell : Cell_arr) {
                 cell.UpdateRates();
             }
@@ -256,11 +256,11 @@ int main(int argc, char *argv[])
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
         cmdlog << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
         //auto cell_it = Cell_arr.begin();
-        while(count <Total_Cell_Count && !startsnap.eof()){
+        while (count <Total_Cell_Count && !startsnap.eof()){
             Cell_arr.emplace_back(startsnap, genesPath);
             count++;  
         }
-        if(PolyCell::ff_ == 5){
+        if (PolyCell::ff_ == 5){
             for (auto& cell : Cell_arr) {
                 cell.UpdateRates();
             }
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
     OUT2.write((char*)(&ENCODING),sizeof(int));
 
     int idx;
-    switch(ENCODING){
+    switch (ENCODING){
         case 0: //"normal" output format
         case 2: idx=1;
                 //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
     system(cmd);
 
     std::ofstream MUTATIONLOG;
-    if(trackMutations && !noMut){
+    if (trackMutations && !noMut){
         // Open MUTATION LOG
         sprintf(buffer, "out/%s/MUTATION_LOG",outDir.c_str());
         MUTATIONLOG.open(buffer);
@@ -326,18 +326,18 @@ int main(int argc, char *argv[])
     cmdlog << "Starting evolution ..." << std::endl;
 
     // PSEUDO WRIGHT-FISHER PROCESS
-    while(CURRENT_GEN < MAX_GEN){
+    while (CURRENT_GEN < MAX_GEN){
         printProgress(CURRENT_GEN*1.0/MAX_GEN);
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
-        if(POP_SIZE<10000){
+        if (POP_SIZE<10000){
             Cell_temp.reserve(POP_SIZE*5);
         }
         else{
             Cell_temp.reserve(POP_SIZE*2);
         }
         // for each cell in the population
-        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
+        for (auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
             // fitness of cell j with respect to sum of population fitness
             double relative_fitness = cell_it->fitness()/w_sum;
             // probability parameter of binomial distribution
@@ -365,15 +365,15 @@ int main(int argc, char *argv[])
                 link++;
             }while(link < last);
 
-            if(!noMut){
+            if (!noMut){
             // after filling with children, go through each one for mutation
                 do{
                 	std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
                 	int n_mutations = binMut(g_rng);
                     // attempt n mutations
-                    for(int i=0;i<n_mutations;++i){
+                    for (int i=0;i<n_mutations;++i){
                         MUTATION_CTR++;
-                        if(trackMutations){
+                        if (trackMutations){
                             // mutate and write mutation to file
                             it->ranmut_Gene(MUTATIONLOG,CURRENT_GEN);
                         }
@@ -387,12 +387,12 @@ int main(int argc, char *argv[])
         }
         // if the population is below N
         // randomly draw from progeny to pad
-        while(Cell_temp.size() < POP_SIZE){
+        while (Cell_temp.size() < POP_SIZE){
             auto cell_it = Cell_temp.begin();
             Cell_temp.emplace_back(*(cell_it + randomNumber()*Cell_temp.size()));
         }
 
-        if(Cell_temp.size() > POP_SIZE){
+        if (Cell_temp.size() > POP_SIZE){
             std::shuffle(Cell_temp.begin(), Cell_temp.end(), g_rng);
             Cell_temp.resize(POP_SIZE);
         }
@@ -419,12 +419,12 @@ int main(int argc, char *argv[])
         for (auto& cell : Cell_arr) {
             double current = cell.fitness();
             w_sum += current;
-            if(current > fittest) 
+            if (current > fittest) 
                 fittest = current;
             cell.UpdateNsNa();
         }
         //normalize by fittest individual to prevent overflow
-        if(inputType == "s"){
+        if (inputType == "s"){
             w_sum = 0;
             for (auto& cell : Cell_arr) {
                 w_sum += cell.normalizeFit(fittest);
@@ -450,7 +450,7 @@ int main(int argc, char *argv[])
             OUT2.write((char*)(&ENCODING),sizeof(int));
 
             int count;
-            switch(ENCODING){
+            switch (ENCODING){
                 case 0: //"normal" output format 
                 case 2: count=1;
                         //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
@@ -489,7 +489,7 @@ int main(int argc, char *argv[])
     cmdlog.close();
 
     // if the user toggled analysis, call shell script
-    if(enableAnalysis){
+    if (enableAnalysis){
         std::string script = "tools/barcodes.sh";
         std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(MAX_GEN)+" "+std::to_string(POP_SIZE)+" "+std::to_string(STEP)+" "+std::to_string(ENCODING)+" "+std::to_string(GENE_COUNT);
         const char *cmd = command.c_str();

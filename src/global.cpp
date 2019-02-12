@@ -221,7 +221,7 @@ int GetIndexFromCodon(std::string in_codon)
 {
     std::map <std::string, int>::const_iterator it;
     it = codon_to_num::cnum.find(in_codon);  
-    if(it == codon_to_num::cnum.end()){
+    if (it == codon_to_num::cnum.end()){
         std::cerr << "Invalid codon: "<< in_codon << std::endl;
         std::cerr << "Nucleotide sequence must not contain STOP codons."<< std::endl;
         exit(2);
@@ -234,14 +234,14 @@ int GetIndexFromCodon(std::string in_codon)
 std::string GetProtFromNuc(std::string in_seq)
 {
     int ln = in_seq.length();
-    if((ln % 3) != 0){
+    if ((ln % 3) != 0){
         std::cerr << "Invalid length for nucleotide sequence: " << ln << std::endl;
         std::cerr << "Nucleotide sequence length must be divisible by 3." << std::endl;
         exit(2);
     }
     int la=ln/3;   
     std::string AA="";
-    for(int i=0; i<la;i++){
+    for (int i=0; i<la;i++){
         std::string temp=in_seq.substr(i*3,3);
         
         //check for valid code
@@ -264,7 +264,7 @@ int GetIndexFromAA(std::string aa)
     //check for valid amino acid
     std::map <std::string, int> :: const_iterator it;
     it = prot_to_num::pnum.find(aa);
-    if( it == prot_to_num::pnum.end()){
+    if (it == prot_to_num::pnum.end()){
         std::cerr << "Invalid amino acid: "<< aa << std::endl;
         exit(2);
     }
@@ -299,7 +299,7 @@ int GetIndexFromAA(char aa){
     //check for valid amino acid
     std::map <char, int> :: const_iterator Iter;
     Iter = m.find(aa);
-    if ( Iter == m.end( ) ){
+    if (Iter == m.end( )){
       std::cerr << "Invalid amino acid: "<< aa << std::endl;
       exit(2);
     }
@@ -540,15 +540,15 @@ std::string n3_to_n3(std::string a, std::string b, int i){
 std::string getBarcode()
 {
     char seq [16];
-    for(int i = 0; i < 15; i++){
-        if(randomNumber()<0.5){
-            if(randomNumber()<0.5){
+    for (int i = 0; i < 15; i++){
+        if (randomNumber()<0.5){
+            if (randomNumber()<0.5){
                 seq[i] = 'G';
             }
             else seq[i] = 'C';
         }
         else{
-            if(randomNumber()<0.5){
+            if (randomNumber()<0.5){
                 seq[i] = 'A';
             }
             else seq[i] = 'T';
@@ -562,9 +562,9 @@ std::string getBarcode()
 void InitMatrix()
 {
     std::cout << "Initializing matrix ..." << std::endl;
-    for(int i = 0; i != gene_number; ++i)
-      for(int j = 0; j != res_number; ++j)
-        for(int k = 0; k != 20; ++k){
+    for (int i = 0; i != gene_number; ++i)
+      for (int j = 0; j != res_number; ++j)
+        for (int k = 0; k != 20; ++k){
             matrix[i][j][k] = 1; //i.e., exp(-0/kT) = 1
             matrix_supp[i][j][k] = 1; // maybe it would make more sense here to set it to inf
         }    
@@ -574,7 +574,7 @@ void InitMatrix()
 double ExtractDDGMatrix(std::string filepath, bool supp_mat)
 {
     std::fstream temp(filepath);
-    if(!temp.is_open()){
+    if (!temp.is_open()){
         std::cerr << "File could not be opened: "<< filepath << std::endl;
         exit(2);
     }
@@ -592,7 +592,7 @@ double ExtractDDGMatrix(std::string filepath, bool supp_mat)
             iss >> word;
             //residue index
             int i = atoi(word.c_str());
-            for(int j = 0; iss>>word; j++){
+            for (int j = 0; iss>>word; j++){
                 //extract DDG values
                 double x = atof(word.c_str());
                 sum +=x;
@@ -609,7 +609,7 @@ double ExtractDDGMatrix(std::string filepath, bool supp_mat)
             iss >> word;
             //residue index
             int i = atoi(word.c_str());
-            for(int j = 0; iss>>word; j++){
+            for (int j = 0; iss>>word; j++){
                 //extract DDG values
                 double x = atof(word.c_str());
                 sum +=x;
@@ -629,14 +629,14 @@ double ExtractDDGMatrix(std::string filepath, bool supp_mat)
 void ExtractDMSMatrix(std::string filepath)
 {
     std::fstream temp(filepath);
-    if(!temp.is_open()){
+    if (!temp.is_open()){
         std::cerr << "File could not be open: "<< filepath << std::endl;
         exit(2);
     }
     std::cout << "Extracting DMS matrix ..." << std::endl;
     std::string line;
     int gene_num = 0;
-    while(!temp.eof()){
+    while (!temp.eof()){
         std::string word;
         getline(temp,line);
         std::istringstream iss(line, std::istringstream::in);
@@ -645,7 +645,7 @@ void ExtractDMSMatrix(std::string filepath)
             iss >> word;
             //residue index
             int i = atoi(word.c_str());
-            for(int j = 0; iss>>word; j++){
+            for (int j = 0; iss>>word; j++){
                 //extract DMS values
                 double x = atof(word.c_str());
                 matrix[gene_num][i-1][j] = x;
@@ -705,7 +705,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
                   getline(genefileIN,l);
                   std::istringstream iss(l, std::istringstream::in);
                   iss >> w;
-                  if(w=="Gene_NUM"){
+                  if (w=="Gene_NUM"){
                       iss >> w;
                       gn = atoi(w.c_str());
                   }
@@ -783,7 +783,7 @@ void seqread_Cell(std::fstream& IN, std::fstream& OUT)
 
     OUT << buffer << std::endl;
 
-    for(int j=0; j<gene_size; j++){
+    for (int j=0; j<gene_size; j++){
         std::string DNAsequence;   
         int Na, Ns;
 
@@ -838,7 +838,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
     sprintf(buffer,"\t%d\t%.9f\t%e\t", cell_index, f, m);
     OUT << buffer << std::endl;
 
-    for(int j=0; j<gene_size; j++){
+    for (int j=0; j<gene_size; j++){
         double e, c, dg, f, eff;
         int gene_nid, Ns, Na;
         std::string DNAsequence;
@@ -862,7 +862,7 @@ void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
 
         sprintf(buffer,"%d\tG\t%e\t%.8f\t%.9f\t%d\t%d\t",j, c, dg, f, Na, Ns);
         OUT << buffer << std::endl;
-        if(DNA) OUT << DNAsequence << std::endl;
+        if (DNA) OUT << DNAsequence << std::endl;
         else OUT << GetProtFromNuc(DNAsequence) << std::endl;
     } 
 }
@@ -873,8 +873,9 @@ int StringDiff(const std::string& A, const std::string& B)
     unsigned int L = A.length();
     assert(L == B.length());
     int ctr = 0;  
-    for(unsigned int i =0; i<L; i++){
-        if( A.at(i) != B.at(i)) ctr+=1; 
+    for (unsigned int i =0; i<L; i++){
+        if ( A.at(i) != B.at(i)) 
+          ctr+=1; 
     } 
     return ctr;
 }
@@ -953,9 +954,12 @@ void printProgress (double progress)
     std::cout << "[";
     int pos = PBWIDTH * progress;
     for (int i = 0; i < PBWIDTH; ++i){
-        if (i < pos) std::cout << "=";
-        else if (i == pos) std::cout << "+";
-        else std::cout << " ";
+        if (i < pos)
+          std::cout << "=";
+        else if (i == pos) 
+          std::cout << "+";
+        else 
+          std::cout << " ";
     }
 
     std::cout << "] " << int(progress * 100.0) << " %\r";

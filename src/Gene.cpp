@@ -22,7 +22,7 @@ Gene::Gene(std::fstream& gene_in,Cell *parent)
         else if (word == "N_Seq"){ 
             iss>>gene_seq_;
             gene_len_ = gene_seq_.length();
-            if((gene_len_ % 3) != 0){
+            if ((gene_len_ % 3) != 0){
                   std::cerr << "Invalid length for nucleotide sequence: " << gene_len_ << std::endl;
                   exit(2);
             }
@@ -32,7 +32,7 @@ Gene::Gene(std::fstream& gene_in,Cell *parent)
 
                   //check stop codons in midsequence
                   std::string::size_type loc = aaseq.find("X", 0 );
-                  if(loc != std::string::npos){
+                  if (loc != std::string::npos){
                         std::cerr << "ERROR: DNA sequence has STOP codons in the middle"<<std::endl;
                         exit(2);
                     }           
@@ -121,13 +121,13 @@ distribution parameters are hardcoded for now
 */
 double Gene::Mutate_Stabil_Gaussian(int i, int j)
 { 
-    if(i>=gene_len_){
+    if (i>=gene_len_){
         std::cerr << "ERROR: Mutation site out of bounds."<< std::endl;
         exit(2);
     }       
 
     //non-synonymous mutation
-    if(randomNumber() <= fNS){
+    if (randomNumber() <= fNS){
 
         double temp = Ran_Gaussian(1.0, 1.7);
         double x = exp(-temp/kT);
@@ -186,21 +186,21 @@ std::string Gene::Mutate_Stabil(int i, int j)
     // fetch primordial amino acid
 
     //Ignore mutations to and from CYSTEINE
-    if( (aa_new==2) || (aa_curr==2)){
+    if ( (aa_new==2) || (aa_curr==2)){
         return "CYSTEINE\tNA\tNA\tNA";
     }
 
     //Case unphysical DDG estimate
-    if( x>DDG_min || x<DDG_max){
+    if ( x>DDG_min || x<DDG_max){
         return "UNPHYSICAL\tNA\tNA\tNA";
     }
 
-    if( aa_curr == aa_new){//SILENT
+    if ( aa_curr == aa_new){//SILENT
           gene_seq_.replace(cdn_start, 3, cdn_new);
           Ns_ += 1;
           return "SILENT\tNA\tNA\tNA";
     }
-    else if(aa_primo == aa_new){//REVERT TO WT BACKGROUND
+    else if (aa_primo == aa_new){//REVERT TO WT BACKGROUND
 
           double x_curr = matrix[gene_idx_][resi][aa_curr-1];
           assert( x_curr<DDG_min || x_curr>DDG_max); 
@@ -226,7 +226,7 @@ std::string Gene::Mutate_Stabil(int i, int j)
 
           dg_ /= x_curr;
           dg_ *= x;
-          if(-kT*log(dg_) > 0){
+          if (-kT*log(dg_) > 0){
             myCell_->ch_Fitness(0);
           }
           gene_seq_.replace(cdn_start, 3, cdn_new);
@@ -240,13 +240,13 @@ This version of the mutation function draws the selection coefficient value from
 */
 double Gene::Mutate_Select_Dist(int i, int j)
 { 
-    if(i>=gene_len_){
+    if (i>=gene_len_){
         std::cerr << "ERROR: Mutation site out of bounds."<< std::endl;
         exit(2);
     }       
        
     //non-synonymous mutation
-    if(randomNumber() <= fNS){
+    if (randomNumber() <= fNS){
         double s = RandomNormal();
         double wf = 1 + s;
         f_ *= wf;
@@ -298,7 +298,7 @@ std::string Gene::Mutate_Select(int i, int j)
 
     // fetch primordial amino acid
 
-    if( aa_curr == aa_new){//SILENT
+    if ( aa_curr == aa_new){//SILENT
           gene_seq_.replace(cdn_start, 3, cdn_new);
           Ns_ += 1;
           return "SILENT\tNA\tNA\tNA";
@@ -338,7 +338,7 @@ void Gene::Update_Sequences(const std::string DNAsequence)
 { 
     int l = DNAsequence.length();
 
-    if(l != gene_len_){
+    if (l != gene_len_){
         std::cerr << "ERROR: Replacing DNA sequence with a non-equal length DNA. "<< std::endl;
         std::cerr << "Make sure the gene list you provided matches the genes in the cell files."<< std::endl;
         exit(2);

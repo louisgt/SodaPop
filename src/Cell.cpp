@@ -61,7 +61,7 @@ Cell::Cell(std::fstream & cell_in) {
             std::vector <Gene>::iterator i = genomeVec_.end();
             i--;
             // if gene fitness is null, assign a randomly fit value
-            if((*i).f()==0){
+            if ((*i).f()==0){
                 (*i).ch_f(0.95+randomNumber()*0.02);
             }
             gene_data.close();
@@ -143,7 +143,7 @@ Cell::Cell(std::fstream & IN,
 
 void Cell::linkGenes()
 {
-    for(auto gene_it = this->genomeVec_.begin(); gene_it != this->genomeVec_.end(); gene_it++) {
+    for (auto gene_it = this->genomeVec_.begin(); gene_it != this->genomeVec_.end(); gene_it++) {
         gene_it->setCell(this);
     }
 }

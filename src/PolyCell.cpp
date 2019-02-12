@@ -37,7 +37,7 @@ void PolyCell::FillGene_L()
 
 void PolyCell::selectFitness()
 {
-    switch(PolyCell::ff_){
+    switch (PolyCell::ff_){
         case 1: fit = &PolyCell::fold;
             break;
         case 2: fit = &PolyCell::flux;
@@ -171,10 +171,10 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     std::vector<Gene>::iterator j = genomeVec_.begin();
     VectInt_citerator k = geneBlocks_.begin();
 
-    if(site >= (*k)){
+    if (site >= (*k)){
     // random number generated is greater than
     // the cumulative sum of genes
-         for(k = geneBlocks_.begin(); k != geneBlocks_.end(); ++k){
+         for (k = geneBlocks_.begin(); k != geneBlocks_.end(); ++k){
              if( site< (*k) ) 
                 break;
              j++; 
@@ -188,8 +188,8 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     int bp = (int) (3 * randomNumber());
 
     double wi = fitness();
-    if(fromS_){
-        if(useDist_){
+    if (fromS_){
+        if (useDist_){
             (*j).Mutate_Select_Dist(site,bp);
         }
         else{
@@ -197,7 +197,7 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
         }
     }
     else{
-        if(useDist_){
+        if (useDist_){
             (*j).Mutate_Stabil_Gaussian(site,bp);
         }
         else{
@@ -231,11 +231,11 @@ void PolyCell::ranmut_Gene()
     VectInt_citerator k = geneBlocks_.begin();
 
 
-    if(site >= (*k)){
+    if (site >= (*k)){
     // random number generated is greater than
     // the cumulative sum of genes
-         for(k = geneBlocks_.begin(); k != geneBlocks_.end(); ++k){
-             if(site< (*k) )
+         for (k = geneBlocks_.begin(); k != geneBlocks_.end(); ++k){
+             if (site< (*k) )
                 break;
              j++; 
          }        
@@ -245,8 +245,8 @@ void PolyCell::ranmut_Gene()
 
     int bp = (int) (3 * randomNumber());
     // what is the input type?
-    if(fromS_){
-        if(useDist_){
+    if (fromS_){
+        if (useDist_){
             (*j).Mutate_Select_Dist(site,bp);
         }
         else{
@@ -254,7 +254,7 @@ void PolyCell::ranmut_Gene()
         }
     }
     else{
-        if(useDist_){
+        if (useDist_){
             (*j).Mutate_Stabil_Gaussian(site,bp);
         }
         else{
@@ -266,7 +266,7 @@ void PolyCell::ranmut_Gene()
 }
 
 double PolyCell::normalizeFit(double fittest){
-    if(fittest <= 0) {
+    if (fittest <= 0) {
         std::cerr << "Population collapse, average fitness is null.\n";
         exit(1);
     }

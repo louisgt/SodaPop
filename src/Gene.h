@@ -76,7 +76,7 @@ public:
     Cell *GetCell() const;
     const void setCell(Cell*);
 
-    private:
+private:
         int gene_idx_;     //numeric ID pointing to primordial gene
         int gene_len_;        //length nuc seq
         int prot_len_;        //length aa seq
