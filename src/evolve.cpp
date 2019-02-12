@@ -1,4 +1,4 @@
-#include "PolyCell.h"
+#include "Cell.h"
 #include <tclap/CmdLine.h>
 #include <unistd.h>
 #include "rng.h"
@@ -131,12 +131,12 @@ int main(int argc, char *argv[])
 
         std::cout << "Begin ... " << std::endl;
         if (inputType == "s"){
-            PolyCell::fromS_ = true;
+            Cell::fromS_ = true;
             if (fitArg.getValue()<5){
-                PolyCell::ff_ = fitArg.getValue();
+                Cell::ff_ = fitArg.getValue();
             }
             else 
-                PolyCell::ff_ = 5;
+                Cell::ff_ = 5;
             InitMatrix();
             GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
             std::cout << "Gene count: " << GENE_COUNT << std::endl;
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
                 ExtractDMSMatrix(matrixVec.front().c_str());
             }
             else{
-                PolyCell::useDist_ = true;
+                Cell::useDist_ = true;
                 if (gammaArg.isSet()){
                     double shape = alphaArg.getValue();
                     double scale = betaArg.getValue();
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
         else if (inputType == "stability"){
             InitMatrix();
             GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
-            PolyCell::ff_ = fitArg.getValue();
+            Cell::ff_ = fitArg.getValue();
             // if DDG matrix is given
             if (matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
                 
             }
             else{
-                PolyCell::useDist_ = true;
+                Cell::useDist_ = true;
             }
         }
 
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
         exit(2);
     }
 
-    if (PolyCell::ff_ == 7) {
+    if (Cell::ff_ == 7) {
         noMut = true;
         std::cout << "Mutations are not active." << std::endl;
     }
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
     cmdlog << "sodapop " << args << std::endl;
     cmdlog << std::endl;
 
-    std::vector <PolyCell> Cell_arr;
+    std::vector <Cell> Cell_arr;
     double w_sum = 0;
 
     // IF POPULATION IS INITIALLY MONOCLONAL
@@ -240,13 +240,13 @@ int main(int argc, char *argv[])
     if (createPop){
         std::cout << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
         cmdlog << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
-        PolyCell A(startsnap, genesPath);
-        Cell_arr = std::vector <PolyCell>(POP_SIZE,A);
+        Cell A(startsnap, genesPath);
+        Cell_arr = std::vector <Cell>(POP_SIZE,A);
         //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
         for (auto& cell : Cell_arr) {
             cell.ch_barcode(getBarcode());
         }
-        if (PolyCell::ff_ == 5){
+        if (Cell::ff_ == 5){
             for (auto& cell : Cell_arr) {
                 cell.UpdateRates();
             }
@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
             Cell_arr.emplace_back(startsnap, genesPath);
             ++count;  
         }
-        if (PolyCell::ff_ == 5){
+        if (Cell::ff_ == 5){
             for (auto& cell : Cell_arr) {
                 cell.UpdateRates();
             }
@@ -331,7 +331,7 @@ int main(int argc, char *argv[])
     // PSEUDO WRIGHT-FISHER PROCESS
     while (CURRENT_GEN < MAX_GEN){
         printProgress(CURRENT_GEN*1.0/MAX_GEN);
-        std::vector<PolyCell> Cell_temp;
+        std::vector<Cell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
         if (POP_SIZE<10000){
             Cell_temp.reserve(POP_SIZE*5);

@@ -26,7 +26,13 @@ Copyright (C) 2019 Louis Gauthier
  */
 
 class Cell {
+
+    typedef double(Cell::*funcPtr)(void) const;
 public:
+
+    static int ff_;
+    static bool useDist_;
+    static bool fromS_;
     
     Cell();
     Cell(std::fstream & );
@@ -38,9 +44,7 @@ public:
     void FillGene_L();
     void linkGenes();
 
-    virtual void UpdateRates() = 0;
-    virtual void dump(std::fstream & , int) const = 0;
-    virtual void PrintCell(int) const = 0;
+    void UpdateRates();
 
     int ID() const {return ID_;}
     uint32_t parent() const {return parent_;}
@@ -55,6 +59,32 @@ public:
     void ch_barcode(std::string s) {barcode_ = s;}
 
     void ch_Fitness(double f){fitness_ = f;}
+
+    // Fitness functions
+    void selectFitness();
+    double flux() const;
+    double toxicity() const;
+    double metabolicOutput() const;
+    double multiplicative() const;
+    double neutral() const;
+    double noMut() const;
+    double fold() const;
+    double growthRate() const;
+
+    void ranmut_Gene();
+    void ranmut_Gene(std::ofstream&, int);
+    void change_exprlevel();
+    double normalizeFit(double);
+    void dump(std::fstream&, int) const;
+    void dumpShort(std::fstream&) const;
+    void dumpSeq(std::fstream&, int) const;
+    void dumpParent(std::fstream&) const;
+
+    void PrintCell(int) const;
+    
+    int Na() const {return Total_Na_;}
+    int Ns() const {return Total_Ns_;}
+    void UpdateNsNa();
     
 protected:
     // organism barcode
@@ -80,6 +110,12 @@ protected:
 
     //Cummulative sum of gene lengths (i.e. genome size)
     VectInt geneBlocks_;
+
+    int Total_Ns_;
+    int Total_Na_;
+
+    // function pointer to select fitness function
+    funcPtr fit;
     
 };
 #endif

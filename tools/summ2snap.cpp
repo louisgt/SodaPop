@@ -1,4 +1,3 @@
-#include "../src/PolyCell.h"
 #include "../src/Cell.h"
 #include "../src/Gene.h"
 
@@ -16,7 +15,7 @@ int main(int argc, char* argv[]) {
     assert((flag == 0) | (flag == 1) | (flag == 2) | (flag == 3));
 
     char buffer[200];
-    std::vector < PolyCell > Cell_arr;
+    std::vector < Cell > Cell_arr;
 
     // open stream to read population summary
     std::fstream popf(argv[1]);
@@ -47,7 +46,7 @@ int main(int argc, char* argv[]) {
                 std::cerr << "File could not be open: " << word << std::endl;
                 exit(1);
             }
-            PolyCell A(temp);
+            Cell A(temp);
             switch(flag)
             {
                 case 0: A.ch_barcode(getBarcode());         
