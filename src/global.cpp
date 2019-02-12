@@ -179,38 +179,38 @@ struct codon_to_prot{
 };
 
 struct prot_to_num{
-    static std::map<std::string,int> create_map()
+    static std::map<char,int> create_map()
         {
-          std::map<std::string,int> m;
-          m["A"] = 1;
-          m["C"] = 2;
-          m["D"] = 3;
-          m["E"] = 4;
-          m["F"] = 5;
-          m["G"] = 6;
-          m["H"] = 7;
-          m["I"] = 8;
-          m["K"] = 9;
-          m["L"] = 10;
-          m["M"] = 11;
-          m["N"] = 12;
-          m["P"] = 13;
-          m["Q"] = 14;
-          m["R"] = 15;
-          m["S"] = 16;
-          m["T"] = 17;
-          m["V"] = 18;
-          m["W"] = 19;
-          m["Y"] = 20;
-          m["X"] = 21;//STOP
+          std::map<char,int> m;
+          m['A'] = 1;
+          m['C'] = 2;
+          m['D'] = 3;
+          m['E'] = 4;
+          m['F'] = 5;
+          m['G'] = 6;
+          m['H'] = 7;
+          m['I'] = 8;
+          m['K'] = 9;
+          m['L'] = 10;
+          m['M'] = 11;
+          m['N'] = 12;
+          m['P'] = 13;
+          m['Q'] = 14;
+          m['R'] = 15;
+          m['S'] = 16;
+          m['T'] = 17;
+          m['V'] = 18;
+          m['W'] = 19;
+          m['Y'] = 20;
+          m['X'] = 21;//STOP
           return m;
         }
-    static std::map<std::string,int> const pnum;
+    static std::map<char,int> const pnum;
 };
 
 // populate genetic code mappings
 std::map<std::string,int> const codon_to_num::cnum = codon_to_num::create_map();
-std::map<std::string,int> const prot_to_num::pnum = prot_to_num::create_map();
+std::map<char,int> const prot_to_num::pnum = prot_to_num::create_map();
 std::map<std::string,char> const codon_to_prot::cprot = codon_to_prot::create_map();
 
 /******* MAPPING FUNCTIONS *******/
@@ -259,51 +259,16 @@ std::string GetProtFromNuc(std::string in_seq)
 
 // input:  amino acid letter as string
 // output: index number of amino acid
-int GetIndexFromAA(std::string aa)
+int GetIndexFromAA(char aa)
 {  
     //check for valid amino acid
-    std::map <std::string, int> :: const_iterator it;
+    std::map <char, int> :: const_iterator it;
     it = prot_to_num::pnum.find(aa);
     if (it == prot_to_num::pnum.end()){
         std::cerr << "Invalid amino acid: "<< aa << std::endl;
         exit(2);
     }
     return it->second;
-}
-
-//duplicate function, allows for a single char input
-int GetIndexFromAA(char aa){
-    std::map <char, int> m;
-    m['A'] = 1;
-    m['C'] = 2;
-    m['D'] = 3;
-    m['E'] = 4;
-    m['F'] = 5;
-    m['G'] = 6;
-    m['H'] = 7;
-    m['I'] = 8;
-    m['K'] = 9;
-    m['L'] = 10;
-    m['M'] = 11;
-    m['N'] = 12;
-    m['P'] = 13;
-    m['Q'] = 14;
-    m['R'] = 15;
-    m['S'] = 16;
-    m['T'] = 17;
-    m['V'] = 18;
-    m['W'] = 19;
-    m['Y'] = 20;
-    m['X'] = 21;//default for missing amino acids
-
-    //check for valid amino acid
-    std::map <char, int> :: const_iterator Iter;
-    Iter = m.find(aa);
-    if (Iter == m.end( )){
-      std::cerr << "Invalid amino acid: "<< aa << std::endl;
-      exit(2);
-    }
-    return m[aa];
 }
 
 // returns the next or second to next bp from a given nucleotide

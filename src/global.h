@@ -120,7 +120,6 @@ enum Matrix_Type {
 };
 
 /******* FUNCTION DECLARATIONS *******/
-int GetIndexFromAA(std::string);
 int GetIndexFromAA(char);
 int GetIndexFromCodon(std::string);
 std::string GetProtFromNuc(std::string);
