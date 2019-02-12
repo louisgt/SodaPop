@@ -135,16 +135,13 @@ int main(int argc, char *argv[])
             }
             else 
                 PolyCell::ff_ = 5;
-            std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
-            std::cout << "Loading primordial genes file ..." << std::endl;
             gene_count = LoadPrimordialGenes(geneListFile,genesPath);
             std::cout << "Gene count: " << gene_count << std::endl;
             // if matrix is given
             if(matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
                 assert(matrixVec.size()==1);
-                std::cout << "Extracting DMS matrix ..." << std::endl;
                 ExtractDMSMatrix(matrixVec.front().c_str());
             }
             else{
@@ -162,9 +159,7 @@ int main(int argc, char *argv[])
             }
         }
         else if(inputType == "stability"){
-            std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
-            std::cout << "Loading primordial genes file ..." << std::endl;
             gene_count = LoadPrimordialGenes(geneListFile,genesPath);
             PolyCell::ff_ = fitArg.getValue();
             // if DDG matrix is given
@@ -173,11 +168,9 @@ int main(int argc, char *argv[])
                 int nMat = matrixVec.size();
                 switch(nMat){
                     case 2:
-                        std::cout << "Extracting DDG_binding matrix ..." << std::endl;
                         bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),true);
                         std::cout << "Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
                     case 1:
-                        std::cout << "Extracting DDG_folding matrix ..." << std::endl;
                         fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),false);
                         std::cout << "Average ∆∆G_folding is " << fold_DG << " ..." << std::endl;
                         break;

@@ -561,6 +561,7 @@ std::string getBarcode()
 // initializes the 3D matrix for DDG values
 void InitMatrix()
 {
+    std::cout << "Initializing matrix ..." << std::endl;
     for(int i = 0; i != max_gene; ++i)
       for(int j = 0; j != max_resi; ++j)
         for(int k = 0; k != 20; ++k){
@@ -577,6 +578,7 @@ double ExtractDDGMatrix(std::string filepath, bool supp_mat)
         std::cerr << "File could not be opened: "<< filepath << std::endl;
         exit(2);
     }
+    std::cout << "Extracting DDG matrix ..." << std::endl;
     std::string line;
     int gene_num = 0;
     double sum = 0;
@@ -631,6 +633,7 @@ void ExtractDMSMatrix(std::string filepath)
         std::cerr << "File could not be open: "<< filepath << std::endl;
         exit(2);
     }
+    std::cout << "Extracting DMS matrix ..." << std::endl;
     std::string line;
     int gene_num = 0;
     while(!temp.eof()){
@@ -678,6 +681,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
         std::cerr << "File could not be open: "<< genelistfile <<std::endl;
         exit(2);
     }
+    std::cout << "Loading primordial genes file ..." << std::endl;
     int flag_AASeq = 0; 
     int gc = 0;
     while(!genelistIN.eof()){
