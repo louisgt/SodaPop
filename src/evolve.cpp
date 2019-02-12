@@ -242,7 +242,6 @@ int main(int argc, char *argv[])
         cmdlog << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
         Cell A(startsnap, genesPath);
         Cell_arr = std::vector <Cell>(POP_SIZE,A);
-        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
         for (auto& cell : Cell_arr) {
             cell.ch_barcode(getBarcode());
         }
@@ -258,7 +257,6 @@ int main(int argc, char *argv[])
         int count = 0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
         cmdlog << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
-        //auto cell_it = Cell_arr.begin();
         while (count <Total_Cell_Count && !startsnap.eof()){
             Cell_arr.emplace_back(startsnap, genesPath);
             ++count;  
@@ -292,7 +290,6 @@ int main(int argc, char *argv[])
     switch (ENCODING){
         case 0: //"normal" output format
         case 2: idx=1;
-                //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                 for (const auto& cell : Cell_arr) {
                     w_sum += cell.fitness();
                     cell.dump(OUT2,idx++);
@@ -418,7 +415,6 @@ int main(int argc, char *argv[])
 
         w_sum = 0;
         double fittest = 0;
-        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
         for (auto& cell : Cell_arr) {
             double current = cell.fitness();
             w_sum += current;
@@ -456,14 +452,12 @@ int main(int argc, char *argv[])
             switch (ENCODING){
                 case 0: //"normal" output format 
                 case 2: count=1;
-                        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                         for (const auto& cell : Cell_arr) {
                             cell.dump(OUT2,count++);
                             //count++;
                         }
                     break;
                 case 1: //"short" output format
-                        //for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
                         for (const auto& cell : Cell_arr) {
                             cell.dumpShort(OUT2);
                         } 

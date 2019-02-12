@@ -189,7 +189,6 @@ double Cell::fitness() const
 void Cell::FillGene_L() {
     int sum = 0;
     std::vector < Gene > ::iterator i;
-    //for (auto cell_it = genomeVec_.begin(); cell_it != genomeVec_.end(); ++cell_it) {
     for (const auto& gene : genomeVec_) {
         sum += gene.geneLength();
         geneBlocks_.push_back(sum);
@@ -208,7 +207,6 @@ int Cell::total_mutations(const int & spec) {
     int s = 0;
     int a = 0;
 
-    //for (auto cell_it = genomeVec_.begin(); cell_it != genomeVec_.end(); ++cell_it) {
     for (const auto& gene : genomeVec_) {
         int Ns = gene.Ns();
         int Na = gene.Na();
@@ -253,7 +251,6 @@ double Cell::fold() const
 {
     double sum_func = 0;
     //sum (concentration*Pnat) over all genes
-    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
     for (const auto& gene : genomeVec_) {
         sum_func += gene.functional();
     }
@@ -265,7 +262,6 @@ double Cell::flux() const
 {
     double sum_func = 0;
     double a = 0;
-    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
     for (const auto& gene : genomeVec_) {
         // efficiency * Pnat * abundance
         sum_func += 1/(gene.eff()*gene.functional());
@@ -279,7 +275,6 @@ double Cell::toxicity() const
 {
     double f = 0;
     //sum (concentration*(1-Pnat)) over all genes
-    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
     for (const auto& gene : genomeVec_) {
         f += gene.misfolded();
     }
@@ -292,7 +287,6 @@ double Cell::metabolicOutput() const
     double flux = 0;
     double toxicity = 0;
     double a = 0;
-    //for (auto& it : genomeVec_) {
     for (const auto& gene : genomeVec_) {
         flux += 1 / (gene.eff()*gene.functional());
         toxicity += gene.misfolded();
@@ -311,7 +305,6 @@ double Cell::metabolicOutput() const
 double Cell::multiplicative() const
 {
     double fitness = 0;
-    //for (auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it)
     for (const auto& gene : genomeVec_){
         fitness += gene.f()*gene.e();
     }
@@ -335,7 +328,6 @@ double Cell::growthRate() const
 {
     double sum = 0;
     //sum (concentration*Pnat) over all genes
-    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
     for (const auto& gene : genomeVec_) {
         sum += gene.functional()*gene.eff();
     }
@@ -491,7 +483,6 @@ void Cell::dump(std::fstream& OUT, int cell_index) const
     x = static_cast<int>(genomeVec_.size());             
     OUT.write((char*)(&x),sizeof(int));
 
-   //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
    for (const auto& gene : genomeVec_) {
         int gene_nid = gene.num();
         double s = gene.e();
@@ -566,7 +557,6 @@ void Cell::dumpSeq(std::fstream& OUT, int cell_index) const
     x = static_cast<int>(genomeVec_.size());             
     OUT.write((char*)(&x),sizeof(int));
 
-    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
     for (const auto& gene : genomeVec_) {
 
         int Ns = gene.Ns();
@@ -595,7 +585,6 @@ void Cell::UpdateNsNa()
 {
     int new_Na = 0;
     int new_Ns = 0;
-    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
     for (auto& gene : genomeVec_){
         new_Na += gene.Na();
         new_Ns += gene.Ns();
@@ -610,7 +599,6 @@ void Cell::PrintCell(int cell_ndx) const
       char buffer[140];
       sprintf(buffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), static_cast<int>(genomeVec_.size()));  
       std::cout << buffer << std::endl;
-      //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
       for (const auto& gene : genomeVec_) {
         int gene_nid = gene.num();
         double e = gene.e();
