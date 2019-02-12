@@ -122,8 +122,7 @@ double PolyCell::multiplicative() const
 {
     double fitness = 0;
     //for (auto gene_it = Gene_arr_.begin(); gene_it != Gene_arr_.end(); ++gene_it)
-    for (const auto& gene : Gene_arr_)
-    {
+    for (const auto& gene : Gene_arr_){
         fitness += gene.f()*gene.e();
     }
     return fitness/gene_count();
@@ -176,7 +175,8 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     // random number generated is greater than
     // the cumulative sum of genes
          for(k = Gene_L_.begin(); k != Gene_L_.end(); ++k){
-             if( site< (*k) ) break;
+             if( site< (*k) ) 
+                break;
              j++; 
          }        
          k--;
@@ -188,25 +188,19 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
     int bp = (int) (3 * randomNumber());
 
     double wi = fitness();
-    if(fromS_)
-    {
-        if(useDist_)
-        {
+    if(fromS_){
+        if(useDist_){
             (*j).Mutate_Select_Dist(site,bp);
         }
-        else
-        {
+        else{
             mutation = (*j).Mutate_Select(site,bp);
         }
     }
-    else
-    {
-        if(useDist_)
-        {
+    else{
+        if(useDist_){
             (*j).Mutate_Stabil_Gaussian(site,bp);
         }
-        else
-        {
+        else{
             mutation = (*j).Mutate_Stabil(site,bp);
         }
     }
@@ -241,7 +235,8 @@ void PolyCell::ranmut_Gene()
     // random number generated is greater than
     // the cumulative sum of genes
          for(k = Gene_L_.begin(); k != Gene_L_.end(); ++k){
-             if(site< (*k) ) break;
+             if(site< (*k) )
+                break;
              j++; 
          }        
          k--;
@@ -250,25 +245,19 @@ void PolyCell::ranmut_Gene()
 
     int bp = (int) (3 * randomNumber());
     // what is the input type?
-    if(fromS_)
-    {
-        if(useDist_)
-        {
+    if(fromS_){
+        if(useDist_){
             (*j).Mutate_Select_Dist(site,bp);
         }
-        else
-        {
+        else{
             (*j).Mutate_Select(site,bp);
         }
     }
-    else
-    {
-        if(useDist_)
-        {
+    else{
+        if(useDist_){
             (*j).Mutate_Stabil_Gaussian(site,bp);
         }
-        else
-        {
+        else{
             (*j).Mutate_Stabil(site,bp);
         }
     }

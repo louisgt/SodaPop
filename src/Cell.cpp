@@ -202,7 +202,10 @@ int Cell::total_mutations(const int & spec) {
         sa += (Ns + Na);
     }
 
-    if (spec == 0) return sa;
-    else if (spec == 1) return s;
-    else return a;
+    if (spec == 0) 
+        return sa;
+    else if (spec == 1) 
+        return s;
+    else 
+        return a;
 }

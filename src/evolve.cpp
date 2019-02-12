@@ -128,53 +128,47 @@ int main(int argc, char *argv[])
             setRngSeed(seedArg.getValue());
 
         std::cout << "Begin ... " << std::endl;
-        if(inputType == "s")
-        {
+        if(inputType == "s"){
             PolyCell::fromS_ = true;
             if(fitArg.getValue()<5){
                 PolyCell::ff_ = fitArg.getValue();
             }
-            else PolyCell::ff_ = 5;
+            else 
+                PolyCell::ff_ = 5;
             std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
             std::cout << "Loading primordial genes file ..." << std::endl;
             gene_count = LoadPrimordialGenes(geneListFile,genesPath);
             std::cout << "Gene count: " << gene_count << std::endl;
             // if matrix is given
-            if(matrixArg.isSet())
-            {
+            if(matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
                 assert(matrixVec.size()==1);
                 std::cout << "Extracting DMS matrix ..." << std::endl;
                 ExtractDMSMatrix(matrixVec.front().c_str());
             }
-            else
-            {
+            else{
                 PolyCell::useDist_ = true;
-                if(gammaArg.isSet())
-                {
+                if(gammaArg.isSet()){
                     double shape = alphaArg.getValue();
                     double scale = betaArg.getValue();
                     Gene::initGamma(shape, scale);
                 }
-                else if(normalArg.isSet())
-                {
+                else if(normalArg.isSet()){
                     double mean = alphaArg.getValue();
                     double stddev = betaArg.getValue();
                     Gene::initNormal(mean, stddev);
                 }
             }
         }
-        else if(inputType == "stability")
-        {
+        else if(inputType == "stability"){
             std::cout << "Initializing matrix ..." << std::endl;
             InitMatrix();
             std::cout << "Loading primordial genes file ..." << std::endl;
             gene_count = LoadPrimordialGenes(geneListFile,genesPath);
             PolyCell::ff_ = fitArg.getValue();
             // if DDG matrix is given
-            if(matrixArg.isSet())
-            {
+            if(matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
                 int nMat = matrixVec.size();
                 switch(nMat){
@@ -190,8 +184,7 @@ int main(int argc, char *argv[])
                 }
                 
             }
-            else
-            {
+            else{
                 PolyCell::useDist_ = true;
             }
         }
@@ -233,8 +226,7 @@ int main(int argc, char *argv[])
     sprintf(buffer,"out/%s/command.log",outDir.c_str());
     std::ofstream cmdlog;
     cmdlog.open(buffer, std::ios::out | std::ios::trunc);
-    if(!cmdlog.is_open())
-    {
+    if(!cmdlog.is_open()){
         std::cerr << "Command log file could not be opened" << std::endl;
         exit(1);
     }
@@ -341,8 +333,7 @@ int main(int argc, char *argv[])
     cmdlog << "Starting evolution ..." << std::endl;
 
     // PSEUDO WRIGHT-FISHER PROCESS
-    while(GENERATION_CTR < GENERATION_MAX)
-    {
+    while(GENERATION_CTR < GENERATION_MAX){
         printProgress(GENERATION_CTR*1.0/GENERATION_MAX);
         std::vector<PolyCell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
@@ -353,8 +344,7 @@ int main(int argc, char *argv[])
             Cell_temp.reserve(N*2);
         }
         // for each cell in the population
-        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it)
-        {
+        for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
             // fitness of cell j with respect to sum of population fitness
             double relative_fitness = cell_it->fitness()/w_sum;
             // probability parameter of binomial distribution
@@ -388,8 +378,7 @@ int main(int argc, char *argv[])
                 	std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
                 	int n_mutations = binMut(g_rng);
                     // attempt n mutations
-                    for(int i=0;i<n_mutations;++i)
-                    {
+                    for(int i=0;i<n_mutations;++i){
                         MUTATION_CTR++;
                         if(trackMutations){
                             // mutate and write mutation to file

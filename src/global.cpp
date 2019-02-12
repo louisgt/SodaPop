@@ -234,8 +234,7 @@ int GetIndexFromCodon(std::string in_codon)
 std::string GetProtFromNuc(std::string in_seq)
 {
     int ln = in_seq.length();
-    if((ln % 3) != 0)
-    {
+    if((ln % 3) != 0){
         std::cerr << "Invalid length for nucleotide sequence: " << ln << std::endl;
         std::cerr << "Nucleotide sequence length must be divisible by 3." << std::endl;
         exit(2);
@@ -360,22 +359,27 @@ std::string n3_to_n3(std::string a, std::string b, int i){
   double r = randomNumber();
   double l;
 
-  if ( a == "TAA")
-  {
+  if ( a == "TAA"){
       switch (i)
       {
           case 0:
               l =  (2*r);
 
               if (b == "CAA" ){
-                if  ( l<1 )	a = "GAA";
-                else 		a = "AAA";
+                if  ( l<1 )	
+                  a = "GAA";
+                else
+                  a = "AAA";
               }else if (b == "GAA" ){
-                if  ( l<1 )	a = "CAA";
-                else 		a = "AAA";
+                if  ( l<1 )
+                  a = "CAA";
+                else
+                  a = "AAA";
               }else if (b == "AAA" ){
-                 if  ( l<1 )	a = "GAA";
-                else 		a = "CAA";
+                if  ( l<1 )
+                  a = "GAA";
+                else
+                  a = "CAA";
               }else{
                 std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
                 exit(2);
@@ -384,8 +388,10 @@ std::string n3_to_n3(std::string a, std::string b, int i){
            break;
 
           case 1:
-              if 	(b == "TTA") a = "TCA";
-              else if (b == "TCA") a = "TTA";
+              if 	(b == "TTA")
+                a = "TCA";
+              else if (b == "TCA")
+                a = "TTA";
               else {
                 std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
                 exit(2); 
@@ -394,8 +400,10 @@ std::string n3_to_n3(std::string a, std::string b, int i){
             break;
 
           case 2:
-              if 	(b == "TAT") a = "TAC";
-              else if (b == "TAC") a = "TAT";
+              if 	(b == "TAT")
+                a = "TAC";
+              else if (b == "TAC")
+                a = "TAT";
               else {
                 std::cerr << "Invalid starting codon in n3_to_n3()." << std::endl;
                 exit(2); 
@@ -415,14 +423,20 @@ std::string n3_to_n3(std::string a, std::string b, int i){
               l = (2*r);
 
               if (b == "AAG" ){
-                if  ( l<1 )	a = "GAG";
-                else 		a = "CAG";
+                if  ( l<1 )
+                  a = "GAG";
+                else
+                  a = "CAG";
               }else if (b == "GAG" ){
-                if  ( l<1 )	a = "AAG";
-                else 		a = "CAG";
+                if  ( l<1 )
+                  a = "AAG";
+                else
+                  a = "CAG";
               }else if (b == "CAG" ){
-                 if  ( l<1 )	a = "GAG";
-                else 		a = "AAG";
+                if  ( l<1 )
+                  a = "GAG";
+                else
+                  a = "AAG";
               }else{
                 std::cerr << "Invalid mutation. n3_to_n3()." << std::endl;
                 exit(2);

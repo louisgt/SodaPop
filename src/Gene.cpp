@@ -46,23 +46,21 @@ Gene::Gene(std::fstream& gene_in,Cell *parent)
             iss >> word;
     	   conc_ = atof(word.c_str());
         }
-        else if (word == "DG")
-        { 
+        else if (word == "DG"){ 
             iss>>word; 
       	    dg_ = atof(word.c_str());
             dg_ = exp(-dg_/kT);
         }
-        else if (word == "F")
-        { 
+        else if (word == "F"){ 
             iss>>word; 
             f_ = atof(word.c_str());
         }
-        else if (word == "EFF")
-        { 
+        else if (word == "EFF"){ 
             iss>>word; 
             eff_ = atof(word.c_str());
         }
-        else if (word == "//"){;}//do nothing
+        else if (word == "//")
+            {;}//do nothing
     }
     Na_ = 0; //default
     Ns_ = 0;
@@ -92,8 +90,10 @@ Gene::~Gene()
 bool Gene::operator== (Gene& G) 
 {
     std::string temp = G.nseq();
-    if ( (temp.compare(nucseq_) == 0) && (conc_ == G.conc_) ) return true;
-    else return false;
+    if ( (temp.compare(nucseq_) == 0) && (conc_ == G.conc_) ) 
+        return true;
+    else
+        return false;
 }
 
 // assignment overloading
@@ -338,8 +338,7 @@ void Gene::Update_Sequences(const std::string DNAsequence)
 { 
     int l = DNAsequence.length();
 
-    if(l != ln_)
-    {
+    if(l != ln_){
         std::cerr << "ERROR: Replacing DNA sequence with a non-equal length DNA. "<< std::endl;
         std::cerr << "Make sure the gene list you provided matches the genes in the cell files."<< std::endl;
         exit(2);
