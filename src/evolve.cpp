@@ -38,8 +38,10 @@ int main(int argc, char *argv[])
     bool noMut = false;
 
     std::string inputType;
-    std::string geneListFile, genesPath;
-    std::string outDir, startSnapFile;
+    std::string geneListFile;
+    std::string genesPath;
+    std::string outDir;
+    std::string startSnapFile;
     std::vector<std::string> matrixVec;
 
     // Wrap everything in a try block
@@ -203,7 +205,8 @@ int main(int argc, char *argv[])
     }
     
     // header
-    int Total_Cell_Count, dummy;
+    int Total_Cell_Count;
+    int dummy;
     double frame_time;
     //read frame time
     startsnap.read((char*)(&frame_time),sizeof(double));
@@ -404,7 +407,7 @@ int main(int argc, char *argv[])
             v_size--;
         }*/
 
-        Total_Cell_Count = (int)(Cell_temp.size());
+        Total_Cell_Count = static_cast<int>(Cell_temp.size());
         assert(Total_Cell_Count == POP_SIZE);
         
         // swap population with initial vector

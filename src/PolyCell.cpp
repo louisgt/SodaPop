@@ -165,7 +165,7 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 
     // pick random site to mutate
 
-    int site = (int) ( L * randomNumber());
+    int site = static_cast<int>( L * randomNumber());
 
     // find the corresponding gene
     std::vector<Gene>::iterator j = genomeVec_.begin();
@@ -185,7 +185,7 @@ void PolyCell::ranmut_Gene(std::ofstream& log,int ctr)
 
     std::string mutation = "";
 
-    int bp = (int) (3 * randomNumber());
+    int bp = static_cast<int>(3 * randomNumber());
 
     double wi = fitness();
     if (fromS_){
@@ -224,7 +224,7 @@ void PolyCell::ranmut_Gene()
     int L = geneBlocks_.back();
     // pick random site to mutate
 
-    int site = (int) ( L * randomNumber());
+    int site = static_cast<int>( L * randomNumber());
 
     // find the corresponding gene
     std::vector<Gene>::iterator j = genomeVec_.begin();
@@ -243,7 +243,7 @@ void PolyCell::ranmut_Gene()
          site = site - (*k);        
     }
 
-    int bp = (int) (3 * randomNumber());
+    int bp = static_cast<int>(3 * randomNumber());
     // what is the input type?
     if (fromS_){
         if (useDist_){
@@ -298,7 +298,7 @@ void PolyCell::dump(std::fstream& OUT, int cell_index) const
     y = c_mrate_;		 	 
     OUT.write((char*)(&y),sizeof(double));
 
-    x = (int)(genomeVec_.size());		 	 
+    x = static_cast<int>(genomeVec_.size());		 	 
     OUT.write((char*)(&x),sizeof(int));
 
    //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
@@ -373,7 +373,7 @@ void PolyCell::dumpSeq(std::fstream& OUT, int cell_index) const
     y = c_mrate_;            
     OUT.write((char*)(&y),sizeof(double));
 
-    x = (int)(genomeVec_.size());             
+    x = static_cast<int>(genomeVec_.size());             
     OUT.write((char*)(&x),sizeof(int));
 
     //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
@@ -418,7 +418,7 @@ void PolyCell::UpdateNsNa()
 void PolyCell::PrintCell(int cell_ndx) const
 {
       char buffer[140];
-      sprintf(buffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), (int)genomeVec_.size());  
+      sprintf(buffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), static_cast<int>(genomeVec_.size()));  
       std::cout << buffer << std::endl;
       //for(auto gene_it = genomeVec_.begin(); gene_it != genomeVec_.end(); ++gene_it){
       for (const auto& gene : genomeVec_) {
