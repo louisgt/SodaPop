@@ -82,6 +82,36 @@ Gene::Gene(const Gene& G)
     Ns_ = G.Ns_;
 }
 
+Gene::Gene()
+{
+    gene_idx_ = 0;
+    gene_len_ = 0;
+    prot_len_ = 0;
+    gene_seq_ = "";
+    dg_ = 0;
+    f_ =5;
+    conc_ = 0;
+    e_ = 0;
+    eff_ = 0;
+    Na_ = 0;
+    Ns_ = 0;
+}
+
+Gene::Gene(const Gene& G, Cell *p_new_Cell) {
+    gene_idx_ = G.gene_idx_;
+    gene_len_ = G.gene_len_;
+    prot_len_ = G.prot_len_;
+    gene_seq_ = G.gene_seq_;
+    dg_ = G.dg_;
+    f_ = G.f_;
+    conc_ = G.conc_;
+    e_ = G.e_;
+    eff_ = G.eff_;
+    Na_ = G.Na_;
+    Ns_ = G.Ns_;
+    myCell_= p_new_Cell;
+}
+
 Gene::~Gene()
 {
 }

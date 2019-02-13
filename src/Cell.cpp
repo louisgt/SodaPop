@@ -6,13 +6,16 @@ int Cell::ff_ = 6;
 bool Cell::useDist_ = false;
 bool Cell::fromS_ = false;
 
+Gene Cell::selected_gene = Gene();
+
 Cell::Cell():
     barcode_(getBarcode()),
     ID_(0),
     parent_(0),
     o_mrate_(0),
     c_mrate_(0),
-    fitness_(0)
+    fitness_(0),
+    accum_pev_fe(0)
     {
         geneBlocks_.reserve(GENECOUNTMAX);
         genomeVec_.reserve(GENECOUNTMAX);
@@ -21,6 +24,7 @@ Cell::Cell():
 // Construct from cell file
 Cell::Cell(std::fstream & cell_in) {
     char buffer[140];
+    accum_pev_fe = 0;
     geneBlocks_.reserve(GENECOUNTMAX);
     genomeVec_.reserve(GENECOUNTMAX);
     ch_barcode(getBarcode());
@@ -179,6 +183,63 @@ void Cell::linkGenes()
 //         genomeVec_.push_back(A);
 //     }
 // }
+
+//Select a random gene from the cell to be transferred to another cell by saving a copy of it in the static member selected_gene of the Gene class
+void Cell::select_random_gene() {
+    // 1. Create a temporary vector of indices corresponding to the actual gene objects
+    std::vector<int> indices(genomeVec_.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    // 2. Shuffle the vector of indices using the already instantiated rng
+    std::shuffle(indices.begin(), indices.end(), g_rng);
+    // 3. Take the last element as ID of the gene to be selected
+    int ID_random_gene = indices.back();
+    // 4. Return the random gene
+    Cell::selected_gene =  Gene(*(this->genomeVec_.begin() + ID_random_gene),this);
+}
+
+int Cell::remove_rand_gene() {
+    // 1. Create a temporary vector of indices corresponding to the actual gene objects
+    std::vector<int> indices(genomeVec_.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    // 2. Shuffle the vector of indices using the already instantiated rng
+    std::shuffle(indices.begin(), indices.end(), g_rng);
+    // 3. Take the last element as ID of the gene to be removed
+    int ID_removed_gene = indices.back();
+    // 4. Erase the gene from the vector. Note that the vector is automatically resized
+    genomeVec_.erase(genomeVec_.begin() + ID_removed_gene);
+    //Update Gene_L_
+    this->geneBlocks_.clear();
+    this->geneBlocks_.reserve(this->gene_count()-1);
+    this->FillGene_L();
+
+    return ID_removed_gene;
+}
+
+//Add the selected gene saved in the static memeber selected_gene in the present cell
+int Cell::add_gene() {
+    Cell::selected_gene.setCell(this);
+    genomeVec_.push_back(Cell::selected_gene);
+    //std::cout<<"Gain event : Cell"<<this->ID()<<" new gene number is "<<n_G.num()<<" and has length : "<<n_G.length()<<std::endl;
+    //Update Gene_L_
+    this->geneBlocks_.clear();
+    this->geneBlocks_.reserve(this->gene_count()+1);
+    this->FillGene_L();
+
+    return Cell::selected_gene.num();
+}
+
+void Cell::print_summary_Gene_arr_() {
+    for (const auto& gene : genomeVec_) {
+         std::cout<<"current gene of cell"<< this->ID()<<" is gene"<< gene.num()<<" and has length "<<gene.geneLength()<<std::endl;
+    }
+}
+
+void Cell::print_summary_Gene_L_() {
+    std::cout<<"cumulative lengths of cell"<< this->ID()<<" is :"<<std::endl;
+    for (const auto& cumul : geneBlocks_) {
+        std::cout<< cumul <<std::endl;
+    }
+}
 
 double Cell::fitness() const
 {

@@ -78,7 +78,7 @@ If the estimated energy is out of this range, the mutation is ignored.
 *****/
 
 const int POPSIZEMAX(1000000);
-const int GENECOUNTMAX(10);
+const int GENECOUNTMAX(100);
 const int PBWIDTH(70);
 
 // for pretty printing of progress

@@ -29,6 +29,7 @@ public:
     Gene();
     Gene(std::fstream&,Cell *);
     Gene(const Gene&);
+    Gene(const Gene&, Cell *);
     ~Gene(); 
   
     bool operator==(Gene&);
