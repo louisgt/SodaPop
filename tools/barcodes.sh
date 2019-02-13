@@ -113,7 +113,7 @@ j=1
 cat barcodes/start.txt > barcodes/series$i.txt
 
 #### JOIN TIME FRAMES IN A SUITABLE FORMAT
-for filename in `find barcodes/ -maxdepth 1 -name "*.unique"`
+for filename in `find barcodes/ -maxdepth 1 -name "*.unique" | sort`
 do
 	join -t' ' -e 0 -a 1 -1 1 -2 1 -o 2.2 barcodes/series$i.txt $filename | paste -d' ' barcodes/series$i.txt - > barcodes/series$j.txt
 	rm -f barcodes/series$i.txt
