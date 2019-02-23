@@ -1,11 +1,10 @@
-// Gene.cpp
 #include "Gene.h"
 
 std::gamma_distribution<> Gene::gamma_ = std::gamma_distribution<>(1.0, 1.0);
 std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(1.0, 1.0);
 
 //Input: gene file
-Gene::Gene(std::ifstream& gene_in,Cell *parent)
+Gene::Gene(std::ifstream& gene_in, Cell *parent)
 {
     myCell_ = parent;
     std::string line;

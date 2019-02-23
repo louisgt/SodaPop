@@ -117,6 +117,8 @@ extern int dummy;
 extern double frame_time;
 extern std::string outPath;
 
+extern double w_sum;
+
 enum Matrix_Type {
     is_folding,
     is_binding
@@ -153,11 +155,10 @@ const char AdjacentBP(char, int);
 
 void openStartingPop(std::string, std::ifstream&);
 void readSnapshotHeader(std::ifstream&);
-void writeSnapshotHeader(std::ofstream&, Encoding_Type);
 void createOutputDir(std::string);
-void saveSnapshot(std::ofstream&, std::string, int, Encoding_Type);
 
 void openCommandLog(std::ofstream&, std::string, char *[], int);
+void openMutationLog(std::ofstream&, std::string);
 
 void InitMatrix();
 double ExtractDDGMatrix(std::string,Matrix_Type);

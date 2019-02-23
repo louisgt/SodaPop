@@ -1,4 +1,3 @@
-// Gene.cpp
 #include "Cell.h"
 
 // By default the fitness function is set to neutral

@@ -10,6 +10,8 @@ double frame_time = 0;
 std::string outPath = "";
 char buffer[200];
 
+double w_sum = 0;
+
 double matrix[gene_number][res_number][20];
 double matrix_supp[gene_number][res_number][20];
 
@@ -244,6 +246,20 @@ void openCommandLog(std::ofstream& cmdlog, std::string outDir, char *argv[], int
     }
 }
 
+void openMutationLog(std::ofstream& mutlog, std::string outDir){
+    sprintf(buffer, "out/%s/MUTATION_LOG",outDir.c_str());
+    mutlog = std::ofstream(buffer, std::ios::out | std::ios::trunc);
+
+    if (mutlog.is_open()){
+        // file was opened successfully
+        std::cout << "-> Mutation log was opened successfully ..." << std::endl;
+    }
+    else{
+        // error opening file, throw exception
+        throw std::runtime_error("Unable to open mutation log.");
+    }
+}
+
 void openStartingPop(std::string filePath, std::ifstream& fileStream){
     std::cout << "Opening starting population snapshot ..." << std::endl;
     fileStream = std::ifstream(filePath.c_str(),std::ios::in|std::ios::binary);
@@ -271,36 +287,6 @@ void createOutputDir(std::string dirName){
     outPath = buffer;
     std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
 }
-
-void saveSnapshot(std::ofstream& toSnapshot, std::string dirName, int currentGen, Encoding_Type encoding){
-    std::cout << "Opening population snapshot ... " << std::endl;
-    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),dirName.c_str(), currentGen); 
-
-    // Open snapshot file
-    toSnapshot = std::ofstream(buffer, std::ios::out | std::ios::binary);
-    if (toSnapshot.is_open()){
-        std::cout << "Writing population snapshot ... " << std::endl;
-
-        //write
-        writeSnapshotHeader(toSnapshot, encoding);
-    }
-    else{
-        // error opening file, throw exception
-        throw std::runtime_error("Unable to open file for output.");
-    }
-}
-
-void writeSnapshotHeader(std::ofstream& toSnapshot, Encoding_Type encoding)
-{
-    toSnapshot.write((char*)(&frame_time),sizeof(double));
-    toSnapshot.write((char*)(&Total_Cell_Count),sizeof(int));
-    toSnapshot.write((char*)(&encoding),sizeof(int));
-}
-
-void writePop(){
-
-}
-
 
 /******* MAPPING FUNCTIONS *******/
 

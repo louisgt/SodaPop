@@ -28,8 +28,8 @@ uninstall:
 	$(RM) -r $(INSTALLDIR)/$(SUMM2SNAP)
 
 # link
-$(SODAPOP): sodapop.o rng.o global.o gene.o cell.o
-	$(LINK) sodapop.o rng.o global.o gene.o cell.o -o sodapop
+$(SODAPOP): sodapop.o rng.o global.o gene.o cell.o population.o
+	$(LINK) sodapop.o rng.o global.o gene.o cell.o population.o -o sodapop
 $(SNAP2ASCII): snap2ascii.o
 	$(LINK) -o sodasnap snap2ascii.o rng.o global.o
 $(SUMM2SNAP): summ2snap.o rng.o gene.o cell.o global.o
@@ -44,6 +44,8 @@ gene.o: ./src/Gene.cpp
 	$(COMPILE) -o gene.o ./src/Gene.cpp
 cell.o: ./src/Cell.cpp
 	$(COMPILE) -o cell.o ./src/Cell.cpp
+population.o: ./src/Population.cpp
+	$(COMPILE) -o population.o ./src/Population.cpp
 sodapop.o: ./src/evolve.cpp
 	$(COMPILE) -o sodapop.o ./src/evolve.cpp
 snap2ascii.o: ./tools/snap2ascii.cpp ./src/global.cpp
