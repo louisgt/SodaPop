@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     // these variables will hold the parameters input (or not) by the user
     int currentGen = 1;
     int maxGen = currentGen + 1;
-    int mutationCounter = 0;
     int numberOfGenes = 0;
     Encoding_Type outputEncoding = Encoding_Type::by_default;
     unsigned int targetPopSize = 1;
@@ -221,185 +220,36 @@ int main(int argc, char *argv[])
         currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
     }catch (std::runtime_error &e) {}
 
-    OUT.close();
-    std::string command = "gzip -f ";
-    command += buffer;
-    const char *cmd = command.c_str();
-    system(cmd);
-
     /* MAIN SIMULATION BLOCK, can be put in a method outside main
     */
+
+    int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
     
-    // std::cout << "Starting evolution ..." << std::endl;
-    // CMDLOG << "Starting evolution ..." << std::endl;
-
+    std::cout << "Starting evolution ..." << std::endl;
+    CMDLOG << "Starting evolution ..." << std::endl;
+    
     // // PSEUDO WRIGHT-FISHER PROCESS
-    // while (currentGen < maxGen){
-    //     printProgress(currentGen*1.0/maxGen);
+    while (currentGen < maxGen){
+        printProgress(currentGen*1.0/maxGen);
 
-    //     // Population newPopulation;
-    //     // newPopulation.initialize();
+        currentPop.divide(targetBuffer, targetPopSize, MUTATIONLOG);
 
-    //     std::vector<Cell> Cell_temp;
-    //     // reserve 2N to allow overflow and prevent segfault
-    //     if (targetPopSize < 10000){
-    //         Cell_temp.reserve(targetPopSize * 5);
-    //     }
-    //     else{
-    //         Cell_temp.reserve(targetPopSize * 2);
-    //     }
-
-    //     // Population.divide()
-    //     // body of method is just the loop below
-    //     // for each cell in the population
-    //     for (auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-
-
-    //         // fitness of cell j with respect to sum of population fitness
-    //         double relative_fitness = cell_it->fitness()/w_sum;
-    //         // probability parameter of binomial distribution
-    //         std::binomial_distribution<> binCell(targetPopSize, relative_fitness);
-    //         // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
-    //         int n_progeny = binCell(g_rng);
-            
-    //         // if nil, the cell will be wiped from the population
-    //         if(n_progeny == 0) continue; 
-
-    //         // iterator to current available position
-    //         auto it = std::end(Cell_temp);
-
-    //         // iterator to end position of fill
-    //         auto last = it + n_progeny;
-
-    //         cell_it->setParent(cell_it - Cell_arr.begin());
-    //         // fill vector with k times the current cell
-    //         std::fill_n(std::back_inserter(Cell_temp),n_progeny,(*cell_it));
-
-    //         auto link = it;
-
-    //         do{
-    //             link->linkGenes();
-    //             ++link;
-    //         }while(link < last);
-
-    //         if (!noMut){
-    //         // after filling with children, go through each one for mutation
-    //             do{
-    //             	std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
-    //             	int n_mutations = binMut(g_rng);
-    //                 // attempt n mutations
-    //                 for (int i=0;i<n_mutations;++i){
-    //                     ++mutationCounter;
-    //                     if (trackMutations){
-    //                         // mutate and write mutation to file
-    //                         it->ranmut_Gene(MUTATIONLOG,currentGen);
-    //                     }
-    //                     else{
-    //                         it->ranmut_Gene();
-    //                     }       
-    //                 }
-    //                 ++it;
-    //             }while(it < last);
-    //         }
-    //     }
-    //     // if the population is below N
-    //     // randomly draw from progeny to pad
-    //     while (Cell_temp.size() < targetPopSize ) {
-    //         auto cell_it = Cell_temp.begin();
-    //         Cell_temp.emplace_back(*(cell_it + randomNumber()*Cell_temp.size()));
-    //     }
-
-    //     if (Cell_temp.size() > targetPopSize ) {
-    //         std::shuffle(Cell_temp.begin(), Cell_temp.end(), g_rng);
-    //         Cell_temp.resize(targetPopSize ) ;
-    //     }
-
-    //     //alternative to shuffling
-    //    /* while(v_size > N){
-    //         int rand_idx = v_size*randomNumber();
-    //         remove_at(Cell_temp,rand_idx);
-    //         v_size--;
-    //     }*/
-
-    //     Total_Cell_Count = static_cast<int>(Cell_temp.size());
-    //     assert(Total_Cell_Count == targetPopSize ) ;
-        
-    //     // swap population with initial vector
-    //     Cell_arr.swap(Cell_temp);
-
-    //     // reset and update w_sum
-    //     // update Ns and Na for each cell
-
-    //     w_sum = 0;
-    //     double fittest = 0;
-    //     for (auto& cell : Cell_arr) {
-    //         double current = cell.fitness();
-    //         w_sum += current;
-    //         if (current > fittest) 
-    //             fittest = current;
-    //         cell.UpdateNsNa();
-    //     }
-    //     //normalize by fittest individual to prevent overflow
-    //     if (inputType == "s"){
-    //         w_sum = 0;
-    //         for (auto& cell : Cell_arr) {
-    //             w_sum += cell.normalizeFit(fittest);
-    //         }
-    //     }
-        
-    //     // update generation counter
-    //     ++currentGen;
-    //     // save population snapshot every timeStep generations
-    //     if( (currentGen % timeStep) == 0){
-    //         sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), currentGen); 
-    //         //Open snapshot file
-    //         //OUT is target output stream
-    //         std::ofstream OUT(buffer, std::ios::out | std::ios::binary);
-    //         if (!OUT.is_open()){
-    //              std::cerr << "Snapshot file could not be opened";
-    //              exit(1);
-    //         }
-
-    //         double frame_time = currentGen;
-    //         OUT.write((char*)(&frame_time),sizeof(double));
-    //         OUT.write((char*)(&Total_Cell_Count),sizeof(int));
-    //         OUT.write((char*)(&outputEncoding),sizeof(int));
-
-    //         int count;
-    //         switch (outputEncoding){
-    //             case Encoding_Type::by_default: //"normal" output format 
-    //             case Encoding_Type::full: count=1;
-    //                     for (const auto& cell : Cell_arr) {
-    //                         cell.dump(OUT,count++);
-    //                         //count++;
-    //                     }
-    //                 break;
-    //             case Encoding_Type::no_sequence: //"short" output format
-    //                     for (const auto& cell : Cell_arr) {
-    //                         cell.dumpShort(OUT);
-    //                     } 
-    //                 break;
-    //             case Encoding_Type::other: //dump with parent data, to be implemented
-    //                 break;
-    //         }   
-              
-    //         OUT.close();
-    //         //compress last written file with gzip
-    //         std::string command = "gzip -f ";
-    //         command += buffer;
-    //         const char *cmd = command.c_str();
-    //         system(cmd);
-
-    //      }
-    // }
+        // update generation counter
+        ++currentGen;
+        // save population snapshot every timeStep generations
+        if( (currentGen % timeStep) == 0){
+            try{
+                currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
+            }catch (std::runtime_error &e) {}
+         }
+     }
 
     printProgress(currentGen/maxGen);
     std::cout << std::endl;
     MUTATIONLOG.close();
     std::cout << "Done." << std::endl;
     CMDLOG << "Done." << std::endl;
-    std::cout << "Total number of mutation events: " << mutationCounter << std::endl;
-    CMDLOG << "Total number of mutation events: " << mutationCounter << std::endl;
+    std::cout << "Total number of mutation events: " << currentPop.getMutationCount() << std::endl;
     CMDLOG.close();
 
     // if the user toggled analysis, call shell script

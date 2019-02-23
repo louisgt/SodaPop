@@ -28,7 +28,7 @@ class Gene
 public:
     Gene();
     Gene(std::ifstream&,Cell *);
-    //Gene(const Gene&);
+    Gene(const Gene&);
     //Gene(const Gene&, Cell *);
     ~Gene(); 
   

@@ -65,21 +65,21 @@ Gene::Gene(std::ifstream& gene_in, Cell *parent)
     Ns_ = 0;
 }
 
-// // copy constructor
-// Gene::Gene(const Gene& G)
-// {
-//     gene_idx_ = G.gene_idx_;
-//     gene_len_ = G.gene_len_;
-//     prot_len_ = G.prot_len_;
-//     gene_seq_ = G.gene_seq_;
-//     dg_ = G.dg_;
-//     f_ = G.f_;
-//     conc_ = G.conc_;
-//     e_ = G.e_;
-//     eff_ = G.eff_;
-//     Na_ = G.Na_;
-//     Ns_ = G.Ns_;
-// }
+// copy constructor
+Gene::Gene(const Gene& G)
+{
+    gene_idx_ = G.gene_idx_;
+    gene_len_ = G.gene_len_;
+    prot_len_ = G.prot_len_;
+    gene_seq_ = G.gene_seq_;
+    dg_ = G.dg_;
+    f_ = G.f_;
+    conc_ = G.conc_;
+    e_ = G.e_;
+    eff_ = G.eff_;
+    Na_ = G.Na_;
+    Ns_ = G.Ns_;
+}
 
 Gene::Gene()
 {

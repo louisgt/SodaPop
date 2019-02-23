@@ -117,8 +117,6 @@ extern int dummy;
 extern double frame_time;
 extern std::string outPath;
 
-extern double w_sum;
-
 enum Matrix_Type {
     is_folding,
     is_binding

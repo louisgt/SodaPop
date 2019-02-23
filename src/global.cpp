@@ -10,8 +10,6 @@ double frame_time = 0;
 std::string outPath = "";
 char buffer[200];
 
-double w_sum = 0;
-
 double matrix[gene_number][res_number][20];
 double matrix_supp[gene_number][res_number][20];
 

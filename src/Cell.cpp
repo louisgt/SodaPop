@@ -105,6 +105,7 @@ Cell::Cell(std::ifstream & IN,
 
     IN.read((char*)(&f), sizeof(double));
     fitness_ = f;
+
     IN.read((char*)(&m), sizeof(double));
     c_mrate_ = m;
     IN.read((char*)(&gene_size), sizeof(int));
@@ -401,6 +402,7 @@ void Cell::ranmut_Gene()
 {
     // get genome size
     int L = geneBlocks_.back();
+
     // pick random site to mutate
 
     int site = static_cast<int>( L * randomNumber());
@@ -423,6 +425,7 @@ void Cell::ranmut_Gene()
     }
 
     int bp = static_cast<int>(3 * randomNumber());
+
     // what is the input type?
     if (fromS_){
         if (useDist_){
@@ -440,7 +443,7 @@ void Cell::ranmut_Gene()
             (*j).Mutate_Stabil(site,bp);
         }
     }
-         
+
     UpdateRates();
 }
 
