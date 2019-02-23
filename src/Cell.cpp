@@ -276,7 +276,7 @@ double Cell::toxicity() const
     for (const auto& gene : genomeVec_) {
         f += gene.misfolded();
     }
-    return exp(-(MISFOLDING_COST*f));
+    return exp(-(misfoldingCost*f));
 }
 
 // COMBINED METABOLIC OUTPUT FITNESS FUNCTION
@@ -292,7 +292,7 @@ double Cell::metabolicOutput() const
     }
 
     flux = a/flux;
-    toxicity = MISFOLDING_COST * toxicity;
+    toxicity = misfoldingCost * toxicity;
 
     double fitness = flux - toxicity;
     // if toxicity > flux, return 0
@@ -329,7 +329,7 @@ double Cell::growthRate() const
     for (const auto& gene : genomeVec_) {
         sum += gene.functional()*gene.eff();
     }
-    double fit = PREFACTOR/sum;
+    double fit = prefactor/sum;
     return 1/(fit+1);
 }
 

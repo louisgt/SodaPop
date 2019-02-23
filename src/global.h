@@ -83,45 +83,24 @@ const int PBWidth(70);
 
 const double ddG_low_bound(-10);
 const double ddG_high_bound(99);
-const double CONC_MAX(1e15);
+const double maxConcentration(1e15);
 const double kT(0.5922); //defines the energy units
-const double MISFOLDING_COST(1e-4); // misfolding cost, see Geiler-Samerotte et al. 2011
+const double misfoldingCost(1e-4); // misfolding cost, see Geiler-Samerotte et al. 2011
 const double fNS(0.775956284); //fraction of non-synonymous substitutions in a typical protein
-const double PREFACTOR(16000);
+const double prefactor(16000);
 
 // exponent values are precalculated to be used readily
 double const DDG_min = exp(-1*(ddG_low_bound)/kT);
 double const DDG_max = exp(-1*(ddG_high_bound)/kT);
 const int Bigbuffer_max(80);
-const double PI(3.141592653589793238463);
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
 // -> all copies are effectively aggregated
-double const DG_STOP = exp(-1*(99)/kT);
+double const DG_stop = exp(-1*(99)/kT);
 
 // for pretty printing of progress
 #define PBstr "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-
-// extern double const ddG_low_bound;
-// extern double const ddG_high_bound;
-// extern double const CONC_MAX ;
-// extern double const kT; //defines the energy units
-// extern double const MISFOLDING_COST; // misfolding cost, see Geiler-Samerotte et al. 2011
-// extern double const fNS; //fraction of non-synonymous substitutions in a typical protein
-// extern double const PREFACTOR; // prefactor for growth rate fitness function
-
-// exponent values are precalculated to be used readily
-// extern double const DDG_min;
-// extern double const DDG_max;
-
-// extern int const Bigbuffer_max;
-// extern double const PI;
-
-// // If the mutation is to a stop codon
-// // DG_mutant is set to 99 kcal/mol 
-// // -> all copies are effectively aggregated
-// extern double const DG_STOP;
 
 // Create a 3D matrix for fitness landscape
 const int gene_number(100);
