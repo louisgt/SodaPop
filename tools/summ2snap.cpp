@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     double limit = 0.90;
 
     std::string line;
-    Cell_arr.reserve(POPSIZEMAX);
+    Cell_arr.reserve(maxPopSize);
     while (!popf.eof()) {
         getline(popf, line);
         std::string word;

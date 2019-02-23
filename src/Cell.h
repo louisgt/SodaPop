@@ -47,10 +47,6 @@ public:
 
     void UpdateRates();
 
-    void select_random_gene();
-    int add_gene();
-    int remove_rand_gene();
-
     void print_summary_Gene_arr_();
     void print_summary_Gene_L_();
 
@@ -85,16 +81,7 @@ public:
     double normalizeFit(double);
     void dump(std::fstream&, int) const;
     void dumpShort(std::fstream&) const;
-    void dumpSeq(std::fstream&, int) const;
     void dumpParent(std::fstream&) const;
-
-    double get_accumPevFe() const {
-        return accum_pev_fe;
-    }
-
-    void set_accumPevFe(double accumPevFe) {
-        accum_pev_fe = accumPevFe;
-    }
 
     void PrintCell(int) const;
     
@@ -120,9 +107,6 @@ protected:
 
     // organismal fitness
     double fitness_;
-
-    //Accumulation of pangenome evolution (gain or loss of genes) fitness effects
-    double accum_pev_fe;
 
     //Array of genes
     std::vector <Gene> genomeVec_;

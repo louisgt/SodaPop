@@ -4,25 +4,6 @@ VectStr PrimordialAASeq;
 double fold_DG = 0;
 double bind_DG = 0;
 
-const double ddG_low_bound(-10);
-const double ddG_high_bound(99);
-const double CONC_MAX(1e15);
-const double kT(0.5922); //defines the energy units
-const double MISFOLDING_COST(1e-4); // misfolding cost, see Geiler-Samerotte et al. 2011
-const double fNS(0.775956284); //fraction of non-synonymous substitutions in a typical protein
-const double PREFACTOR(16000);
-
-// exponent values are precalculated to be used readily
-double const DDG_min = exp(-1*(ddG_low_bound)/kT);
-double const DDG_max = exp(-1*(ddG_high_bound)/kT);
-const int Bigbuffer_max(80);
-const double PI(3.141592653589793238463);
-
-// If the mutation is to a stop codon
-// DG_mutant is set to 99 kcal/mol 
-// -> all copies are effectively aggregated
-double const DG_STOP = exp(-1*(99)/kT);
-
 double matrix[gene_number][res_number][20];
 double matrix_supp[gene_number][res_number][20];
 
@@ -212,6 +193,21 @@ struct prot_to_num{
 std::map<std::string,int> const codon_to_num::cnum = codon_to_num::create_map();
 std::map<char,int> const prot_to_num::pnum = prot_to_num::create_map();
 std::map<std::string,char> const codon_to_prot::cprot = codon_to_prot::create_map();
+
+Encoding_Type intToEncoding_Type(int type){
+    switch(type){
+        case 0:
+            return Encoding_Type::by_default;
+        case 1:
+            return Encoding_Type::full;
+        case 2:
+            return Encoding_Type::no_sequence;
+        case 3:
+            return Encoding_Type::other;
+        default:
+            return Encoding_Type::by_default;
+    }
+}
 
 /******* MAPPING FUNCTIONS *******/
 
@@ -898,8 +894,8 @@ bool makePath(const std::string& path)
 void printProgress (double progress)
 {
     std::cout << '[';
-    int pos = PBWIDTH * progress;
-    for (int i = 0; i < PBWIDTH; ++i){
+    int pos = PBWidth * progress;
+    for (int i = 0; i < PBWidth; ++i){
         if (i < pos)
           std::cout << '=';
         else if (i == pos) 

@@ -14,19 +14,17 @@ Cell::Cell():
     parent_(0),
     o_mrate_(0),
     c_mrate_(0),
-    fitness_(0),
-    accum_pev_fe(0)
+    fitness_(0)
     {
-        geneBlocks_.reserve(GENECOUNTMAX);
-        genomeVec_.reserve(GENECOUNTMAX);
+        geneBlocks_.reserve(maxGeneCount);
+        genomeVec_.reserve(maxGeneCount);
     }
 
 // Construct from cell file
 Cell::Cell(std::fstream & cell_in) {
     char buffer[140];
-    accum_pev_fe = 0;
-    geneBlocks_.reserve(GENECOUNTMAX);
-    genomeVec_.reserve(GENECOUNTMAX);
+    geneBlocks_.reserve(maxGeneCount);
+    genomeVec_.reserve(maxGeneCount);
     ch_barcode(getBarcode());
     setParent(0);
     std::string line;
@@ -86,8 +84,8 @@ Cell::Cell(std::fstream & cell_in) {
 // Constructs from a unit cell stored in binary 
 Cell::Cell(std::fstream & IN,
     const std::string & genesPath) {
-    geneBlocks_.reserve(GENECOUNTMAX);
-    genomeVec_.reserve(GENECOUNTMAX);
+    geneBlocks_.reserve(maxGeneCount);
+    genomeVec_.reserve(maxGeneCount);
 
     char buffer[140];
     int cell_id, cell_index, gene_size;
@@ -165,67 +163,6 @@ void Cell::linkGenes()
     for (auto gene_it = this->genomeVec_.begin(); gene_it != this->genomeVec_.end(); gene_it++) {
         gene_it->setCell(this);
     }
-}
-
-// // copy constructor
-// Cell::Cell(const Cell& C)
-// {
-//     barcode_ = C.barcode_;
-//     ID_ = C.ID_;
-//     parent_ = C.parent_;
-//     o_mrate_ = C.o_mrate_;
-//     c_mrate_ = C.c_mrate_;
-//     fitness_ = C.fitness_;
-//     geneBlocks_ = C.geneBlocks_;
-//     std::vector < Gene > ::iterator i;
-//     for (auto cell_it = C.genomeVec_.begin(); cell_it != C.genomeVec_.end(); cell_it++) {
-//         Gene A(*cell_it,this);
-//         genomeVec_.push_back(A);
-//     }
-// }
-
-//Select a random gene from the cell to be transferred to another cell by saving a copy of it in the static member selected_gene of the Gene class
-void Cell::select_random_gene() {
-    // 1. Create a temporary vector of indices corresponding to the actual gene objects
-    std::vector<int> indices(genomeVec_.size());
-    std::iota(indices.begin(), indices.end(), 0);
-    // 2. Shuffle the vector of indices using the already instantiated rng
-    std::shuffle(indices.begin(), indices.end(), g_rng);
-    // 3. Take the last element as ID of the gene to be selected
-    int ID_random_gene = indices.back();
-    // 4. Return the random gene
-    Cell::selected_gene =  Gene(*(this->genomeVec_.begin() + ID_random_gene),this);
-}
-
-int Cell::remove_rand_gene() {
-    // 1. Create a temporary vector of indices corresponding to the actual gene objects
-    std::vector<int> indices(genomeVec_.size());
-    std::iota(indices.begin(), indices.end(), 0);
-    // 2. Shuffle the vector of indices using the already instantiated rng
-    std::shuffle(indices.begin(), indices.end(), g_rng);
-    // 3. Take the last element as ID of the gene to be removed
-    int ID_removed_gene = indices.back();
-    // 4. Erase the gene from the vector. Note that the vector is automatically resized
-    genomeVec_.erase(genomeVec_.begin() + ID_removed_gene);
-    //Update Gene_L_
-    this->geneBlocks_.clear();
-    this->geneBlocks_.reserve(this->gene_count()-1);
-    this->FillGene_L();
-
-    return ID_removed_gene;
-}
-
-//Add the selected gene saved in the static memeber selected_gene in the present cell
-int Cell::add_gene() {
-    Cell::selected_gene.setCell(this);
-    genomeVec_.push_back(Cell::selected_gene);
-    //std::cout<<"Gain event : Cell"<<this->ID()<<" new gene number is "<<n_G.num()<<" and has length : "<<n_G.length()<<std::endl;
-    //Update Gene_L_
-    this->geneBlocks_.clear();
-    this->geneBlocks_.reserve(this->gene_count()+1);
-    this->FillGene_L();
-
-    return Cell::selected_gene.num();
 }
 
 void Cell::print_summary_Gene_arr_() {
@@ -591,47 +528,6 @@ void Cell::dumpShort(std::fstream& OUT) const
 
     y = fitness();         
     OUT.write((char*)(&y),sizeof(double));
-}
-
-// Dump cell summary to binary file
-void Cell::dumpSeq(std::fstream& OUT, int cell_index) const
-{
-    int x;
-    double y;
-
-    OUT.write((char*)(&cell_index),sizeof(int));
-
-    //cell ID
-    OUT.write((char*)(&ID_),sizeof(int));
-
-    int s = barcode().size();
-    OUT.write((char*)&s, sizeof(int));
-
-    OUT.write(barcode().c_str(), s);
-
-    y = fitness();         
-    OUT.write((char*)(&y),sizeof(double));
-
-    y = c_mrate_;            
-    OUT.write((char*)(&y),sizeof(double));
-
-    x = static_cast<int>(genomeVec_.size());             
-    OUT.write((char*)(&x),sizeof(int));
-
-    for (const auto& gene : genomeVec_) {
-
-        int Ns = gene.Ns();
-        int Na = gene.Na();
-
-        OUT.write((char*)(&Na),sizeof(int));
-        OUT.write((char*)(&Ns),sizeof(int));
-
-        //Save length of nucleo sequence
-        std::string DNAsequence = gene.geneSeq();
-        int nl = DNAsequence.length();
-        OUT.write((char*)&nl, sizeof(int));
-        OUT.write(DNAsequence.data(), nl);
-    }
 }
 
 // Dump cell parent to binary file

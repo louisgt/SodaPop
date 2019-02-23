@@ -24,18 +24,14 @@ Copyright (C) 2019 Louis Gauthier
 int main(int argc, char *argv[])
 {
     // these variables will hold the parameters input (or not) by the user
-    int CURRENT_GEN = 1;
-    int MAX_GEN = CURRENT_GEN + 1;
-    int MUTATION_CTR = 0;
-    int GENE_COUNT = 0;
-    int ENCODING = 0;
-    unsigned int POP_SIZE=1;
-    int STEP = 1;
+    int currentGen = 1;
+    int maxGen = currentGen + 1;
+    int mutationCounter = 0;
+    int numberOfGenes = 0;
+    Encoding_Type outputEncoding = Encoding_Type::by_default;
+    unsigned int targetPopSize = 1;
+    int timeStep = 1;
 
-    int nb_gain_to_sim = 0;
-    int nb_loss_to_sim = 0;
-    int gain_event_ctr = 0;
-    int loss_event_ctr = 0;
     double lambda_plus = 0;
     double lambda_minus = 0;
     double r_prime = 0;
@@ -156,9 +152,9 @@ int main(int argc, char *argv[])
         cmd.parse(argc, argv);
 
         // Get values from args. 
-        MAX_GEN = maxArg.getValue();
-        POP_SIZE = popArg.getValue();
-        STEP = dtArg.getValue();
+        maxGen = maxArg.getValue();
+        targetPopSize   = popArg.getValue();
+        timeStep = dtArg.getValue();
 
         geneListFile = geneArg.getValue();
         outDir = prefixArg.getValue();
@@ -179,8 +175,8 @@ int main(int argc, char *argv[])
             else 
                 Cell::ff_ = 5;
             InitMatrix();
-            GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
-            std::cout << "Gene count: " << GENE_COUNT << std::endl;
+            numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
+            std::cout << "Gene count: " << numberOfGenes << std::endl;
             // if matrix is given
             if (matrixArg.isSet()){
                 matrixVec = matrixArg.getValue();
@@ -203,7 +199,7 @@ int main(int argc, char *argv[])
         }
         else if (inputType == "stability"){
             InitMatrix();
-            GENE_COUNT = LoadPrimordialGenes(geneListFile,genesPath);
+            numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
             Cell::ff_ = fitArg.getValue();
             // if DDG matrix is given
             if (matrixArg.isSet()){
@@ -227,7 +223,7 @@ int main(int argc, char *argv[])
 
         enableAnalysis = analysisArg.getValue();
         trackMutations = eventsArg.getValue();
-        ENCODING = seqArg.getValue();
+        outputEncoding = intToEncoding_Type(seqArg.getValue());
         createPop = initArg.getValue();
 
         simul_pangenomes_evolution = pangenomes_evo_Arg.getValue();
@@ -261,7 +257,7 @@ int main(int argc, char *argv[])
     startsnap.read((char*)(&frame_time),sizeof(double));
     //read number of cells in file
     startsnap.read((char*)(&Total_Cell_Count),sizeof(int));
-    //read file ENCODING
+    //read file outputEncoding
     startsnap.read((char*)(&dummy),sizeof(int));
 
     sprintf(buffer,"out/%s/snapshots",outDir.c_str());
@@ -287,10 +283,10 @@ int main(int argc, char *argv[])
     // IF POPULATION IS INITIALLY MONOCLONAL
     // CREATE VECTOR WITH N IDENTICAL CELLS
     if (createPop){
-        std::cout << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
-        cmdlog << "Creating a population of " << POP_SIZE << " cells ..." << std::endl;
+        std::cout << "Creating a population of " << targetPopSize   << " cells ..." << std::endl;
+        cmdlog << "Creating a population of " << targetPopSize   << " cells ..." << std::endl;
         Cell A(startsnap, genesPath);
-        Cell_arr = std::vector <Cell>(POP_SIZE,A);
+        Cell_arr = std::vector <Cell>(targetPopSize , A);
         for (auto& cell : Cell_arr) {
             cell.ch_barcode(getBarcode());
         }
@@ -302,7 +298,7 @@ int main(int argc, char *argv[])
     }
     else{
         // ELSE IT MUST BE POPULATED CELL BY CELL FROM SNAP FILE
-        Cell_arr.reserve(POP_SIZE);
+        Cell_arr.reserve(targetPopSize ) ;
         int count = 0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
         cmdlog << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
@@ -321,7 +317,7 @@ int main(int argc, char *argv[])
 
     std::cout << "Saving initial population snapshot ... " << std::endl;
     cmdlog << "Saving initial population snapshot ... " << std::endl;
-    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), CURRENT_GEN); 
+    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), currentGen); 
 
     // Open snapshot file
     std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
@@ -333,24 +329,24 @@ int main(int argc, char *argv[])
     Total_Cell_Count = Cell_arr.size();
     OUT2.write((char*)(&frame_time),sizeof(double));
     OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
-    OUT2.write((char*)(&ENCODING),sizeof(int));
+    OUT2.write((char*)(&outputEncoding),sizeof(int));
 
     int idx;
-    switch (ENCODING){
-        case 0: //"normal" output format
-        case 2: idx=1;
+    switch (outputEncoding){
+        case Encoding_Type::by_default: //"normal" output format
+        case Encoding_Type::full: idx=1;
                 for (const auto& cell : Cell_arr) {
                     w_sum += cell.fitness();
                     cell.dump(OUT2,idx++);
                 } 
             break;
-        case 1: //"short" output format
+        case Encoding_Type::no_sequence: //"short" output format
                 for (const auto& cell : Cell_arr) {
                     w_sum += cell.fitness();
                     cell.dumpShort(OUT2);
                 }
             break;
-        case 3: //dump with parent data, to be implemented
+        case Encoding_Type::other: //dump with parent data, to be implemented
             break;
     }   
 
@@ -432,132 +428,26 @@ int main(int argc, char *argv[])
         }
     }
 
-    /*
-////////////////BEGIN TESTS
-    std::cout<<std::endl<<"////////////////BEGIN TESTS"<<std::endl;
-    //Test Cell::select_random_gene()
-    std::cout<<"Test Cell::select_random_gene():"<<std::endl;
-    (*(Cell_arr.begin())).select_random_gene();
-    std::cout<<"current selected gene is gene"<<Cell::selected_gene.num()<<" and has length "<<Cell::selected_gene.length()<<std::endl;
-
-    //Test Cell::remove_rand_gene()
-    std::cout<<"Test Cell::remove_rand_gene():"<<std::endl;
-    auto current_cell_it = Cell_arr.begin();
-    current_cell_it->remove_rand_gene();
-    current_cell_it->print_summary_Gene_L_();
-    current_cell_it->print_summary_Gene_arr_();
-
-    //Test Cell::select_random_gene() and add_gene()
-    std::cout<<"Test Cell::select_random_gene() and Cell::add_gene():"<<std::endl;
-    std::uniform_int_distribution<int> uniff_dist(0, Cell_arr.size()-1);
-    int random_index_cell = uniff_dist(g_rng);
-    auto cell_two = Cell_arr.begin() + random_index_cell;
-    while (cell_two->barcode() == current_cell_it->barcode()){
-        //choose random cell from which the gained gene will come (DON'T SHUFFLE Cell_arr here because you iterate through it)
-        random_index_cell = uniff_dist(g_rng);
-        cell_two = Cell_arr.begin() + random_index_cell;
-    }
-    cell_two->select_random_gene();
-    int ID_gene_gained = current_cell_it->add_gene();
-    current_cell_it->print_summary_Gene_L_();
-    current_cell_it->print_summary_Gene_arr_();
-    std::cout<<std::endl<<"////////////////END TESTS"<<std::endl;
-/////////////////END TESTS
-*/
-
     // PSEUDO WRIGHT-FISHER PROCESS
-    while (CURRENT_GEN < MAX_GEN){
-        printProgress(CURRENT_GEN*1.0/MAX_GEN);
+    while (currentGen < maxGen){
+        printProgress(currentGen*1.0/maxGen);
         std::vector<Cell> Cell_temp;
         // reserve 2N to allow overflow and prevent segfault
-        if (POP_SIZE<10000){
-            Cell_temp.reserve(POP_SIZE*5);
+        if (targetPopSize < 10000){
+            Cell_temp.reserve(targetPopSize * 5);
         }
         else{
-            Cell_temp.reserve(POP_SIZE*2);
-        }
-
-        bool more_than_one_sp = false;
-        //If the user chose to simulate pangenome evolution
-        if (simul_pangenomes_evolution){
-        //Determine the value of a boolean variable that will allow the program to handle the impact of extinction on HGT: check if there is still more than one species. It is possible that a species takes the advantage over the others which all goes extinct. Thus, HGT won't be possible anymore
-            std::string barcode_initial = Cell_arr.begin()->barcode();
-            for(auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
-                if (cell_it->barcode() != barcode_initial){
-                    more_than_one_sp = true;
-                    break;
-                }
-            }
+            Cell_temp.reserve(targetPopSize * 2);
         }
 
         // for each cell in the population
         for (auto cell_it = Cell_arr.begin(); cell_it != Cell_arr.end(); ++cell_it){
 
-            //Gene gain through HGT between different species & Gene loss event(s)
-            if (simul_pangenomes_evolution){
-
-                nb_gain_to_sim = 0;
-                nb_loss_to_sim = 0;
-                // Poisson distribution for number of gain events in the current generation
-                std::poisson_distribution<> poissonGain(round((pow(cell_it->gene_count(),lambda_plus))));
-                // number of gain event is drawn from Poisson distribution with gain_rate as the expected number of gain events in the current generation
-                nb_gain_to_sim = round(poissonGain(g_rng));
-                // binomial distribution for loss
-
-                // Poisson distribution for number of loss events in the current generation
-                std::poisson_distribution<> poissonLoss(round((r_prime*pow(cell_it->gene_count(),lambda_minus))));
-                // number of loss event is drawn from Poisson distribution with loss_rate as the expected number of loss events in the current generation
-                nb_loss_to_sim = round(poissonLoss(g_rng));
-
-                if ((nb_gain_to_sim > 0) && more_than_one_sp){
-                    //for each gain event
-                    for (int num_gain_event_current_gen = 1; num_gain_event_current_gen < nb_gain_to_sim + 1;num_gain_event_current_gen++){
-                        //choose random cell from which the gained gene will come (DON'T SHUFFLE Cell_arr here because you iterate through it)
-                        std::uniform_int_distribution<int> uniff_dist(0, Cell_arr.size()-1);
-                        int random_index_cell = uniff_dist(g_rng);
-                        auto cell_two = Cell_arr.begin() + random_index_cell;
-                        while (cell_two->barcode() == cell_it->barcode()){
-                            //choose random cell from which the gained gene will come (DON'T SHUFFLE Cell_arr here because you iterate through it)
-                            random_index_cell = uniff_dist(g_rng);
-                            cell_two = Cell_arr.begin() + random_index_cell;
-                        }
-                        cell_two->select_random_gene();
-                        int ID_gene_gained = cell_it->add_gene();
-                        cell_it->set_accumPevFe(cell_it->get_accumPevFe() + a_for_s_x + (b_for_s_x * cell_it->gene_count()));
-                        cell_it->ch_Fitness(cell_it->fitness() + cell_it->get_accumPevFe());
-                        gain_event_ctr++;
-                        //If the user activated the option to get pangenome evolution feedbacks, save feedback for the gain event at each STEP generations where STEP is the time-step
-                        if (track_pangenomes_evolution && ((CURRENT_GEN % STEP) == 0)){
-                            GENE_GAIN_EVENTS_LOG <<gain_event_ctr<<"\t"<<CURRENT_GEN<<"\t"<<cell_two->ID()<<"\t"<<cell_two->barcode()<<"\t"<<cell_it->ID()<<"\t"<<cell_it->barcode()<<"\t"<<ID_gene_gained<<std::endl;
-                        }
-                    }
-                }
-                if ((nb_loss_to_sim > 0) && (cell_it->gene_count()>1) && more_than_one_sp){
-                    //for each loss event
-                    for (int num_loss_event_current_gen = 1; num_loss_event_current_gen < nb_loss_to_sim + 1;num_loss_event_current_gen++){
-                        int ID_gene_removed = cell_it->remove_rand_gene(); //remove a random gene of *cell_it and return its ID
-                        //s_loss(x) = -s_gain(x)
-                        cell_it->set_accumPevFe(cell_it->get_accumPevFe() - a_for_s_x - (b_for_s_x * cell_it->gene_count()));
-                        cell_it->ch_Fitness(cell_it->fitness() + cell_it->get_accumPevFe());
-                        loss_event_ctr++;
-                        //If the user activated the option to get pangenome evolution feedbacks, save feedback for the loss event at each STEP generations where STEP is the time-step
-                        if (track_pangenomes_evolution && ((CURRENT_GEN % STEP) == 0)){
-                            GENE_LOSS_EVENTS_LOG <<loss_event_ctr<<"\t"<<CURRENT_GEN<<"\t"<<cell_it->ID()<<"\t"<<cell_it->ID()<<"\t"<<ID_gene_removed<<std::endl;
-                        }
-                    }
-
-                }
-                //If the user activated the option to get pangenome evolution feedbacks, save Feedback on genome size ( x ), loss/gain rate ratio ( r_x ), loss rate Beta_x and gain rate Alpha_x in PANGENOME_LOG at each STEP generations where STEP is the time-step
-                if (track_pangenomes_evolution && ((CURRENT_GEN % STEP) == 0)){
-                    PANGENOMES_EVOLUTION_LOG <<(cell_it->gene_count())<<"\t"<<(r_prime*pow(cell_it->gene_count(),(lambda_minus-lambda_plus)))<<"\t"<<(r_prime*pow(cell_it->gene_count(),lambda_minus))<<"\t"<<pow(cell_it->gene_count(),lambda_plus)<<std::endl;
-                }
-            }
-
 
             // fitness of cell j with respect to sum of population fitness
             double relative_fitness = cell_it->fitness()/w_sum;
             // probability parameter of binomial distribution
-            std::binomial_distribution<> binCell(POP_SIZE, relative_fitness);
+            std::binomial_distribution<> binCell(targetPopSize ,  relative_fitness);
             // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
             int n_progeny = binCell(g_rng);
             
@@ -588,10 +478,10 @@ int main(int argc, char *argv[])
                 	int n_mutations = binMut(g_rng);
                     // attempt n mutations
                     for (int i=0;i<n_mutations;++i){
-                        ++MUTATION_CTR;
+                        ++mutationCounter;
                         if (trackMutations){
                             // mutate and write mutation to file
-                            it->ranmut_Gene(MUTATIONLOG,CURRENT_GEN);
+                            it->ranmut_Gene(MUTATIONLOG,currentGen);
                         }
                         else{
                             it->ranmut_Gene();
@@ -603,14 +493,14 @@ int main(int argc, char *argv[])
         }
         // if the population is below N
         // randomly draw from progeny to pad
-        while (Cell_temp.size() < POP_SIZE){
+        while (Cell_temp.size() < targetPopSize ) {
             auto cell_it = Cell_temp.begin();
             Cell_temp.emplace_back(*(cell_it + randomNumber()*Cell_temp.size()));
         }
 
-        if (Cell_temp.size() > POP_SIZE){
+        if (Cell_temp.size() > targetPopSize ) {
             std::shuffle(Cell_temp.begin(), Cell_temp.end(), g_rng);
-            Cell_temp.resize(POP_SIZE);
+            Cell_temp.resize(targetPopSize ) ;
         }
 
         //alternative to shuffling
@@ -621,7 +511,7 @@ int main(int argc, char *argv[])
         }*/
 
         Total_Cell_Count = static_cast<int>(Cell_temp.size());
-        assert(Total_Cell_Count == POP_SIZE);
+        assert(Total_Cell_Count == targetPopSize ) ;
         
         // swap population with initial vector
         Cell_arr.swap(Cell_temp);
@@ -647,10 +537,10 @@ int main(int argc, char *argv[])
         }
         
         // update generation counter
-        ++CURRENT_GEN;
-        // save population snapshot every STEP generations
-        if( (CURRENT_GEN % STEP) == 0){
-            sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), CURRENT_GEN); 
+        ++currentGen;
+        // save population snapshot every timeStep generations
+        if( (currentGen % timeStep) == 0){
+            sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), currentGen); 
             //Open snapshot file
             //OUT2 is target output stream
             std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
@@ -659,26 +549,26 @@ int main(int argc, char *argv[])
                  exit(1);
             }
 
-            double frame_time = CURRENT_GEN;
+            double frame_time = currentGen;
             OUT2.write((char*)(&frame_time),sizeof(double));
             OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
-            OUT2.write((char*)(&ENCODING),sizeof(int));
+            OUT2.write((char*)(&outputEncoding),sizeof(int));
 
             int count;
-            switch (ENCODING){
-                case 0: //"normal" output format 
-                case 2: count=1;
+            switch (outputEncoding){
+                case Encoding_Type::by_default: //"normal" output format 
+                case Encoding_Type::full: count=1;
                         for (const auto& cell : Cell_arr) {
                             cell.dump(OUT2,count++);
                             //count++;
                         }
                     break;
-                case 1: //"short" output format
+                case Encoding_Type::no_sequence: //"short" output format
                         for (const auto& cell : Cell_arr) {
                             cell.dumpShort(OUT2);
                         } 
                     break;
-                case 3: //dump with parent data, to be implemented
+                case Encoding_Type::other: //dump with parent data, to be implemented
                     break;
             }   
               
@@ -692,22 +582,19 @@ int main(int argc, char *argv[])
          }
     }
 
-    printProgress(CURRENT_GEN/MAX_GEN);
+    printProgress(currentGen/maxGen);
     std::cout << std::endl;
     MUTATIONLOG.close();
-    PANGENOMES_EVOLUTION_LOG.close();
-    GENE_GAIN_EVENTS_LOG.close();
-    GENE_LOSS_EVENTS_LOG.close();
     std::cout << "Done." << std::endl;
     cmdlog << "Done." << std::endl;
-    std::cout << "Total number of mutation events: " << MUTATION_CTR << std::endl;
-    cmdlog << "Total number of mutation events: " << MUTATION_CTR << std::endl;
+    std::cout << "Total number of mutation events: " << mutationCounter << std::endl;
+    cmdlog << "Total number of mutation events: " << mutationCounter << std::endl;
     cmdlog.close();
 
     // if the user toggled analysis, call shell script
     if (enableAnalysis){
         std::string script = "tools/barcodes.sh";
-        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(MAX_GEN)+" "+std::to_string(POP_SIZE)+" "+std::to_string(STEP)+" "+std::to_string(ENCODING)+" "+std::to_string(GENE_COUNT);
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(maxGen)+" "+std::to_string(targetPopSize ) +" "+std::to_string(timeStep)+" "+std::to_string(outputEncoding)+" "+std::to_string(numberOfGenes);
         const char *cmd = command.c_str();
         system(cmd);
     }
