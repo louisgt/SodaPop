@@ -3,3 +3,4 @@ _site/
 +sodasnap
 +sodasumm
 out/
+*.o

@@ -112,6 +112,10 @@ extern double matrix_supp[gene_number][res_number][20];
 extern double fold_DG;
 extern double bind_DG;
 
+extern int Total_Cell_Count;
+extern int dummy;
+extern double frame_time;
+
 enum Matrix_Type {
     is_folding,
     is_binding
@@ -147,6 +151,7 @@ double Ran_Gaussian(double const, double const);
 const char AdjacentBP(char, int);
 
 void openStartingPop(std::string, std::ifstream&);
+void readSnapshotHeader(std::ifstream&);
 
 void InitMatrix();
 double ExtractDDGMatrix(std::string,Matrix_Type);

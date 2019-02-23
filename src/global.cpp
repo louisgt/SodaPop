@@ -4,6 +4,10 @@ VectStr PrimordialAASeq;
 double fold_DG = 0;
 double bind_DG = 0;
 
+int Total_Cell_Count = 0;
+int dummy = 0;
+double frame_time = 0;
+
 double matrix[gene_number][res_number][20];
 double matrix_supp[gene_number][res_number][20];
 
@@ -232,6 +236,15 @@ void openStartingPop(std::string filePath, std::ifstream& fileStream){
         // error opening file, throw exception
         throw std::runtime_error("Unable to open starting population snapshot.");
     }
+}
+
+void readSnapshotHeader(std::ifstream& snapshot)
+{
+    snapshot.read((char*)(&frame_time),sizeof(double));
+    //read number of cells in file
+    snapshot.read((char*)(&Total_Cell_Count),sizeof(int));
+    //read file outputEncoding
+    snapshot.read((char*)(&dummy),sizeof(int));
 }
 
 

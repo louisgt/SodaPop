@@ -240,13 +240,18 @@ int main(int argc, char *argv[])
 
     /*OPEN POPULATION SNAPSHOT
         eventually move block to initializing method*/
+    /*READ POPULATION SNAPSHOT:
+        -put in global method (throws file read error)
+        -takes stream to read from
+        -wrap in try/catch
+    */
 
     std::ifstream startFile;
     try{
         openStartingPop(startSnapFile,startFile);
+        readSnapshotHeader(startFile);
 
     }catch (std::runtime_error &e) {}
-
 
 
     /* general simulation initialization, can be put in a global method
@@ -255,24 +260,6 @@ int main(int argc, char *argv[])
         noMut = true;
         std::cout << "Mutations are not active." << std::endl;
     }
-   
-
-    /*READ POPULATION SNAPSHOT:
-        -put in global method (throws file read error)
-        -takes stream to read from
-        -wrap in try/catch
-    */
-
-    // header
-    int Total_Cell_Count;
-    int dummy;
-    double frame_time;
-    //read frame time
-    startFile.read((char*)(&frame_time),sizeof(double));
-    //read number of cells in file
-    startFile.read((char*)(&Total_Cell_Count),sizeof(int));
-    //read file outputEncoding
-    startFile.read((char*)(&dummy),sizeof(int));
 
     /* general simulation initialization, can be put in a global method
     */
