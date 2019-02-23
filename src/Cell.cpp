@@ -21,7 +21,7 @@ Cell::Cell():
     }
 
 // Construct from cell file
-Cell::Cell(std::fstream & cell_in) {
+Cell::Cell(std::ifstream & cell_in) {
     char buffer[140];
     geneBlocks_.reserve(maxGeneCount);
     genomeVec_.reserve(maxGeneCount);
@@ -56,7 +56,7 @@ Cell::Cell(std::fstream & cell_in) {
             iss >> word;
             //open gene file
             sprintf(buffer, "%s%s.gene", genesPath.c_str(), word.c_str());
-            std::fstream gene_data(buffer);
+            std::ifstream gene_data(buffer);
             if (!gene_data.is_open()) {
                 std::cerr << "File could not be open: " << buffer << std::endl;
                 exit(2);
@@ -82,7 +82,7 @@ Cell::Cell(std::fstream & cell_in) {
 }
 
 // Constructs from a unit cell stored in binary 
-Cell::Cell(std::fstream & IN,
+Cell::Cell(std::ifstream & IN,
     const std::string & genesPath) {
     geneBlocks_.reserve(maxGeneCount);
     genomeVec_.reserve(maxGeneCount);
@@ -134,7 +134,7 @@ Cell::Cell(std::fstream & IN,
         DNAsequence.assign(buf.begin(), buf.end());
 
         sprintf(buffer, "%s%d.gene", genesPath.c_str(), gene_nid);
-        std::fstream gene_data(buffer);
+        std::ifstream gene_data(buffer);
         if (!gene_data.is_open()) {
             std::cerr << "ERROR: Cannot open gene file " << buffer << std::endl;
             exit(2);
@@ -457,7 +457,7 @@ double Cell::normalizeFit(double fittest){
 }
 
 // Dump cell information to binary file
-void Cell::dump(std::fstream& OUT, int cell_index) const
+void Cell::dump(std::ofstream& OUT, int cell_index) const
 {
     int x;
     double y;
@@ -510,7 +510,7 @@ void Cell::dump(std::fstream& OUT, int cell_index) const
 }
 
 // Dump cell summary to binary file
-void Cell::dumpShort(std::fstream& OUT) const
+void Cell::dumpShort(std::ofstream& OUT) const
 {
     int x;
     double y;
@@ -531,7 +531,7 @@ void Cell::dumpShort(std::fstream& OUT) const
 }
 
 // Dump cell parent to binary file
-void Cell::dumpParent(std::fstream& OUT) const
+void Cell::dumpParent(std::ofstream& OUT) const
 {
     uint32_t a;
     a = parent();

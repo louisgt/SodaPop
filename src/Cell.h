@@ -36,8 +36,8 @@ public:
     static Gene selected_gene;
 
     Cell();
-    Cell(std::fstream & );
-    Cell(std::fstream & ,const std::string & );
+    Cell(std::ifstream & );
+    Cell(std::ifstream & ,const std::string & );
 
     virtual ~Cell(){};
 
@@ -79,9 +79,9 @@ public:
     void ranmut_Gene(std::ofstream&, int);
     void change_exprlevel();
     double normalizeFit(double);
-    void dump(std::fstream&, int) const;
-    void dumpShort(std::fstream&) const;
-    void dumpParent(std::fstream&) const;
+    void dump(std::ofstream&, int) const;
+    void dumpShort(std::ofstream&) const;
+    void dumpParent(std::ofstream&) const;
 
     void PrintCell(int) const;
     

@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     char buffer[200];
     bool enableAnalysis = false;
     bool trackMutations = false;
-    bool createPop = false;
+    Init_Pop createPop = Init_Pop::from_snapFile;
     bool noMut = false;
 
     bool simul_pangenomes_evolution = false;
@@ -208,10 +208,10 @@ int main(int argc, char *argv[])
                 switch (nMat){
                     case 2:
                         bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_binding);
-                        std::cout << "Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
+                        std::cout << "-> Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
                     case 1:
                         fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_folding);
-                        std::cout << "Average ∆∆G_folding is " << fold_DG << " ..." << std::endl;
+                        std::cout << "-> Average ∆∆G_folding is " << fold_DG << " ..." << std::endl;
                         break;
                 }
                 
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
         enableAnalysis = analysisArg.getValue();
         trackMutations = eventsArg.getValue();
         outputEncoding = intToEncoding_Type(seqArg.getValue());
-        createPop = initArg.getValue();
+        createPop = intToPop_Type(initArg.getValue());
 
         simul_pangenomes_evolution = pangenomes_evo_Arg.getValue();
         track_pangenomes_evolution = track_pangenomes_evo_Arg.getValue();
@@ -237,32 +237,52 @@ int main(int argc, char *argv[])
     }catch (TCLAP::ArgException &e){
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;}
 
-    std::cout << "Opening starting population snapshot ..." << std::endl;
-    std::fstream startsnap (startSnapFile.c_str(),std::ios::in|std::ios::binary);
-    if (!startsnap.is_open()){
-        std::cerr << "File could not be open: "<< startSnapFile << std::endl;
-        exit(2);
-    }
 
+    /*OPEN POPULATION SNAPSHOT
+        eventually move block to initializing method*/
+
+    std::ifstream startFile;
+    try{
+        openStartingPop(startSnapFile,startFile);
+
+    }catch (std::runtime_error &e) {}
+
+
+
+    /* general simulation initialization, can be put in a global method
+    */
     if (Cell::ff_ == 7) {
         noMut = true;
         std::cout << "Mutations are not active." << std::endl;
     }
-    
+   
+
+    /*READ POPULATION SNAPSHOT:
+        -put in global method (throws file read error)
+        -takes stream to read from
+        -wrap in try/catch
+    */
+
     // header
     int Total_Cell_Count;
     int dummy;
     double frame_time;
     //read frame time
-    startsnap.read((char*)(&frame_time),sizeof(double));
+    startFile.read((char*)(&frame_time),sizeof(double));
     //read number of cells in file
-    startsnap.read((char*)(&Total_Cell_Count),sizeof(int));
+    startFile.read((char*)(&Total_Cell_Count),sizeof(int));
     //read file outputEncoding
-    startsnap.read((char*)(&dummy),sizeof(int));
+    startFile.read((char*)(&dummy),sizeof(int));
+
+    /* general simulation initialization, can be put in a global method
+    */
 
     sprintf(buffer,"out/%s/snapshots",outDir.c_str());
     std::string outPath = buffer;
     std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
+
+    /* general simulation initialization, can be put in a global method
+    */
 
     sprintf(buffer,"out/%s/command.log",outDir.c_str());
     std::ofstream cmdlog;
@@ -277,15 +297,19 @@ int main(int argc, char *argv[])
     cmdlog << "sodapop " << args << std::endl;
     cmdlog << std::endl;
 
+    /* POPULATION INITIALIZATION
+        put in global method
+    */
+
     std::vector <Cell> Cell_arr;
     double w_sum = 0;
 
     // IF POPULATION IS INITIALLY MONOCLONAL
     // CREATE VECTOR WITH N IDENTICAL CELLS
-    if (createPop){
+    if(Init_Pop::from_cellFile){
         std::cout << "Creating a population of " << targetPopSize   << " cells ..." << std::endl;
         cmdlog << "Creating a population of " << targetPopSize   << " cells ..." << std::endl;
-        Cell A(startsnap, genesPath);
+        Cell A(startFile, genesPath);
         Cell_arr = std::vector <Cell>(targetPopSize , A);
         for (auto& cell : Cell_arr) {
             cell.ch_barcode(getBarcode());
@@ -302,8 +326,8 @@ int main(int argc, char *argv[])
         int count = 0;
         std::cout << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
         cmdlog << "Constructing population from source " << startSnapFile.c_str() << " ..." << std::endl;
-        while (count <Total_Cell_Count && !startsnap.eof()){
-            Cell_arr.emplace_back(startsnap, genesPath);
+        while (count <Total_Cell_Count && !startFile.eof()){
+            Cell_arr.emplace_back(startFile, genesPath);
             ++count;  
         }
         if (Cell::ff_ == 5){
@@ -312,7 +336,10 @@ int main(int argc, char *argv[])
             }
         }
     }
-    startsnap.close();
+
+    /* should be handled by method initializing the population
+    */
+    startFile.close();
 
 
     std::cout << "Saving initial population snapshot ... " << std::endl;
@@ -320,7 +347,7 @@ int main(int argc, char *argv[])
     sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), currentGen); 
 
     // Open snapshot file
-    std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
+    std::ofstream OUT2(buffer, std::ios::out | std::ios::binary);
     if (!OUT2.is_open()){
          std::cerr << "Snapshot file could not be opened";
          exit(1);
@@ -334,7 +361,8 @@ int main(int argc, char *argv[])
     int idx;
     switch (outputEncoding){
         case Encoding_Type::by_default: //"normal" output format
-        case Encoding_Type::full: idx=1;
+        case Encoding_Type::full: 
+                idx=1;
                 for (const auto& cell : Cell_arr) {
                     w_sum += cell.fitness();
                     cell.dump(OUT2,idx++);
@@ -367,47 +395,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    //create PANGENOMES_EVOLUTION_LOG, GENE_GAIN_EVENTS_LOG and GENE_LOSS_EVENTS_LOG files if the -V command-line option is enabled
-    std::ofstream PANGENOMES_EVOLUTION_LOG;
-    std::ofstream GENE_GAIN_EVENTS_LOG;
-    std::ofstream GENE_LOSS_EVENTS_LOG;
-    if(simul_pangenomes_evolution){
-
-        // Open PANGENOMES_EVOLUTION_LOG
-        sprintf(buffer, "out/%s/PANGENOMES_EVOLUTION_LOG.txt",outDir.c_str());
-        PANGENOMES_EVOLUTION_LOG.open(buffer);
-        if ( !PANGENOMES_EVOLUTION_LOG.is_open() ) {
-            std::cerr << "Pangenomes evolution log file could not be opened";
-            exit(1);
-        }else{
-            std::cout << "Opening pangenomes evolution log ..." << std::endl;
-            PANGENOMES_EVOLUTION_LOG <<"x"<<"\t"<<"r_x"<<"\t"<<"Beta_x"<<"\t"<<"Alpha_x"<<std::endl;
-        }
-
-        // Open GENE_GAIN_EVENTS_LOG
-        sprintf(buffer, "out/%s/GENE_GAIN_EVENTS_LOG.txt",outDir.c_str());
-        GENE_GAIN_EVENTS_LOG.open(buffer);
-        if ( !GENE_GAIN_EVENTS_LOG.is_open() ) {
-            std::cerr << "Gene gain events log file could not be opened";
-            exit(1);
-        }else{
-            std::cout << "Opening gene gain events log ..." << std::endl;
-            //d_cell is the donor cell and r_cell is the receiving cell
-            GENE_GAIN_EVENTS_LOG <<"gain_event_ID"<<"\t"<<"Generation_ctr"<<"\t"<<"d_cell_ID"<<"\t"<<"d_cell_barcode"<<"\t"<<"r_cell_ID"<<"\t"<<"r_cell_barcode"<<"\t"<<"gene_ID"<<std::endl;
-        }
-
-        // Open GENE_LOSS_EVENTS_LOG
-        sprintf(buffer, "out/%s/GENE_LOSS_EVENTS_LOG.txt",outDir.c_str());
-        GENE_LOSS_EVENTS_LOG.open(buffer);
-        if ( !GENE_LOSS_EVENTS_LOG.is_open() ) {
-            std::cerr << "Gene loss events log file could not be opened";
-            exit(1);
-        }else{
-            std::cout << "Opening gene loss events log ..." << std::endl;
-            //t_cell is the target cell
-            GENE_LOSS_EVENTS_LOG <<"loss_event_ID"<<"\t"<<"Generation_ctr"<<"\t"<<"t_cell_ID"<<"\t"<<"t_cell_barcode"<<"gene_ID"<<std::endl;
-        }
-    }
+    /* MAIN SIMULATION BLOCK, can be put in a method outside main
+    */
     
     std::cout << "Starting evolution ..." << std::endl;
     cmdlog << "Starting evolution ..." << std::endl;
@@ -543,7 +532,7 @@ int main(int argc, char *argv[])
             sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), currentGen); 
             //Open snapshot file
             //OUT2 is target output stream
-            std::fstream OUT2(buffer, std::ios::out | std::ios::binary);
+            std::ofstream OUT2(buffer, std::ios::out | std::ios::binary);
             if (!OUT2.is_open()){
                  std::cerr << "Snapshot file could not be opened";
                  exit(1);

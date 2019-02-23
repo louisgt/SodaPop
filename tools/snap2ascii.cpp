@@ -10,13 +10,13 @@ int main(int argc, char * argv[]) {
     double frame_time;
 
     //open binary file 
-    std::fstream IN(argv[1], std::ios:: in | std::ios::binary);
+    std::ifstream IN(argv[1], std::ios:: in | std::ios::binary);
     if (!IN.is_open()) {
         std::cerr << "Binary file could not be opened.\n";
         exit(1);
     }
 
-    std::fstream OUT(argv[2], std::ios::out);
+    std::ofstream OUT(argv[2], std::ios::out);
     if (!OUT.is_open()) {
         std::cerr << "Ascii file could not be opened.\n";
         exit(1);
@@ -33,11 +33,14 @@ int main(int argc, char * argv[]) {
         OUT << std::endl;
         switch(encoding)
             {
-                case 0: read_Cell(IN, OUT,false);
+                case 0: 
+                    read_Cell(IN, OUT,false);
                     break;
-                case 1: qread_Cell(IN, OUT);
+                case 1: 
+                    qread_Cell(IN, OUT);
                     break;
-                case 2: read_Cell(IN,OUT,true);
+                case 2: 
+                    read_Cell(IN,OUT,true);
                     break;
                 case 3: //to be properly implemented
                         //read_Parent(IN,OUT);  

@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     std::vector < Cell > Cell_arr;
 
     // open stream to read population summary
-    std::fstream popf(argv[1]);
+    std::ifstream popf(argv[1]);
     if (!popf.is_open()) {
         std::cerr << "File could not be opened";
         exit(1);
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
             iss >> word; //cell count
             int count = atoi(word.c_str());
             iss >> word; //cell files
-            std::fstream temp(word.c_str()); //convert std::string to char
+            std::ifstream temp(word.c_str()); //convert std::string to char
             if (!temp.is_open()) {
                 std::cerr << "File could not be open: " << word << std::endl;
                 exit(1);
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
     sprintf(buffer, "%s.snap", rawname.c_str());
 
     // Open stream to write snapshot
-    std::fstream OUT(buffer, std::ios::out);
+    std::ofstream OUT(buffer, std::ios::out);
     if (!OUT.is_open()) {
         std::cerr << "Snapshot file could not be opened";
         exit(1);

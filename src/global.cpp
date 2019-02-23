@@ -195,19 +195,45 @@ std::map<char,int> const prot_to_num::pnum = prot_to_num::create_map();
 std::map<std::string,char> const codon_to_prot::cprot = codon_to_prot::create_map();
 
 Encoding_Type intToEncoding_Type(int type){
-    switch(type){
+    switch (type){
         case 0:
             return Encoding_Type::by_default;
         case 1:
-            return Encoding_Type::full;
-        case 2:
             return Encoding_Type::no_sequence;
+        case 2:
+            return Encoding_Type::full;
         case 3:
             return Encoding_Type::other;
         default:
             return Encoding_Type::by_default;
     }
 }
+
+Init_Pop intToPop_Type(int type){
+    switch (type){
+        case 0:
+            return Init_Pop::from_snapFile;
+        case 1:
+            return Init_Pop::from_cellFile;
+        default:
+            return Init_Pop::from_snapFile;
+    }
+}
+
+void openStartingPop(std::string filePath, std::ifstream& fileStream){
+    std::cout << "Opening starting population snapshot ..." << std::endl;
+    fileStream = std::ifstream(filePath.c_str(),std::ios::in|std::ios::binary);
+    if (fileStream.is_open()){
+        // file was opened successfully
+        std::cout << "-> File was opened successfully ..." << std::endl;
+        //return fileStream;
+    }
+    else{
+        // error opening file, throw exception
+        throw std::runtime_error("Unable to open starting population snapshot.");
+    }
+}
+
 
 /******* MAPPING FUNCTIONS *******/
 
@@ -515,7 +541,7 @@ void InitMatrix()
 // extracts values from the DDG file and stores them in the matrix
 double ExtractDDGMatrix(std::string filepath, Matrix_Type m)
 {
-    std::fstream temp(filepath);
+    std::ifstream temp(filepath);
     if (!temp.is_open()){
         std::cerr << "File could not be opened: "<< filepath << std::endl;
         exit(2);
@@ -570,7 +596,7 @@ double ExtractDDGMatrix(std::string filepath, Matrix_Type m)
 
 void ExtractDMSMatrix(std::string filepath)
 {
-    std::fstream temp(filepath);
+    std::ifstream temp(filepath);
     if (!temp.is_open()){
         std::cerr << "File could not be open: "<< filepath << std::endl;
         exit(2);
@@ -618,7 +644,7 @@ double Ran_Gaussian(double const mean, double const sigma)
 // Loads primordial genes in a VectStr
 int LoadPrimordialGenes(const std::string& genelistfile, const std::string& genesPath)
 {  
-    std::fstream genelistIN (genelistfile.c_str());
+    std::ifstream genelistIN (genelistfile.c_str());
     if (!genelistIN.is_open()){
         std::cerr << "File could not be open: "<< genelistfile <<std::endl;
         exit(2);
@@ -634,7 +660,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
         if ( word=="G" ){
             iss >> word;
             word = genesPath + word;
-            std::fstream genefileIN (word.c_str(), std::fstream::in | std::fstream::out);
+            std::ifstream genefileIN (word.c_str(), std::ifstream::in | std::ifstream::out);
             if (!genefileIN.is_open()){
                 std::cerr << "File could not be open: " << word << std::endl;
                 exit(2);
@@ -675,7 +701,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
 }
 
 // Reads a unit cell stored in binary format using Cell::dumpShort()
-void qread_Cell(std::fstream& IN, std::fstream& OUT)
+void qread_Cell(std::ifstream& IN, std::ofstream& OUT)
 {
     char buffer[140];
     int na, ns;
@@ -699,7 +725,7 @@ void qread_Cell(std::fstream& IN, std::fstream& OUT)
 }
 
 // Reads a unit cell stored in binary format using Cell::dumpSeq()
-void seqread_Cell(std::fstream& IN, std::fstream& OUT)
+void seqread_Cell(std::ifstream& IN, std::ofstream& OUT)
 {
     char buffer[140];
     int cell_id, cell_index, gene_size;
@@ -745,7 +771,7 @@ void seqread_Cell(std::fstream& IN, std::fstream& OUT)
     }
 }
 
-void read_Parent(std::fstream& IN, std::fstream& OUT)
+void read_Parent(std::ifstream& IN, std::ofstream& OUT)
 {
     uint32_t a;
 
@@ -755,7 +781,7 @@ void read_Parent(std::fstream& IN, std::fstream& OUT)
 }
 
 // Reads a unit cell stored in binary format using Cell::dump()
-void read_Cell(std::fstream& IN, std::fstream& OUT, bool DNA)
+void read_Cell(std::ifstream& IN, std::ofstream& OUT, bool DNA)
 {
     char buffer[140];
     int cell_id, cell_index, gene_size;

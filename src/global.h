@@ -124,16 +124,30 @@ enum Encoding_Type {
     other
 };
 
+enum Init_Pop {
+    from_snapFile,
+    from_cellFile
+};
+
 /******* FUNCTION DECLARATIONS *******/
 Encoding_Type intToEncoding_Type(int);
+Init_Pop intToPop_Type(int);
+
 int GetIndexFromAA(char);
 int GetIndexFromCodon(std::string);
 std::string GetProtFromNuc(std::string);
 std::string n3_to_n3(std::string, std::string, int);
+
 std::string getBarcode();
+
 //double RandomNumber();
+
 double Ran_Gaussian(double const, double const);
+
 const char AdjacentBP(char, int);
+
+void openStartingPop(std::string, std::ifstream&);
+
 void InitMatrix();
 double ExtractDDGMatrix(std::string,Matrix_Type);
 void ExtractDMSMatrix(std::string);
@@ -144,8 +158,8 @@ bool isDirExist(const std::string&);
 bool makePath(const std::string&);
 void printProgress (double);
 
-void qread_Cell(std::fstream&, std::fstream&);
-void seqread_Cell(std::fstream&, std::fstream&);
-void read_Parent(std::fstream&, std::fstream&);
-void read_Cell(std::fstream&, std::fstream&, bool);
+void qread_Cell(std::ifstream&, std::ofstream&);
+void seqread_Cell(std::ifstream&, std::ofstream&);
+void read_Parent(std::ifstream&, std::ofstream&);
+void read_Cell(std::ifstream&, std::ofstream&, bool);
 #endif
