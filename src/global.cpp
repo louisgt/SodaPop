@@ -7,6 +7,8 @@ double bind_DG = 0;
 int Total_Cell_Count = 0;
 int dummy = 0;
 double frame_time = 0;
+std::string outPath = "";
+char buffer[200];
 
 double matrix[gene_number][res_number][20];
 double matrix_supp[gene_number][res_number][20];
@@ -224,13 +226,30 @@ Init_Pop intToPop_Type(int type){
     }
 }
 
+void openCommandLog(std::ofstream& cmdlog, std::string outDir, char *argv[], int argc){
+    sprintf(buffer,"out/%s/command.log",outDir.c_str());
+    cmdlog = std::ofstream(buffer, std::ios::out | std::ios::trunc);
+
+    if (cmdlog.is_open()){
+        // file was opened successfully
+        std::cout << "-> Command log was opened successfully ..." << std::endl;
+        std::string args;
+        std::for_each( argv + 1, argv + argc , [&]( const char* c_str ){ args += std::string ( c_str ) + " "; } );
+        cmdlog << "sodapop " << args << std::endl;
+        cmdlog << std::endl;
+    }
+    else{
+        // error opening file, throw exception
+        throw std::runtime_error("Unable to open command log.");
+    }
+}
+
 void openStartingPop(std::string filePath, std::ifstream& fileStream){
     std::cout << "Opening starting population snapshot ..." << std::endl;
     fileStream = std::ifstream(filePath.c_str(),std::ios::in|std::ios::binary);
     if (fileStream.is_open()){
         // file was opened successfully
         std::cout << "-> File was opened successfully ..." << std::endl;
-        //return fileStream;
     }
     else{
         // error opening file, throw exception
@@ -245,6 +264,41 @@ void readSnapshotHeader(std::ifstream& snapshot)
     snapshot.read((char*)(&Total_Cell_Count),sizeof(int));
     //read file outputEncoding
     snapshot.read((char*)(&dummy),sizeof(int));
+}
+
+void createOutputDir(std::string dirName){
+    sprintf(buffer,"out/%s/snapshots",dirName.c_str());
+    outPath = buffer;
+    std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
+}
+
+void saveSnapshot(std::ofstream& toSnapshot, std::string dirName, int currentGen, Encoding_Type encoding){
+    std::cout << "Opening population snapshot ... " << std::endl;
+    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),dirName.c_str(), currentGen); 
+
+    // Open snapshot file
+    toSnapshot = std::ofstream(buffer, std::ios::out | std::ios::binary);
+    if (toSnapshot.is_open()){
+        std::cout << "Writing population snapshot ... " << std::endl;
+
+        //write
+        writeSnapshotHeader(toSnapshot, encoding);
+    }
+    else{
+        // error opening file, throw exception
+        throw std::runtime_error("Unable to open file for output.");
+    }
+}
+
+void writeSnapshotHeader(std::ofstream& toSnapshot, Encoding_Type encoding)
+{
+    toSnapshot.write((char*)(&frame_time),sizeof(double));
+    toSnapshot.write((char*)(&Total_Cell_Count),sizeof(int));
+    toSnapshot.write((char*)(&encoding),sizeof(int));
+}
+
+void writePop(){
+
 }
 
 
@@ -716,7 +770,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
 // Reads a unit cell stored in binary format using Cell::dumpShort()
 void qread_Cell(std::ifstream& IN, std::ofstream& OUT)
 {
-    char buffer[140];
+    char mybuffer[140];
     int na, ns;
     double f;
     std::string barcode;
@@ -733,14 +787,14 @@ void qread_Cell(std::ifstream& IN, std::ofstream& OUT)
     IN.read((char*)(&ns),sizeof(int));
     IN.read((char*)(&f),sizeof(double));
     
-    sprintf(buffer,"\t%d\t%d\t%e", na, ns, f);
-    OUT << buffer;
+    sprintf(mybuffer,"\t%d\t%d\t%e", na, ns, f);
+    OUT << mybuffer;
 }
 
 // Reads a unit cell stored in binary format using Cell::dumpSeq()
 void seqread_Cell(std::ifstream& IN, std::ofstream& OUT)
 {
-    char buffer[140];
+    char mybuffer[140];
     int cell_id, cell_index, gene_size;
     double f,m;
     std::string barcode;
@@ -760,9 +814,9 @@ void seqread_Cell(std::ifstream& IN, std::ofstream& OUT)
     IN.read((char*)(&m),sizeof(double));
     IN.read((char*)(&gene_size),sizeof(int));
     
-    sprintf(buffer,"\t%d\t%e\t%e\t", cell_index, f, m);
+    sprintf(mybuffer,"\t%d\t%e\t%e\t", cell_index, f, m);
 
-    OUT << buffer << std::endl;
+    OUT << mybuffer << std::endl;
 
     for (int j=0; j<gene_size; ++j){
         std::string DNAsequence;   
@@ -778,8 +832,8 @@ void seqread_Cell(std::ifstream& IN, std::ofstream& OUT)
         IN.read(&buff[0], nl);  
         DNAsequence.assign(buff.begin(), buff.end());
 
-        sprintf(buffer,"%d\tG\t%d\t%d\t",j,Ns,Na);
-        OUT << buffer << std::endl;
+        sprintf(mybuffer,"%d\tG\t%d\t%d\t",j,Ns,Na);
+        OUT << mybuffer << std::endl;
         OUT << DNAsequence << std::endl;
     }
 }
@@ -796,7 +850,7 @@ void read_Parent(std::ifstream& IN, std::ofstream& OUT)
 // Reads a unit cell stored in binary format using Cell::dump()
 void read_Cell(std::ifstream& IN, std::ofstream& OUT, bool DNA)
 {
-    char buffer[140];
+    char mybuffer[140];
     int cell_id, cell_index, gene_size;
     double m,f;
     std::string barcode;
@@ -816,8 +870,8 @@ void read_Cell(std::ifstream& IN, std::ofstream& OUT, bool DNA)
     IN.read((char*)(&m),sizeof(double));
     IN.read((char*)(&gene_size),sizeof(int));
     
-    sprintf(buffer,"\t%d\t%.9f\t%e\t", cell_index, f, m);
-    OUT << buffer << std::endl;
+    sprintf(mybuffer,"\t%d\t%.9f\t%e\t", cell_index, f, m);
+    OUT << mybuffer << std::endl;
 
     for (int j=0; j<gene_size; ++j){
         double e, c, dg, f, eff;
@@ -841,8 +895,8 @@ void read_Cell(std::ifstream& IN, std::ofstream& OUT, bool DNA)
         IN.read(&buff[0], nl);  
         DNAsequence.assign(buff.begin(), buff.end());
 
-        sprintf(buffer,"%d\tG\t%e\t%.8f\t%.9f\t%d\t%d\t",j, c, dg, f, Na, Ns);
-        OUT << buffer << std::endl;
+        sprintf(mybuffer,"%d\tG\t%e\t%.8f\t%.9f\t%d\t%d\t",j, c, dg, f, Na, Ns);
+        OUT << mybuffer << std::endl;
         if (DNA) OUT << DNAsequence << std::endl;
         else OUT << GetProtFromNuc(DNAsequence) << std::endl;
     } 

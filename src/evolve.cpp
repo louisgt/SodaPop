@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
     double a_for_s_x = 0;
     double b_for_s_x = 0;
 
-    char buffer[200];
     bool enableAnalysis = false;
     bool trackMutations = false;
     Init_Pop createPop = Init_Pop::from_snapFile;
@@ -238,6 +237,16 @@ int main(int argc, char *argv[])
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;}
 
 
+
+    /* general simulation initialization, can be put in a global method
+    */
+    std::ofstream cmdlog;
+
+    try{
+        openCommandLog(cmdlog, outDir, argv, argc);
+    }catch (std::runtime_error &e) {}
+
+
     /*OPEN POPULATION SNAPSHOT
         eventually move block to initializing method*/
     /*READ POPULATION SNAPSHOT:
@@ -261,28 +270,7 @@ int main(int argc, char *argv[])
         std::cout << "Mutations are not active." << std::endl;
     }
 
-    /* general simulation initialization, can be put in a global method
-    */
-
-    sprintf(buffer,"out/%s/snapshots",outDir.c_str());
-    std::string outPath = buffer;
-    std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
-
-    /* general simulation initialization, can be put in a global method
-    */
-
-    sprintf(buffer,"out/%s/command.log",outDir.c_str());
-    std::ofstream cmdlog;
-    cmdlog.open(buffer, std::ios::out | std::ios::trunc);
-    if (!cmdlog.is_open()){
-        std::cerr << "Command log file could not be opened" << std::endl;
-        exit(1);
-    }
-
-    std::string args;
-    std::for_each( argv + 1, argv + argc , [&]( const char* c_str ){ args += std::string ( c_str ) + " "; } );
-    cmdlog << "sodapop " << args << std::endl;
-    cmdlog << std::endl;
+    createOutputDir(outDir);
 
     /* POPULATION INITIALIZATION
         put in global method
@@ -328,22 +316,13 @@ int main(int argc, char *argv[])
     */
     startFile.close();
 
+    std::ofstream OUT;
 
-    std::cout << "Saving initial population snapshot ... " << std::endl;
-    cmdlog << "Saving initial population snapshot ... " << std::endl;
-    sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), currentGen); 
-
-    // Open snapshot file
-    std::ofstream OUT2(buffer, std::ios::out | std::ios::binary);
-    if (!OUT2.is_open()){
-         std::cerr << "Snapshot file could not be opened";
-         exit(1);
-    }
+    try{
+        saveSnapshot(OUT,outDir,currentGen,outputEncoding);
+    }catch (std::runtime_error &e) {}
 
     Total_Cell_Count = Cell_arr.size();
-    OUT2.write((char*)(&frame_time),sizeof(double));
-    OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
-    OUT2.write((char*)(&outputEncoding),sizeof(int));
 
     int idx;
     switch (outputEncoding){
@@ -352,20 +331,20 @@ int main(int argc, char *argv[])
                 idx=1;
                 for (const auto& cell : Cell_arr) {
                     w_sum += cell.fitness();
-                    cell.dump(OUT2,idx++);
+                    cell.dump(OUT,idx++);
                 } 
             break;
         case Encoding_Type::no_sequence: //"short" output format
                 for (const auto& cell : Cell_arr) {
                     w_sum += cell.fitness();
-                    cell.dumpShort(OUT2);
+                    cell.dumpShort(OUT);
                 }
             break;
         case Encoding_Type::other: //dump with parent data, to be implemented
             break;
     }   
 
-    OUT2.close();
+    OUT.close();
     std::string command = "gzip -f ";
     command += buffer;
     const char *cmd = command.c_str();
@@ -518,37 +497,37 @@ int main(int argc, char *argv[])
         if( (currentGen % timeStep) == 0){
             sprintf(buffer,"%s/%s.gen%010d.snap",outPath.c_str(),outDir.c_str(), currentGen); 
             //Open snapshot file
-            //OUT2 is target output stream
-            std::ofstream OUT2(buffer, std::ios::out | std::ios::binary);
-            if (!OUT2.is_open()){
+            //OUT is target output stream
+            std::ofstream OUT(buffer, std::ios::out | std::ios::binary);
+            if (!OUT.is_open()){
                  std::cerr << "Snapshot file could not be opened";
                  exit(1);
             }
 
             double frame_time = currentGen;
-            OUT2.write((char*)(&frame_time),sizeof(double));
-            OUT2.write((char*)(&Total_Cell_Count),sizeof(int));
-            OUT2.write((char*)(&outputEncoding),sizeof(int));
+            OUT.write((char*)(&frame_time),sizeof(double));
+            OUT.write((char*)(&Total_Cell_Count),sizeof(int));
+            OUT.write((char*)(&outputEncoding),sizeof(int));
 
             int count;
             switch (outputEncoding){
                 case Encoding_Type::by_default: //"normal" output format 
                 case Encoding_Type::full: count=1;
                         for (const auto& cell : Cell_arr) {
-                            cell.dump(OUT2,count++);
+                            cell.dump(OUT,count++);
                             //count++;
                         }
                     break;
                 case Encoding_Type::no_sequence: //"short" output format
                         for (const auto& cell : Cell_arr) {
-                            cell.dumpShort(OUT2);
+                            cell.dumpShort(OUT);
                         } 
                     break;
                 case Encoding_Type::other: //dump with parent data, to be implemented
                     break;
             }   
               
-            OUT2.close();
+            OUT.close();
             //compress last written file with gzip
             std::string command = "gzip -f ";
             command += buffer;

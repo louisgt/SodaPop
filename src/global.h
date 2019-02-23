@@ -92,7 +92,7 @@ const double prefactor(16000);
 // exponent values are precalculated to be used readily
 double const DDG_min = exp(-1*(ddG_low_bound)/kT);
 double const DDG_max = exp(-1*(ddG_high_bound)/kT);
-const int Bigbuffer_max(80);
+extern char buffer[];
 
 // If the mutation is to a stop codon
 // DG_mutant is set to 99 kcal/mol 
@@ -115,6 +115,7 @@ extern double bind_DG;
 extern int Total_Cell_Count;
 extern int dummy;
 extern double frame_time;
+extern std::string outPath;
 
 enum Matrix_Type {
     is_folding,
@@ -152,6 +153,11 @@ const char AdjacentBP(char, int);
 
 void openStartingPop(std::string, std::ifstream&);
 void readSnapshotHeader(std::ifstream&);
+void writeSnapshotHeader(std::ofstream&, Encoding_Type);
+void createOutputDir(std::string);
+void saveSnapshot(std::ofstream&, std::string, int, Encoding_Type);
+
+void openCommandLog(std::ofstream&, std::string, char *[], int);
 
 void InitMatrix();
 double ExtractDDGMatrix(std::string,Matrix_Type);

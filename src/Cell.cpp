@@ -22,7 +22,7 @@ Cell::Cell():
 
 // Construct from cell file
 Cell::Cell(std::ifstream & cell_in) {
-    char buffer[140];
+    char mybuffer[140];
     geneBlocks_.reserve(maxGeneCount);
     genomeVec_.reserve(maxGeneCount);
     ch_barcode(getBarcode());
@@ -55,10 +55,10 @@ Cell::Cell(std::ifstream & cell_in) {
             //concentration and stability from gene file take precedence
             iss >> word;
             //open gene file
-            sprintf(buffer, "%s%s.gene", genesPath.c_str(), word.c_str());
-            std::ifstream gene_data(buffer);
+            sprintf(mybuffer, "%s%s.gene", genesPath.c_str(), word.c_str());
+            std::ifstream gene_data(mybuffer);
             if (!gene_data.is_open()) {
-                std::cerr << "File could not be open: " << buffer << std::endl;
+                std::cerr << "File could not be open: " << mybuffer << std::endl;
                 exit(2);
             }
             Gene A(gene_data,this);
@@ -87,7 +87,7 @@ Cell::Cell(std::ifstream & IN,
     geneBlocks_.reserve(maxGeneCount);
     genomeVec_.reserve(maxGeneCount);
 
-    char buffer[140];
+    char mybuffer[140];
     int cell_id, cell_index, gene_size;
     double m, f;
 
@@ -133,10 +133,10 @@ Cell::Cell(std::ifstream & IN,
         IN.read(& buf[0], nl);
         DNAsequence.assign(buf.begin(), buf.end());
 
-        sprintf(buffer, "%s%d.gene", genesPath.c_str(), gene_nid);
-        std::ifstream gene_data(buffer);
+        sprintf(mybuffer, "%s%d.gene", genesPath.c_str(), gene_nid);
+        std::ifstream gene_data(mybuffer);
         if (!gene_data.is_open()) {
-            std::cerr << "ERROR: Cannot open gene file " << buffer << std::endl;
+            std::cerr << "ERROR: Cannot open gene file " << mybuffer << std::endl;
             exit(2);
         }
         Gene G(gene_data,this);
@@ -553,9 +553,9 @@ void Cell::UpdateNsNa()
 // Print cell information to stdout
 void Cell::PrintCell(int cell_ndx) const
 {
-      char buffer[140];
-      sprintf(buffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), static_cast<int>(genomeVec_.size()));  
-      std::cout << buffer << std::endl;
+      char mybuffer[140];
+      sprintf(mybuffer,"C %6d %6d %12e %12e %d", cell_ndx, ID_, o_mrate_, mrate(), static_cast<int>(genomeVec_.size()));  
+      std::cout << mybuffer << std::endl;
       for (const auto& gene : genomeVec_) {
         int gene_nid = gene.num();
         double e = gene.e();
@@ -564,8 +564,8 @@ void Cell::PrintCell(int cell_ndx) const
         int Ns = gene.Ns();
         int Na = gene.Na();
            
-        sprintf(buffer,"G %d% 2.2f %10.8f %10.8f %d %d ", gene_nid, e, c, dg, Ns, Na);
-        std::cout << buffer << std::endl;  
+        sprintf(mybuffer,"G %d% 2.2f %10.8f %10.8f %d %d ", gene_nid, e, c, dg, Ns, Na);
+        std::cout << mybuffer << std::endl;  
       }
       std::cout << std::endl;
 }
