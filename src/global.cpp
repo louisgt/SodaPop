@@ -305,13 +305,13 @@ int GetIndexFromCodon(std::string in_codon)
 // output: amino acid sequence as string
 std::string GetProtFromNuc(std::string in_seq)
 {
-    int ln = in_seq.length();
+    const int ln = in_seq.length();
     if ((ln % 3) != 0){
         std::cerr << "Invalid length for nucleotide sequence: " << ln << std::endl;
         std::cerr << "Nucleotide sequence length must be divisible by 3." << std::endl;
         exit(2);
     }
-    int la=ln/3;   
+    const int la=ln/3;   
     std::string AA="";
     for (int i=0; i<la;++i){
         std::string temp=in_seq.substr(i*3,3);
@@ -606,10 +606,10 @@ double ExtractDDGMatrix(std::string filepath, Matrix_Type m)
         if ( word == "DDG"){
             iss >> word;
             //residue index
-            int i = atoi(word.c_str());
+            const int i = atoi(word.c_str());
             for (int j = 0; iss>>word; ++j){
                 //extract DDG values
-                double x = atof(word.c_str());
+                const double x = atof(word.c_str());
                 sum +=x;
                 ++idx;
                 //if(m){
@@ -623,10 +623,10 @@ double ExtractDDGMatrix(std::string filepath, Matrix_Type m)
         else if ( word == "rCat"){
             iss >> word;
             //residue index
-            int i = atoi(word.c_str());
+            const int i = atoi(word.c_str());
             for (int j = 0; iss>>word; ++j){
                 //extract DDG values
-                double x = atof(word.c_str());
+                const double x = atof(word.c_str());
                 sum +=x;
                 ++idx;
                 matrix_supp[gene_num][i-1][j] = x;
@@ -659,10 +659,10 @@ void ExtractDMSMatrix(std::string filepath)
         if ( word == "DMS"){
             iss >> word;
             //residue index
-            int i = atoi(word.c_str());
+            const int i = atoi(word.c_str());
             for (int j = 0; iss>>word; ++j){
                 //extract DMS values
-                double x = atof(word.c_str());
+                const double x = atof(word.c_str());
                 matrix[gene_num][i-1][j] = x;
             }
         }
@@ -751,11 +751,12 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
 void qread_Cell(std::ifstream& IN, std::ofstream& OUT)
 {
     char mybuffer[140];
-    int na, ns;
-    double f;
+    int na = 0;
+    int ns = 0;
+    double f = 0;
     std::string barcode;
 
-    int l;
+    int l = 0;
     IN.read((char*)&l, sizeof(int));
     std::vector<char> buf(l);
     IN.read(&buf[0], l);
@@ -775,14 +776,17 @@ void qread_Cell(std::ifstream& IN, std::ofstream& OUT)
 void seqread_Cell(std::ifstream& IN, std::ofstream& OUT)
 {
     char mybuffer[140];
-    int cell_id, cell_index, gene_size;
-    double f,m;
+    int cell_id(0);
+    int cell_index(0);
+    int gene_size(0);
+    double f(0);
+    double m(0);
     std::string barcode;
 
     IN.read((char*)(&cell_index),sizeof(int));
     IN.read((char*)(&cell_id),sizeof(int));
 
-    int l;
+    int l(0);
     IN.read((char*)&l, sizeof(int));
     std::vector<char> buf(l);
     IN.read(&buf[0], l);
@@ -800,13 +804,14 @@ void seqread_Cell(std::ifstream& IN, std::ofstream& OUT)
 
     for (int j=0; j<gene_size; ++j){
         std::string DNAsequence;   
-        int Na, Ns;
+        int Na(0);
+        int Ns(0);
 
         IN.read((char*)(&Na),sizeof(int));
         IN.read((char*)(&Ns),sizeof(int));
 
         //read DNA sequence
-        int nl;
+        int nl(0);
         IN.read((char*)&nl, sizeof(int));
         std::vector<char> buff(nl);
         IN.read(&buff[0], nl);  
@@ -831,14 +836,17 @@ void read_Parent(std::ifstream& IN, std::ofstream& OUT)
 void read_Cell(std::ifstream& IN, std::ofstream& OUT, bool DNA)
 {
     char mybuffer[140];
-    int cell_id, cell_index, gene_size;
-    double m,f;
+    int cell_id(0);
+    int cell_index(0);
+    int gene_size(0);
+    double f(0);
+    double m(0);
     std::string barcode;
 
     IN.read((char*)(&cell_index),sizeof(int));
     IN.read((char*)(&cell_id),sizeof(int));
 
-    int l;
+    int l(0);
     IN.read((char*)&l, sizeof(int));
     std::vector<char> buf(l);
     IN.read(&buf[0], l);  
@@ -853,9 +861,17 @@ void read_Cell(std::ifstream& IN, std::ofstream& OUT, bool DNA)
     sprintf(mybuffer,"\t%d\t%.9f\t%e\t", cell_index, f, m);
     OUT << mybuffer << std::endl;
 
+    //read gene info
+    double e(0);
+    double c(0);
+    double dg(0);
+    double eff(0);
+
+    int gene_nid(0);
+    int Ns(0);
+    int Na(0);
+
     for (int j=0; j<gene_size; ++j){
-        double e, c, dg, f, eff;
-        int gene_nid, Ns, Na;
         std::string DNAsequence;
 
         IN.read((char*)(&gene_nid),sizeof(int));   
@@ -869,7 +885,7 @@ void read_Cell(std::ifstream& IN, std::ofstream& OUT, bool DNA)
         IN.read((char*)(&Ns),sizeof(int));
         
         //read DNA sequence
-        int nl;
+        int nl(0);
         IN.read((char*)&nl, sizeof(int));
         std::vector<char> buff(nl);
         IN.read(&buff[0], nl);  

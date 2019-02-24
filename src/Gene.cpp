@@ -169,35 +169,35 @@ std::string Gene::Mutate_Stabil(int i, int j)
     // extract codon to be mutated
     int cdn_ndx = (i%3);
     int cdn_start = i - cdn_ndx; 
-    int resi = cdn_start/3;
 
     // fetch current codon
     std::string cdn_curr = gene_seq_.substr(cdn_start, 3);
-    // fetch current amino acid
-    int aa_curr = GetIndexFromCodon(cdn_curr);
-    std::string cdn_new = cdn_curr;
-
-    std::string s = PrimordialAASeq.at(gene_idx_);
-    // get amino acid from WT background
-    int aa_primo = GetIndexFromAA(s.at(resi));
-
+    
     // get mutated bp
     char bp = AdjacentBP(cdn_curr.at(cdn_ndx), j); //new BP
    
     // mutate codon
+    std::string cdn_new = cdn_curr;
     cdn_new.replace(cdn_ndx, 1, 1, bp);
+
     // check for stop codon
     cdn_new = n3_to_n3(cdn_new, cdn_curr, cdn_ndx);
+
+    // get amino acid from WT background
+    int resi = cdn_start/3;
+
     // get new amino acid
     int aa_new = GetIndexFromCodon(cdn_new);
     
-
     // get DDG value from matrix
     double x = matrix[gene_idx_][resi][aa_new-1];
 
     std::string mutation = std::to_string(gene_idx_) + '\t' + GetProtFromNuc(cdn_curr) + '\t' + std::to_string(resi) + '\t' + GetProtFromNuc(cdn_new);
 
-    // fetch primordial amino acid
+    // fetch current amino acid
+    int aa_curr = GetIndexFromCodon(cdn_curr);
+    std::string s = PrimordialAASeq.at(gene_idx_);
+    int aa_primo = GetIndexFromAA(s.at(resi));
 
     //Ignore mutations to and from CYSTEINE
     if ( (aa_new==2) || (aa_curr==2)){
@@ -285,32 +285,31 @@ std::string Gene::Mutate_Select(int i, int j)
     // extract codon to be mutated
     int cdn_ndx = (i%3);
     int cdn_start = i - cdn_ndx; 
-    int resi = cdn_start/3;
+
+    std::string s = PrimordialAASeq.at(gene_idx_);     
 
     // fetch current codon
     std::string cdn_curr = gene_seq_.substr(cdn_start, 3);
-    // fetch current amino acid
-    int aa_curr = GetIndexFromCodon(cdn_curr);
-    std::string cdn_new = cdn_curr;
-
-    std::string s = PrimordialAASeq.at(gene_idx_);     
 
     // get mutated bp
     char bp = AdjacentBP( cdn_curr.at(cdn_ndx), j); //new BP
    
+    std::string cdn_new = cdn_curr;
     // mutate codon
     cdn_new.replace(cdn_ndx, 1, 1, bp);
     // check for stop codon
     cdn_new = n3_to_n3(cdn_new, cdn_curr, cdn_ndx);
-    // get new amino acid
-    int aa_new = GetIndexFromCodon(cdn_new);
     
-    // get selection coefficient from matrix
-    double new_s = matrix[gene_idx_][resi][aa_new-1];
+    int resi = cdn_start/3;
 
     std::string mutation = std::to_string(gene_idx_) + '\t' + GetProtFromNuc(cdn_curr) + '\t' + std::to_string(resi) + '\t' + GetProtFromNuc(cdn_new);
 
-    // fetch primordial amino acid
+    // get new amino acid
+    int aa_new = GetIndexFromCodon(cdn_new);
+    // get selection coefficient from matrix
+    double new_s = matrix[gene_idx_][resi][aa_new-1];
+    // fetch current amino acid
+    int aa_curr = GetIndexFromCodon(cdn_curr);
 
     if ( aa_curr == aa_new){//SILENT
           gene_seq_.replace(cdn_start, 3, cdn_new);

@@ -323,14 +323,11 @@ double Cell::noMut() const
     return fitness();
 }
 
-// FOLDING-STABILITY BASED FLUX FITNESS FUNCTION
 double Cell::growthRate() const
 {
-    double sum = 0;
-    for (const auto& gene : genomeVec_) {
-        sum += gene.functional()*gene.eff();
-    }
-    double fit = prefactor/sum;
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+        { return gene.functional()*gene.eff() + i;});
+    double fit = prefactor/f;
     return 1/(fit+1);
 }
 
@@ -405,13 +402,11 @@ void Cell::ranmut_Gene()
     int L = geneBlocks_.back();
 
     // pick random site to mutate
-
     int site = static_cast<int>( L * randomNumber());
 
     // find the corresponding gene
     auto j = genomeVec_.begin();
     auto k = geneBlocks_.begin();
-
 
     if (site >= (*k)){
     // random number generated is greater than
@@ -461,10 +456,7 @@ double Cell::normalizeFit(double fittest){
 
 // Dump cell information to binary file
 void Cell::dump(std::ofstream& OUT, int cell_index) const
-{
-    int x = 0;
-    double y = 0;
-    
+{   
     OUT.write((char*)(&cell_index),sizeof(int));
     
     //cell ID
@@ -474,6 +466,9 @@ void Cell::dump(std::ofstream& OUT, int cell_index) const
     OUT.write((char*)&s, sizeof(int));
 
     OUT.write(barcode().c_str(), s);
+
+    int x = 0;
+    double y = 0;
 
     y = fitness();
     OUT.write((char*)(&y),sizeof(double));
@@ -515,13 +510,13 @@ void Cell::dump(std::ofstream& OUT, int cell_index) const
 // Dump cell summary to binary file
 void Cell::dumpShort(std::ofstream& OUT) const
 {
-    int x = 0;
-    double y = 0;
-
     int s = barcode().size();
     OUT.write((char*)&s, sizeof(int));
 
     OUT.write(barcode().c_str(), s);
+
+    int x = 0;
+    double y = 0;
 
     x = Na();
     OUT.write((char*)(&x),sizeof(int));
