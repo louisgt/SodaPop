@@ -80,15 +80,15 @@ If the estimated energy is out of this range, the mutation is ignored.
 
 const int maxPopSize(1000000);
 const int maxGeneCount(100);
-const int PBWidth(70);
+constexpr int PBWidth(70);
 
-const double ddG_low_bound(-10);
-const double ddG_high_bound(99);
-const double maxConcentration(1e15);
-const double kT(0.5922); //defines the energy units
-const double misfoldingCost(1e-4); // misfolding cost, see Geiler-Samerotte et al. 2011
-const double fNS(0.775956284); //fraction of non-synonymous substitutions in a typical protein
-const double prefactor(16000);
+constexpr double ddG_low_bound(-10);
+constexpr double ddG_high_bound(99);
+constexpr double maxConcentration(1e15);
+constexpr double kT(0.5922); //defines the energy units
+constexpr double misfoldingCost(1e-4); // misfolding cost, see Geiler-Samerotte et al. 2011
+constexpr double fNS(0.775956284); //fraction of non-synonymous substitutions in a typical protein
+constexpr double prefactor(16000);
 
 // exponent values are precalculated to be used readily
 double const DDG_min = exp(-1*(ddG_low_bound)/kT);
