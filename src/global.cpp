@@ -374,6 +374,7 @@ std::string n3_to_n3(std::string a, std::string b, int i){
   double r = randomNumber();
   double l;
 
+  //change statement to switch
   if ( a == "TAA"){
       switch (i)
       {

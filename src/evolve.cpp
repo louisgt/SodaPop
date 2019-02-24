@@ -107,6 +107,9 @@ int main(int argc, char *argv[])
             setRngSeed(seedArg.getValue());
 
         std::cout << "Begin ... " << std::endl;
+
+        // This statement should be a switch
+        // make enum for inputType
         if (inputType == "s"){
             Cell::fromS_ = true;
             if (fitArg.getValue()<5){

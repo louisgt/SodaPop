@@ -66,15 +66,14 @@ void Population::initPolyclonal(std::ifstream& startFile,const std::string & gen
 void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
     // allocate space for temporary population
     Population newPopulation(targetBuffer);
-    for (auto& cell : cells_) {
-        
-        //cell.PrintCell(1);
+    for (const auto& cell : cells_) {
 
         // fitness of cell j with respect to sum of population fitness
         double relative_fitness = cell.fitness()/getSumFitness();
 
         // probability parameter of binomial distribution
         std::binomial_distribution<> binCell(targetSize, relative_fitness);
+
         // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
         int n_progeny = binCell(g_rng);
             
@@ -93,10 +92,10 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
 
         auto link = it;
 
-            do{
-                link->linkGenes();
-                ++link;
-            }while(link < last);
+        do{
+            link->linkGenes();
+            ++link;
+        }while(link < last);
 
             //if (!noMut){
             // after filling with children, go through each one for mutation
@@ -106,6 +105,7 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
                     // attempt n mutations
                     for (int i=0;i<n_mutations;++i){
                         incrementMutationCount(1);
+                        // change statement to switch
                         if (false){
                             // mutate and write mutation to file
                             it->ranmut_Gene(LOG,getGeneration());

@@ -366,6 +366,9 @@ void Cell::ranmut_Gene(std::ofstream& log,int ctr)
     int bp = static_cast<int>(3 * randomNumber());
 
     double wi = fitness();
+
+    //change statement to switch
+
     if (fromS_){
         if (useDist_){
             (*j).Mutate_Select_Dist(site,bp);
@@ -540,7 +543,7 @@ void Cell::UpdateNsNa()
 {
     int new_Na = 0;
     int new_Ns = 0;
-    for (auto& gene : genomeVec_){
+    for (const auto& gene : genomeVec_){
         new_Na += gene.Na();
         new_Ns += gene.Ns();
     }
