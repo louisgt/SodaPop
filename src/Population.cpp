@@ -203,11 +203,10 @@ void Population::writeSnapshotHeader(std::ofstream& toSnapshot, Encoding_Type en
 }
 
 void Population::writePop(std::ofstream& toSnapshot, Encoding_Type encoding){
-    int idx;
+    int idx = 1;
     switch (encoding){
         case Encoding_Type::by_default: //"normal" output format
         case Encoding_Type::full: 
-                idx=1;
                 for (const auto& cell : cells_) {
                     addSumFitness(cell.fitness());
                     cell.dump(toSnapshot,idx++);

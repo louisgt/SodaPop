@@ -7,7 +7,7 @@ double bind_DG = 0;
 int Total_Cell_Count = 0;
 int dummy = 0;
 double frame_time = 0;
-std::string outPath = "";
+std::string outPath;
 char buffer[200];
 
 double matrix[gene_number][res_number][20];
@@ -292,8 +292,7 @@ void createOutputDir(std::string dirName){
 // output: index number of codon
 int GetIndexFromCodon(std::string in_codon)
 {
-    std::map <std::string, int>::const_iterator it;
-    it = codon_to_num::cnum.find(in_codon);  
+    auto it = codon_to_num::cnum.find(in_codon);  
     if (it == codon_to_num::cnum.end()){
         std::cerr << "Invalid codon: "<< in_codon << std::endl;
         std::cerr << "Nucleotide sequence must not contain STOP codons."<< std::endl;
@@ -317,10 +316,8 @@ std::string GetProtFromNuc(std::string in_seq)
     for (int i=0; i<la;++i){
         std::string temp=in_seq.substr(i*3,3);
         
-        //check for valid code
-        std::map <std::string, char> :: const_iterator Iter;
-        Iter = codon_to_prot::cprot.find(temp);
-        if (Iter == codon_to_prot::cprot.end()){
+        auto it = codon_to_prot::cprot.find(temp);
+        if (it == codon_to_prot::cprot.end()){
           std::cerr << "Invalid codon: "<< temp << std::endl;
           std::cerr << "Nucleotide sequence must not contain STOP codons."<< std::endl;
           exit(2);
@@ -335,8 +332,7 @@ std::string GetProtFromNuc(std::string in_seq)
 int GetIndexFromAA(char aa)
 {  
     //check for valid amino acid
-    std::map <char, int> :: const_iterator it;
-    it = prot_to_num::pnum.find(aa);
+    auto it = prot_to_num::pnum.find(aa);
     if (it == prot_to_num::pnum.end()){
         std::cerr << "Invalid amino acid: "<< aa << std::endl;
         exit(2);
@@ -735,7 +731,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
                       //check stop codons in midsequence
                       size_t loc = aaseq.find('X', 0);
                       assert( loc == std::string::npos ); // no match
-                      VectStr_iterator iter = PrimordialAASeq.begin();
+                      auto iter = PrimordialAASeq.begin();
                       PrimordialAASeq.insert(iter+gn, aaseq); 
                       flag_AASeq += 1;
                   }

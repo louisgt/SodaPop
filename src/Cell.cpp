@@ -64,7 +64,7 @@ Cell::Cell(std::ifstream & cell_in) {
             genomeVec_.push_back(A);
 
             //Check if gene is correctly inserted
-            std::vector <Gene>::iterator i = genomeVec_.end();
+            auto i = genomeVec_.end();
             i--;
             // if gene fitness is null, assign a randomly fit value
             if ((*i).f()==0){
@@ -87,8 +87,12 @@ Cell::Cell(std::ifstream & IN,
     genomeVec_.reserve(maxGeneCount);
 
     char mybuffer[140];
-    int cell_id, cell_index, gene_size;
-    double m, f;
+    int l(0);
+    int cell_id(0);
+    int cell_index(0);
+    int gene_size(0);
+    double m(0);
+    double f(0);
 
     IN.read((char*)(&cell_index), sizeof(int));
     IN.read((char*)(&cell_id), sizeof(int));
@@ -96,7 +100,6 @@ Cell::Cell(std::ifstream & IN,
     parent_ = 0;
 
     //read barcode
-    int l;
     IN.read((char*) & l, sizeof(int));
     //construct vector container with nl elements
     std::vector<char> buf(l);
@@ -111,10 +114,17 @@ Cell::Cell(std::ifstream & IN,
     IN.read((char*)(&gene_size), sizeof(int));
 
     //read gene info
+    double e(0);
+    double c(0);
+    double dg(0);
+    double eff(0);
+
+    int gene_nid(0);
+    int Ns(0);
+    int Na(0);
+
+    std::string DNAsequence;
     for (int j = 0; j < gene_size; ++j) {
-        double e, c, dg, f, eff;
-        int gene_nid, Ns, Na;
-        std::string DNAsequence;
 
         IN.read((char*)(&gene_nid), sizeof(int));
         IN.read((char*)(&e), sizeof(double));
@@ -186,7 +196,6 @@ double Cell::fitness() const
 // Initialize the cummulative gene length array
 void Cell::FillGene_L() {
     int sum = 0;
-    std::vector < Gene > ::iterator i;
     for (const auto& gene : genomeVec_) {
         sum += gene.geneLength();
         geneBlocks_.push_back(sum);
@@ -247,12 +256,9 @@ void Cell::selectFitness()
 // FOLDING-STABILITY BASED FLUX FITNESS FUNCTION
 double Cell::fold() const
 {
-    double sum_func = 0;
-    //sum (concentration*Pnat) over all genes
-    for (const auto& gene : genomeVec_) {
-        sum_func += gene.functional();
-    }
-    return sum_func;
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+        { return gene.functional() + i;});
+    return f;
 }
 
 // METABOLIC FLUX FITNESS FUNCTION
@@ -271,11 +277,9 @@ double Cell::flux() const
 // MISFOLDING TOXICITY FITNESS FUNCTION
 double Cell::toxicity() const
 {
-    double f = 0;
-    //sum (concentration*(1-Pnat)) over all genes
-    for (const auto& gene : genomeVec_) {
-        f += gene.misfolded();
-    }
+    // //sum (concentration*(1-Pnat)) over all genes using fold
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+        { return gene.misfolded() + i;});
     return exp(-(misfoldingCost*f));
 }
 
@@ -302,11 +306,9 @@ double Cell::metabolicOutput() const
 // MULTIPLICATIVE FITNESS FUNCTION
 double Cell::multiplicative() const
 {
-    double fitness = 0;
-    for (const auto& gene : genomeVec_){
-        fitness += gene.f()*gene.e();
-    }
-    return fitness/gene_count();
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+        { return gene.f()*gene.e() + i;});
+    return f/gene_count();
 }
 
 // NEUTRAL FITNESS FUNCTION
@@ -325,7 +327,6 @@ double Cell::noMut() const
 double Cell::growthRate() const
 {
     double sum = 0;
-    //sum (concentration*Pnat) over all genes
     for (const auto& gene : genomeVec_) {
         sum += gene.functional()*gene.eff();
     }
@@ -348,8 +349,8 @@ void Cell::ranmut_Gene(std::ofstream& log,int ctr)
     int site = static_cast<int>( L * randomNumber());
 
     // find the corresponding gene
-    std::vector<Gene>::iterator j = genomeVec_.begin();
-    VectInt_citerator k = geneBlocks_.begin();
+    auto j = genomeVec_.begin();
+    auto k = geneBlocks_.begin();
 
     if (site >= (*k)){
     // random number generated is greater than
@@ -408,8 +409,8 @@ void Cell::ranmut_Gene()
     int site = static_cast<int>( L * randomNumber());
 
     // find the corresponding gene
-    std::vector<Gene>::iterator j = genomeVec_.begin();
-    VectInt_citerator k = geneBlocks_.begin();
+    auto j = genomeVec_.begin();
+    auto k = geneBlocks_.begin();
 
 
     if (site >= (*k)){
@@ -461,8 +462,8 @@ double Cell::normalizeFit(double fittest){
 // Dump cell information to binary file
 void Cell::dump(std::ofstream& OUT, int cell_index) const
 {
-    int x;
-    double y;
+    int x = 0;
+    double y = 0;
     
     OUT.write((char*)(&cell_index),sizeof(int));
     
@@ -514,8 +515,8 @@ void Cell::dump(std::ofstream& OUT, int cell_index) const
 // Dump cell summary to binary file
 void Cell::dumpShort(std::ofstream& OUT) const
 {
-    int x;
-    double y;
+    int x = 0;
+    double y = 0;
 
     int s = barcode().size();
     OUT.write((char*)&s, sizeof(int));
