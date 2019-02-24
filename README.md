@@ -31,7 +31,7 @@ SodaPop is a work in progress. It can certainly be expanded by implementing new 
 
 ## License
 
-Copyright (C) 2018 Louis Gauthier
+Copyright (C) 2019 Louis Gauthier
 
 SodaPop is free software. You can redistribute it or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
