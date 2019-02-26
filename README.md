@@ -6,7 +6,7 @@
 
 ## Overview
 
-SodaPop is a forward-time simulator of large asexual populations aimed at studying population structure, dynamics and the distribution of fitness effects without prior assumptions on the landscape. The program integrates biochemical and biophysical properties in a cell-based, object-oriented framework and provides an efficient, open-source toolkit for studying large-scale scenarios in molecular evolution.
+SodaPop is a forward-time simulator of large asexual populations aimed at studying population structure, dynamics and the distribution of fitness effects without prior assumptions on the landscape. The program integrates biochemical and biophysical properties in a cell-based, object-oriented framework and provides an efficient, open-source toolkit for studying multi-scale scenarios in molecular evolution.
 
 ![header](https://user-images.githubusercontent.com/29554043/32801437-0cb5cc14-c94b-11e7-8b22-5687ff245afc.png)
 
