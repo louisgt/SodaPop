@@ -2,7 +2,7 @@
 
 ## Developed by the http://www.serohijoslab.org/
 
-## Visit the [SodaPop website](https://louisgt.github.io/SodaPop/) for online documentation or [download the SodaPop user manual](https://github.com/louisgt/SodaPop/files/2673235/manual_2018.pdf).
+## Visit the [SodaPop website](https://louisgt.github.io/SodaPop/) for online documentation or [download the SodaPop user manual](https://github.com/louisgt/SodaPop/files/2906347/SodaPop-manual-v1.pdf).
 
 ## Overview
 
