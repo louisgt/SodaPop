@@ -256,7 +256,7 @@ void Cell::selectFitness()
 // FOLDING-STABILITY BASED FLUX FITNESS FUNCTION
 double Cell::fold() const
 {
-    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0.0, [](double i, const Gene& gene)
         { return gene.functional() + i;});
     return f;
 }
@@ -278,7 +278,7 @@ double Cell::flux() const
 double Cell::toxicity() const
 {
     // //sum (concentration*(1-Pnat)) over all genes using fold
-    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0.0, [](double i, const Gene& gene)
         { return gene.misfolded() + i;});
     return exp(-(misfoldingCost*f));
 }
@@ -306,9 +306,9 @@ double Cell::metabolicOutput() const
 // MULTIPLICATIVE FITNESS FUNCTION
 double Cell::multiplicative() const
 {
-    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0.0, [](double i, const Gene& gene)
         { return gene.f()*gene.e() + i;});
-    return f/gene_count();
+    return f/static_cast<double>(gene_count());
 }
 
 // NEUTRAL FITNESS FUNCTION
@@ -325,7 +325,7 @@ double Cell::noMut() const
 
 double Cell::growthRate() const
 {
-    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0, [](double i, const Gene& gene)
+    double f = std::accumulate(begin(genomeVec_), end(genomeVec_), 0.0, [](double i, const Gene& gene)
         { return gene.functional()*gene.eff() + i;});
     double fit = prefactor/f;
     return 1/(fit+1);

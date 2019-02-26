@@ -200,6 +200,13 @@ std::map<std::string,int> const codon_to_num::cnum = codon_to_num::create_map();
 std::map<char,int> const prot_to_num::pnum = prot_to_num::create_map();
 std::map<std::string,char> const codon_to_prot::cprot = codon_to_prot::create_map();
 
+// string hash function from Github user rioki
+constexpr 
+unsigned int hashString(const char* str, int h = 0)
+{
+    return !str[h] ? 5381 : (hashString(str, h+1)*33) ^ str[h];
+}
+
 Encoding_Type intToEncoding_Type(int type){
     switch (type){
         case 0:
@@ -223,6 +230,20 @@ Init_Pop intToPop_Type(int type){
             return Init_Pop::from_cellFile;
         default:
             return Init_Pop::from_snapFile;
+    }
+}
+
+Input_Type stringToInput_Type(const std::string& type){
+    switch (hashString(type.c_str())){
+        case hashString("s"):
+            return Input_Type::selection_coefficient;
+          break;
+        case hashString("stability"):
+            return Input_Type::stability;
+          break;
+        default:
+            return Input_Type::selection_coefficient;
+          break;
     }
 }
 

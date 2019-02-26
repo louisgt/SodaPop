@@ -1,5 +1,8 @@
 #include "Population.h"
 
+int Population::numberOfGenes = 0;
+Input_Type Population::simType = Input_Type::selection_coefficient;
+
 Population::Population():
     size_(0),
     sumFitness_(0)
@@ -27,6 +30,57 @@ Population::Population(std::ifstream& startFile,const std::string & genesPath, i
 	}
     for (auto& cell : cells_) {
         addSumFitness(cell.fitness());
+    }
+}
+
+void Population::initLandscape(int fitArg, std::vector<std::string> matrixVec, std::string geneListFile, std::string genesPath){
+    switch(Population::simType){
+      case Input_Type::selection_coefficient:
+          Cell::fromS_ = true;
+          if (fitArg<5){
+              // not allowed, should throw error
+              std::cout << "Not a valid argument" << std::endl;
+          }
+          else Cell::ff_ = fitArg;
+
+          InitMatrix();
+          Population::numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
+
+          std::cout << "Gene count: " << numberOfGenes << std::endl;
+
+          if(matrixVec.size()==1)
+              ExtractDMSMatrix(matrixVec.front().c_str());
+          else{
+              Cell::useDist_ = true;
+          }
+
+        break;
+
+
+      case Input_Type::stability:
+          InitMatrix();
+          Population::numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
+          Cell::ff_ = fitArg;
+          // if DDG matrix is given
+          if(matrixVec.size()){
+              switch (matrixVec.size()){
+                  case 2:
+                      bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_binding);
+                      std::cout << "-> Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
+                  case 1:
+                      fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_folding);
+                      std::cout << "-> Average ∆∆G_folding is " << fold_DG << " ..." << std::endl;
+                    break;
+                  }
+          }
+          else{
+              Cell::useDist_ = true;
+          }
+
+        break;
+        
+      default:
+        break;
     }
 }
 
@@ -159,12 +213,12 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
             cell.UpdateNsNa();
         }
         //normalize by fittest individual to prevent overflow
-        // if (inputType == "s"){
-        //     sumFitness_ = 0;
-        //     for (auto& cell : cells_) {
-        //         sumFitness_ += cell.normalizeFit(fittest);
-        //     }
-        // }
+        if (Population::simType == Input_Type::selection_coefficient){
+            sumFitness_ = 0;
+            for (auto& cell : cells_) {
+                sumFitness_ += cell.normalizeFit(fittest);
+            }
+        }
 }
 
 void Population::fill_n(int n_progeny, const Cell& c)

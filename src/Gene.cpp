@@ -88,7 +88,7 @@ Gene::Gene()
     prot_len_ = 0;
     gene_seq_ = "";
     dg_ = 0;
-    f_ =5;
+    f_ = 1;
     conc_ = 0;
     e_ = 0;
     eff_ = 0;

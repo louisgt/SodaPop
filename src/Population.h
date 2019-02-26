@@ -13,6 +13,8 @@ public:
 	void initMonoclonal(std::ifstream & ,const std::string &, int);
 	void initPolyclonal(std::ifstream & ,const std::string &, int);
 
+	static void initLandscape(int, std::vector<std::string>,std::string,std::string);
+
 	void saveSnapshot(std::ofstream&, std::string, int, Encoding_Type);
 	void writeSnapshotHeader(std::ofstream&, Encoding_Type);
 	void writePop(std::ofstream&, Encoding_Type);
@@ -42,6 +44,10 @@ public:
 	void resetSumFitness() {sumFitness_ = 0;}
 
 	double addSumFitness(double);
+
+	static int numberOfGenes;
+
+	static Input_Type simType;
 
 protected:
 	int size_;

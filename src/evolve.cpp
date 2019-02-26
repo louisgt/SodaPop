@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     // these variables will hold the parameters input (or not) by the user
     int currentGen = 1;
     int maxGen = currentGen + 1;
-    int numberOfGenes = 0;
     Encoding_Type outputEncoding = Encoding_Type::by_default;
     unsigned int targetPopSize = 1;
     int timeStep = 1;
@@ -36,7 +35,6 @@ int main(int argc, char *argv[])
     Init_Pop createPop = Init_Pop::from_snapFile;
     bool noMut = false;
 
-    std::string inputType;
     std::string geneListFile;
     std::string genesPath;
     std::string outDir;
@@ -93,7 +91,7 @@ int main(int argc, char *argv[])
 
         // Get values from args. 
         maxGen = maxArg.getValue();
-        targetPopSize   = popArg.getValue();
+        targetPopSize = popArg.getValue();
         timeStep = dtArg.getValue();
 
         geneListFile = geneArg.getValue();
@@ -101,68 +99,32 @@ int main(int argc, char *argv[])
         startSnapFile = startArg.getValue();
         genesPath = libArg.getValue();
 
-        inputType = inputArg.getValue();
+        Population::simType = stringToInput_Type(inputArg.getValue());
 
         if (seedArg.isSet())
             setRngSeed(seedArg.getValue());
 
         std::cout << "Begin ... " << std::endl;
 
+        if (matrixArg.isSet()){
+            matrixVec = matrixArg.getValue();
+        }
+
         // This statement should be a switch
-        // make enum for inputType
-        if (inputType == "s"){
-            Cell::fromS_ = true;
-            if (fitArg.getValue()<5){
-                Cell::ff_ = fitArg.getValue();
-            }
-            else 
-                Cell::ff_ = 5;
-            InitMatrix();
-            numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
-            std::cout << "Gene count: " << numberOfGenes << std::endl;
-            // if matrix is given
-            if (matrixArg.isSet()){
-                matrixVec = matrixArg.getValue();
-                assert(matrixVec.size()==1);
-                ExtractDMSMatrix(matrixVec.front().c_str());
-            }
-            else{
-                Cell::useDist_ = true;
-                if (gammaArg.isSet()){
-                    double shape = alphaArg.getValue();
-                    double scale = betaArg.getValue();
-                    Gene::initGamma(shape, scale);
-                }
-                else if (normalArg.isSet()){
-                    double mean = alphaArg.getValue();
-                    double stddev = betaArg.getValue();
-                    Gene::initNormal(mean, stddev);
-                }
-            }
+        // make enum for simType
+        if (gammaArg.isSet()){
+            Gene::initGamma(alphaArg.getValue(), betaArg.getValue());
         }
-        else if (inputType == "stability"){
-            InitMatrix();
-            numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
-            Cell::ff_ = fitArg.getValue();
-            // if DDG matrix is given
-            if (matrixArg.isSet()){
-                matrixVec = matrixArg.getValue();
-                int nMat = matrixVec.size();
-                switch (nMat){
-                    case 2:
-                        bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_binding);
-                        std::cout << "-> Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
-                    case 1:
-                        fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_folding);
-                        std::cout << "-> Average ∆∆G_folding is " << fold_DG << " ..." << std::endl;
-                        break;
-                }
-                
-            }
-            else{
-                Cell::useDist_ = true;
-            }
+        else if (normalArg.isSet()){
+            Gene::initNormal(alphaArg.getValue(), betaArg.getValue());
         }
+        else{
+            // default to gamma
+            Gene::initGamma(alphaArg.getValue(), betaArg.getValue());
+        }
+
+        //call init here
+        Population::initLandscape(fitArg.getValue(), matrixVec,geneListFile,genesPath);
 
         enableAnalysis = analysisArg.getValue();
         trackMutations = eventsArg.getValue();
@@ -258,7 +220,7 @@ int main(int argc, char *argv[])
     // if the user toggled analysis, call shell script
     if (enableAnalysis){
         std::string script = "tools/barcodes.sh";
-        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(maxGen)+" "+std::to_string(targetPopSize ) +" "+std::to_string(timeStep)+" "+std::to_string(outputEncoding)+" "+std::to_string(numberOfGenes);
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(maxGen)+" "+std::to_string(targetPopSize ) +" "+std::to_string(timeStep)+" "+std::to_string(outputEncoding)+" "+std::to_string(Population::numberOfGenes);
         const char *cmd = command.c_str();
         system(cmd);
     }

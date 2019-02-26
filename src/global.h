@@ -124,10 +124,15 @@ enum Matrix_Type {
 };
 
 enum Encoding_Type {
-    full,
     by_default,
     no_sequence,
+    full,
     other
+};
+
+enum Input_Type {
+    selection_coefficient,
+    stability
 };
 
 enum Init_Pop {
@@ -136,8 +141,10 @@ enum Init_Pop {
 };
 
 /******* FUNCTION DECLARATIONS *******/
+constexpr unsigned int hashString(const char*, int);
 Encoding_Type intToEncoding_Type(int);
 Init_Pop intToPop_Type(int);
+Input_Type stringToInput_Type(const std::string&);
 
 int GetIndexFromAA(char);
 int GetIndexFromCodon(std::string);
@@ -151,6 +158,8 @@ std::string getBarcode();
 double Ran_Gaussian(double const, double const);
 
 const char AdjacentBP(char, int);
+
+//void initLandscape(Input_Type, int, std::vector<std::string>);
 
 void openStartingPop(std::string, std::ifstream&);
 void readSnapshotHeader(std::ifstream&);

@@ -36,7 +36,7 @@ int main(int argc, char * argv[]) {
                 case 0: 
                     read_Cell(IN, OUT,false);
                     break;
-                case 1: 
+                case 1:
                     qread_Cell(IN, OUT);
                     break;
                 case 2: 
