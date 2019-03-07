@@ -37,8 +37,10 @@ public:
 
     static void initGamma(double, double);
     static void initNormal(double, double);
+    static void initExponential(double);
     static double RandomGamma();
     static double RandomNormal();
+    static double RandomExponential();
 
     double Mutate_Stabil_Gaussian(int, int);
     std::string Mutate_Stabil(int, int);
@@ -97,7 +99,8 @@ private:
         Cell *myCell_;
 
         static std::gamma_distribution<> gamma_;
-        static std::normal_distribution<> normal_;     
+        static std::normal_distribution<> normal_;  
+        static std::exponential_distribution<> exponential_;  
 };
 
 #endif

@@ -1,25 +1,8 @@
 #include "Population.h"
 
-/*SodaPop
-
-Copyright (C) 2019 Louis Gauthier
-
-    SodaPop is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-    
-    SodaPop is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-    
-    You should have received a copy of the GNU General Public License
-    along with SodaPop.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 int Population::numberOfGenes = 0;
 Input_Type Population::simType = Input_Type::selection_coefficient;
+bool Population::noMut = false;
 
 Population::Population():
     size_(0),
@@ -49,7 +32,6 @@ Population::Population(std::ifstream& startFile,const std::string & genesPath, i
     for (auto& cell : cells_) {
         addSumFitness(cell.fitness());
     }
-    startFile.close();
 }
 
 void Population::initLandscape(int fitArg, std::vector<std::string> matrixVec, std::string geneListFile, std::string genesPath){
@@ -139,16 +121,18 @@ void Population::initPolyclonal(std::ifstream& startFile,const std::string & gen
 void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
     // allocate space for temporary population
     Population newPopulation(targetBuffer);
+    double relative_fitness(1);
+    int n_progeny(0);
     for (const auto& cell : cells_) {
 
         // fitness of cell j with respect to sum of population fitness
-        double relative_fitness = cell.fitness()/getSumFitness();
+        relative_fitness = cell.fitness()/getSumFitness();
 
         // probability parameter of binomial distribution
         std::binomial_distribution<> binCell(targetSize, relative_fitness);
 
         // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
-        int n_progeny = binCell(g_rng);
+        n_progeny = binCell(g_rng);
             
         // if nil, the cell will be wiped from the population
         if(n_progeny == 0) continue; 
@@ -170,26 +154,26 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
             ++link;
         }while(link < last);
 
-            //if (!noMut){
+            if(!Population::noMut){
             // after filling with children, go through each one for mutation
                 do{
-                std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
-                int n_mutations = binMut(g_rng);
-                    // attempt n mutations
-                    for (int i=0;i<n_mutations;++i){
-                        incrementMutationCount(1);
-                        // change statement to switch
-                        if (false){
-                            // mutate and write mutation to file
-                            it->ranmut_Gene(LOG,getGeneration());
+                    std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
+                    int n_mutations = binMut(g_rng);
+                        // attempt n mutations
+                        for (int i=0;i<n_mutations;++i){
+                            incrementMutationCount(1);
+                            // change statement to switch
+                            if (false){
+                                // mutate and write mutation to file
+                                it->ranmut_Gene(LOG,getGeneration());
+                            }
+                            else{
+                                it->ranmut_Gene();
+                            }       
                         }
-                        else{
-                            it->ranmut_Gene();
-                        }       
-                    }
-                    ++it;
+                        ++it;
                 }while(it < last);
-            //}
+            }
         }
 
         // if the population is below N
@@ -231,11 +215,12 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
                 fittest = current;
             cell.UpdateNsNa();
         }
+
         //normalize by fittest individual to prevent overflow
         if (Population::simType == Input_Type::selection_coefficient){
-            sumFitness_ = 0;
+            //sumFitness_ = 0;
             for (auto& cell : cells_) {
-                sumFitness_ += cell.normalizeFit(fittest);
+                cell.normalizeFit(fittest);
             }
         }
 }
@@ -281,13 +266,11 @@ void Population::writePop(std::ofstream& toSnapshot, Encoding_Type encoding){
         case Encoding_Type::by_default: //"normal" output format
         case Encoding_Type::full: 
                 for (const auto& cell : cells_) {
-                    addSumFitness(cell.fitness());
                     cell.dump(toSnapshot,idx++);
                 } 
             break;
         case Encoding_Type::no_sequence: //"short" output format
                 for (const auto& cell : cells_) {
-                    addSumFitness(cell.fitness());
                     cell.dumpShort(toSnapshot);
                 }
             break;

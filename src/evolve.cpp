@@ -110,6 +110,8 @@ int main(int argc, char *argv[])
             matrixVec = matrixArg.getValue();
         }
 
+        // This statement should be a switch
+        // make enum for simType
         if (gammaArg.isSet()){
             Gene::initGamma(alphaArg.getValue(), betaArg.getValue());
         }
@@ -121,6 +123,7 @@ int main(int argc, char *argv[])
             Gene::initGamma(alphaArg.getValue(), betaArg.getValue());
         }
 
+        //call init here
         Population::initLandscape(fitArg.getValue(), matrixVec,geneListFile,genesPath);
 
         enableAnalysis = analysisArg.getValue();
@@ -134,7 +137,7 @@ int main(int argc, char *argv[])
     /* general simulation initialization, can be put in a global method
     */
     if (Cell::ff_ == 7) {
-        noMut = true;
+        Population::noMut = true;
         std::cout << "Mutations are not active." << std::endl;
     }
 
@@ -170,6 +173,10 @@ int main(int argc, char *argv[])
     //std::vector <Cell> Cell_arr;
     Population currentPop(startFile, genesPath, targetPopSize, createPop);
 
+    /* should be handled by method initializing the population
+    */
+    startFile.close();
+
     Total_Cell_Count = currentPop.getSize();
 
     std::ofstream OUT;
@@ -178,7 +185,10 @@ int main(int argc, char *argv[])
         currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
     }catch (std::runtime_error &e) {}
 
-    int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
+    /* MAIN SIMULATION BLOCK, can be put in a method outside main
+    */
+
+    const int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
     
     std::cout << "Starting evolution ..." << std::endl;
     CMDLOG << "Starting evolution ..." << std::endl;

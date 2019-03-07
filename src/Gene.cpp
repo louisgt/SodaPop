@@ -2,6 +2,7 @@
 
 std::gamma_distribution<> Gene::gamma_ = std::gamma_distribution<>(1.0, 1.0);
 std::normal_distribution<> Gene::normal_ = std::normal_distribution<>(1.0, 1.0);
+std::exponential_distribution<> Gene::exponential_ = std::exponential_distribution<>(1.0);
 
 //Input: gene file
 Gene::Gene(std::ifstream& gene_in, Cell *parent)
@@ -336,6 +337,11 @@ void Gene::initNormal(double mean, double stddev)
     Gene::normal_.param(std::normal_distribution<>::param_type(mean, stddev));
 }
 
+void Gene::initExponential(double lambda)
+{
+    Gene::exponential_.param(std::exponential_distribution<>::param_type(lambda));
+}
+
 double Gene::RandomGamma()
 {
     return Gene::gamma_(g_rng);
@@ -344,6 +350,11 @@ double Gene::RandomGamma()
 double Gene::RandomNormal()
 {
     return Gene::normal_(g_rng);
+}
+
+double Gene::RandomExponential()
+{
+    return Gene::exponential_(g_rng);
 }
 
 // Updates the current DNA sequence
