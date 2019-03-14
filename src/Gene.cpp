@@ -270,7 +270,7 @@ double Gene::Mutate_Select_Dist(int i, int j)
     }
     else{
         Ns_ += 1;
-        return 1;
+        return 0;
     }
 }
 
