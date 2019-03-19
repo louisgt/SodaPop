@@ -28,6 +28,21 @@ Download and install [Cygwin](https://www.cygwin.com/) on your computer. This wi
 
 SodaPop is a work in progress. It can certainly be expanded by implementing new features, and it can also be further optimized for performance and memory. If you have ideas for additional features, or if you are interested in contributing to the software, please contact me at louis.gauthier AT umontreal.ca
 
+## Citation
+
+*If you use SodaPop in your research, kindly cite the following:*
+
+Gauthier L, Di Franco R, Serohijos AWR. SodaPop: A Forward Simulation Suite for the Evolutionary Dynamics of Asexual Populations on Protein Fitness Landscapes. Bioinformatics. 2019 Mar 13. pii: btz175. doi:10.1093/bioinformatics/btz175.
+
+```
+@article{Gauthier2019,
+    author = {Gauthier, Louis and Serohijos, Adrian W R and Di Franco, Rémicia},
+    title = "{SodaPop: A Forward Simulation Suite for the Evolutionary Dynamics of Asexual Populations on Protein Fitness Landscapes}",
+    year = {2019},
+    doi = {10.1093/bioinformatics/btz175}
+}
+```
+
 
 ## License
 
