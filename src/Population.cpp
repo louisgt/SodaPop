@@ -93,7 +93,7 @@ void Population::initMonoclonal(std::ifstream& startFile,const std::string & gen
     for (auto& cell : cells_) {
         cell.ch_barcode(getBarcode());
     }
-    if (Cell::ff_ == 5){
+    if (Cell::ff_ == 5 || Cell::ff_ == 9){
         for (auto& cell : cells_) {
             cell.UpdateRates();
         }
@@ -109,7 +109,7 @@ void Population::initPolyclonal(std::ifstream& startFile,const std::string & gen
         cells_.emplace_back(startFile, genesPath);
         ++count;  
     }
-    if (Cell::ff_ == 5){
+    if (Cell::ff_ == 5 || Cell::ff_ == 9){
         for (auto& cell : cells_) {
             cell.UpdateRates();
         }

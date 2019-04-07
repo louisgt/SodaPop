@@ -35,6 +35,22 @@ int main(int argc, char *argv[])
     Init_Pop createPop = Init_Pop::from_snapFile;
     bool noMut = false;
 
+    /*## HGT ##*/
+    int nb_gain_to_sim = 0;
+    int nb_loss_to_sim = 0;
+    int gain_event_ctr = 0;
+    int loss_event_ctr = 0;
+    double lambda_plus = 0;
+    double lambda_minus = 0;
+    double r_prime = 0;
+    double a_for_s_x = 0;
+    double b_for_s_x = 0;
+
+    bool simul_pangenomes_evolution = false;
+    bool track_pangenomes_evolution = false;
+    bool msg_hgt_off_already_printed = false;
+    /*## HGT ##*/
+
     std::string geneListFile;
     std::string genesPath;
     std::string outDir;
@@ -71,6 +87,29 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<int> seqArg("s","seq-output","Sequence output format",false,0,"integer");
         TCLAP::ValueArg<unsigned long> seedArg("", "seed", "Seed value for RNG.", false, 0, "unsigned int (64-bit)");
 
+        /*## HGT ##*/
+        // boolean switch to simulate neutral Pangenomes evolution (Gain and loss of genes)
+        TCLAP::SwitchArg pangenomes_evo_Arg("V","pangenomes-evolution","simulate neutral Pangenomes evolution (random Gain and loss of genes)", cmd, false);
+        
+        // boolean switch to track pangenomes evolution events (Gain and loss of genes) and also track the evolution of genome size and loss rate / gain rate ratio
+        TCLAP::SwitchArg track_pangenomes_evo_Arg("T","track-PanEv","track pangenomes evolution events (Gain and loss of genes) and also track the evolution of genome size and loss rate / gain rate ratio", cmd, false);
+
+        //parameter a to calculate the selection coefficient s(x)
+        TCLAP::ValueArg<double> a_Arg("","aForSx","parameter a to calculate s(x)",false,1,"double");
+
+        //parameter b to calculate the selection coefficient s(x)
+        TCLAP::ValueArg<double> b_Arg("","bForSx","parameter b to calculate s(x)",false,1,"double");
+
+        //parameter r_prime to calculate r(x)
+        TCLAP::ValueArg<double> r_prime_Arg("","rPrime","parameter rPrime to calculate r(x)",false,1,"double");
+
+        //parameter lambda_plus to calculate alpha(x)
+        TCLAP::ValueArg<double> lambda_plus_Arg("","lambdaPlus","parameter lambdaPlus to calculate alpha(x)",false,1,"double");
+
+        //parameter lambda_minus to calculate beta(x)***
+        TCLAP::ValueArg<double> lambda_minus_Arg("","lambdaMinus","parameter lambdaMinus to calculate beta(x)",false,1,"double");
+        /*## HGT ##*/
+
         // Add the arguments to the CmdLine object.
         cmd.add(maxArg);
         cmd.add(popArg);
@@ -85,6 +124,14 @@ int main(int argc, char *argv[])
         cmd.add(alphaArg);
         cmd.add(betaArg);
         cmd.add(inputArg);
+
+        /*## HGT ##*/
+        cmd.add(a_Arg);
+        cmd.add(b_Arg);
+        cmd.add(r_prime_Arg);
+        cmd.add(lambda_plus_Arg);
+        cmd.add(lambda_minus_Arg);
+        /*## HGT ##*/
 
         // Parse the argv array.
         cmd.parse(argc, argv);
@@ -128,6 +175,17 @@ int main(int argc, char *argv[])
 
         enableAnalysis = analysisArg.getValue();
         trackMutations = eventsArg.getValue();
+
+        /*## HGT ##*/
+        simul_pangenomes_evolution = pangenomes_evo_Arg.getValue();
+        track_pangenomes_evolution = track_pangenomes_evo_Arg.getValue();
+        lambda_plus = lambda_plus_Arg.getValue();
+        lambda_minus = lambda_minus_Arg.getValue();
+        r_prime = r_prime_Arg.getValue();
+        a_for_s_x = a_Arg.getValue();
+        b_for_s_x = b_Arg.getValue();
+        /*## HGT ##*/
+
         outputEncoding = intToEncoding_Type(seqArg.getValue());
         createPop = intToPop_Type(initArg.getValue());
 
@@ -160,7 +218,6 @@ int main(int argc, char *argv[])
     }
 
     /*OPEN POPULATION SNAPSHOT
-        eventually move block to initializing method*/
     /*READ POPULATION SNAPSHOT:
     */
 

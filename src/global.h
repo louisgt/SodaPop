@@ -21,6 +21,7 @@
 #include <functional>
 #include <iterator>
 #include <sys/stat.h>
+#include <stdexcept>
 
 #include <errno.h>    // errno, ENOENT, EEXIST
 #if defined(_WIN32)
