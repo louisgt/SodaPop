@@ -69,6 +69,7 @@ public:
     double noMut() const;
     double fold() const;
     double growthRate() const;
+    double multiplicative_without_genes_fit_mean() const;
 
     void ranmut_Gene();
     void ranmut_Gene(std::ofstream&, int);
@@ -91,6 +92,7 @@ public:
     double getSelCoeffCurrentMutation() const;
     void setSelCoeffCurrentMutation(double selCoeffCurrentMutation);
     void initialize_cumul_pev_effect();
+    void dumpCellGeneContent(std::ofstream&,int);
     /**** HGT ****/
 
     void PrintCell(int) const;

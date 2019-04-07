@@ -243,7 +243,9 @@ void Cell::selectFitness()
             break;
         case 8: fit = &Cell::growthRate;
             break;
-        default:;
+        case 9: fit = &Cell::multiplicative_without_genes_fit_mean;
+            break;
+        default: fit = &Cell::neutral;;
     }
 }
 
@@ -323,6 +325,11 @@ double Cell::growthRate() const
         { return gene.functional()*gene.eff() + i;});
     double fit = prefactor/f;
     return 1/(fit+1);
+}
+
+double Cell::multiplicative_without_genes_fit_mean() const
+{
+    return fitness()*(1.0+getSelCoeffCurrentMutation());
 }
 
 void Cell::UpdateRates()
@@ -616,6 +623,11 @@ void Cell::initialize_cumul_pev_effect() {
     this->set_PevFe(0);
 }
 
+void Cell::dumpCellGeneContent(std::ofstream& OUT, int GEN_CTR) {
+    for(auto gene_it = this->genomeVec_.begin(); gene_it != this->genomeVec_.end(); ++gene_it){
+        OUT <<GEN_CTR<<"\t"<<this->ID()<<"\t"<<gene_it->num()<<"\t"<<gene_it->geneSeq()<<std::endl;
+    }
+}
 
 // Print cell information to stdout
 void Cell::PrintCell(int cell_ndx) const
