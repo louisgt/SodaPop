@@ -63,6 +63,7 @@ Gene::Gene(std::ifstream& gene_in, Cell *parent)
     }
     Na_ = 0; //default
     Ns_ = 0;
+    this->s_current_mutation = 0;
 }
 
 // copy constructor
@@ -79,6 +80,7 @@ Gene::Gene(const Gene& G)
     eff_ = G.eff_;
     Na_ = G.Na_;
     Ns_ = G.Ns_;
+    this->s_current_mutation = G.s_current_mutation;
 }
 
 Gene::Gene()
@@ -94,6 +96,7 @@ Gene::Gene()
     eff_ = 0;
     Na_ = 0;
     Ns_ = 0;
+    this->s_current_mutation = 0;
 }
 
 Gene::~Gene()
@@ -255,7 +258,7 @@ This version of the mutation function draws the selection coefficient value from
 double Gene::Mutate_Select_Dist(int i, int j)
 { 
     if (i>=gene_len_){
-        std::cerr << "ERROR: Mutation site out of bounds."<< std::endl;
+        std::cerr << "ERROR: Mutation site out of bounds. Gene "<<this->num()<<" length is : "<<this->geneLength()<<" but selected site is " <<i << std::endl;
         exit(2);
     }       
        
@@ -312,13 +315,16 @@ std::string Gene::Mutate_Select(int i, int j)
     int aa_curr = GetIndexFromCodon(cdn_curr);
 
     if ( aa_curr == aa_new){//SILENT
+          new_s=0;
           gene_seq_.replace(cdn_start, 3, cdn_new);
           Ns_ += 1;
+          this->setS_current_mutation(new_s);
           return "SILENT\tNA\tNA\tNA";
     }
     else{// NON-SYNONYMOUS 
           // assign new fitness value
           double new_f = f_ + new_s;
+          this->setS_current_mutation(new_s);
           f_ = f_ * new_f;
           gene_seq_.replace(cdn_start, 3, cdn_new);
           Na_ += 1;
@@ -388,6 +394,31 @@ double Gene::misfolded() const
 double Gene::A_factor() const
 {
     return 1.0/conc_;
+}
+
+double Gene::getS_current_mutation() const {
+    return s_current_mutation;
+}
+
+ void Gene::setS_current_mutation(
+        double p_S_current_mutation) {
+    s_current_mutation = p_S_current_mutation;
+}
+
+Gene::Gene(const Gene& G, Cell *p_new_Cell) {
+    gene_idx_ = G.gene_idx_;
+    gene_len_ = G.gene_len_;
+    prot_len_ = G.prot_len_;
+    gene_seq_ = G.gene_seq_;
+    dg_ = G.dg_;
+    f_ = G.f_;
+    conc_ = G.conc_;
+    e_ = G.e_;
+    eff_ = G.eff_;
+    Na_ = G.Na_;
+    Ns_ = G.Ns_;
+    this->s_current_mutation = G.s_current_mutation;
+    myCell_= p_new_Cell;
 }
 
 Cell *Gene::GetCell() const

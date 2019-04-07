@@ -29,7 +29,7 @@ public:
     Gene();
     Gene(std::ifstream&,Cell *);
     Gene(const Gene&);
-    //Gene(const Gene&, Cell *);
+    Gene(const Gene&, Cell *);
     ~Gene(); 
   
     bool operator==(Gene&);
@@ -74,6 +74,9 @@ public:
     void ch_Ns(const int a){Ns_ = a;}
     void ch_e(const double e){e_ = e;}
 
+    double getS_current_mutation() const;
+    void setS_current_mutation(double cumulSumFitEffectMutCurrentGen);
+
     Cell *GetCell() const;
     const void setCell(Cell*);
 
@@ -93,6 +96,8 @@ private:
 
         double conc_;    //concentration
         double e_;       //essentiality: between 0 and 1, can be used as a coefficient
+
+        double s_current_mutation; //used to save the selection coefficient of a mutation event
 
         Cell *myCell_;
 

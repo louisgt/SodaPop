@@ -13,7 +13,9 @@ Cell::Cell():
     parent_(0),
     o_mrate_(0),
     c_mrate_(0),
-    fitness_(0)
+    fitness_(0),
+    pev_fe(0),
+    sel_coeff_current_mutation(0)
     {
         geneBlocks_.reserve(maxGeneCount);
         genomeVec_.reserve(maxGeneCount);
@@ -21,6 +23,8 @@ Cell::Cell():
 
 // Construct from cell file
 Cell::Cell(std::ifstream & cell_in) {
+    pev_fe = 0;
+    sel_coeff_current_mutation=0;
     char mybuffer[140];
     geneBlocks_.reserve(maxGeneCount);
     genomeVec_.reserve(maxGeneCount);
@@ -99,6 +103,9 @@ Cell::Cell(std::ifstream & IN,
     ID_ = cell_id;
     parent_ = 0;
 
+    pev_fe = 0;
+    sel_coeff_current_mutation=0;
+
     //read barcode
     IN.read((char*) & l, sizeof(int));
     //construct vector container with nl elements
@@ -172,19 +179,6 @@ void Cell::linkGenes()
 {
     for (auto gene_it = this->genomeVec_.begin(); gene_it != this->genomeVec_.end(); gene_it++) {
         gene_it->setCell(this);
-    }
-}
-
-void Cell::print_summary_Gene_arr_() {
-    for (const auto& gene : genomeVec_) {
-         std::cout<<"current gene of cell"<< this->ID()<<" is gene"<< gene.num()<<" and has length "<<gene.geneLength()<<std::endl;
-    }
-}
-
-void Cell::print_summary_Gene_L_() {
-    std::cout<<"cumulative lengths of cell"<< this->ID()<<" is :"<<std::endl;
-    for (const auto& cumul : geneBlocks_) {
-        std::cout<< cumul <<std::endl;
     }
 }
 
@@ -550,6 +544,78 @@ void Cell::UpdateNsNa()
     Total_Na_ = new_Na;
     Total_Ns_ = new_Ns;
 }
+
+// ********** HGT
+void Cell::select_random_gene() {
+    // 1. Create a temporary vector of indices corresponding to the actual gene objects
+    std::vector<int> indices(genomeVec_.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    // 2. Shuffle the vector of indices using the already instantiated rng
+    std::shuffle(indices.begin(), indices.end(), g_rng);
+    // 3. Take the last element as ID of the gene to be selected
+    int ID_random_gene = indices.back();
+    // 4. Return the random gene
+    Cell::selected_gene =  Gene(*(this->genomeVec_.begin() + ID_random_gene),this);
+}
+
+int Cell::remove_rand_gene(const int & a_for_s_x,const int & b_for_s_x) {
+    // 1. Create a temporary vector of indices corresponding to the actual gene objects
+    std::vector<int> indices(genomeVec_.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    // 2. Shuffle the vector of indices using the already instantiated rng
+    std::shuffle(indices.begin(), indices.end(), g_rng);
+    // 3. Take the last element as ID of the gene to be removed
+    int indice_removed_gene = indices.back();
+    int ID_removed_gene = (genomeVec_.begin() + indice_removed_gene)->num();
+    // 4. Erase the gene from the vector. Note that the vector is automatically resized
+    genomeVec_.erase(genomeVec_.begin() + indice_removed_gene);
+    this->geneBlocks_.clear();
+    this->geneBlocks_.reserve(this->gene_count()-1);
+    this->FillGene_L();
+    //s_loss(x) = -s_gain(x)
+    this->set_PevFe(-1*(a_for_s_x + (b_for_s_x * this->gene_count())));
+    this->ch_Fitness(this->fitness() + (this->get_PevFe()));
+    return ID_removed_gene;
+}
+
+//Add the selected gene saved in the static memeber selected_gene in the present cell
+int Cell::add_gene(const int & a_for_s_x,const int & b_for_s_x) {
+    Cell::selected_gene.setCell(this);
+    genomeVec_.push_back(Cell::selected_gene);
+    //std::cout<<"Gain event : Cell"<<this->ID()<<" new gene number is "<<n_G.num()<<" and has length : "<<n_G.length()<<std::endl;
+    this->geneBlocks_.clear();
+    this->geneBlocks_.reserve(this->gene_count()+1);
+    this->FillGene_L();
+    this->set_PevFe(a_for_s_x + (b_for_s_x * this->gene_count()));
+    this->ch_Fitness(this->fitness() + (this->get_PevFe()));
+    return Cell::selected_gene.num();
+}
+
+void Cell::print_summary_Gene_arr_() {
+    for (auto current_gene_it = this->genomeVec_.begin(); current_gene_it!=this->genomeVec_.end();++current_gene_it){
+         std::cout<<"current gene of cell"<< this->ID()<<" is gene"<<current_gene_it->num()<<" and has length "<<current_gene_it->geneLength()<<std::endl;
+    }
+}
+
+void Cell::print_summary_Gene_L_() {
+    std::cout<<"cumulative lengths of cell"<< this->ID()<<" is :"<<std::endl;
+    for (auto it_cumul_length = this->geneBlocks_.begin(); it_cumul_length!=this->geneBlocks_.end();++it_cumul_length){
+        std::cout<<*(it_cumul_length)<<std::endl;
+    }
+}
+
+double Cell::getSelCoeffCurrentMutation() const {
+    return sel_coeff_current_mutation;
+}
+
+void Cell::setSelCoeffCurrentMutation(double selCoeffCurrentMutation) {
+    sel_coeff_current_mutation = selCoeffCurrentMutation;
+}
+
+void Cell::initialize_cumul_pev_effect() {
+    this->set_PevFe(0);
+}
+
 
 // Print cell information to stdout
 void Cell::PrintCell(int cell_ndx) const
