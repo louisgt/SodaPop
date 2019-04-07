@@ -452,8 +452,8 @@ double Cell::normalizeFit(double fittest){
         std::cerr << "Population collapse, average fitness is null.\n";
         exit(1);
     }
-    double newfit = (genomeVec_.begin()->f())/fittest;
-    genomeVec_.begin()->ch_f(newfit);
+    double newfit = fitness()/fittest;
+    ch_Fitness(newfit);
     UpdateRates();
     return newfit;
 }

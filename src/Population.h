@@ -49,6 +49,8 @@ public:
 
 	static Input_Type simType;
 
+	static bool noMut;
+
 protected:
 	int size_;
 	double sumFitness_;

@@ -2,6 +2,7 @@
 
 int Population::numberOfGenes = 0;
 Input_Type Population::simType = Input_Type::selection_coefficient;
+bool Population::noMut = false;
 
 Population::Population():
     size_(0),
@@ -120,16 +121,18 @@ void Population::initPolyclonal(std::ifstream& startFile,const std::string & gen
 void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
     // allocate space for temporary population
     Population newPopulation(targetBuffer);
+    double relative_fitness(1);
+    int n_progeny(0);
     for (const auto& cell : cells_) {
 
         // fitness of cell j with respect to sum of population fitness
-        double relative_fitness = cell.fitness()/getSumFitness();
+        relative_fitness = cell.fitness()/getSumFitness();
 
         // probability parameter of binomial distribution
         std::binomial_distribution<> binCell(targetSize, relative_fitness);
 
         // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
-        int n_progeny = binCell(g_rng);
+        n_progeny = binCell(g_rng);
             
         // if nil, the cell will be wiped from the population
         if(n_progeny == 0) continue; 
@@ -151,27 +154,27 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
             ++link;
         }while(link < last);
 
-            //if (!noMut){
+        if(!Population::noMut){
             // after filling with children, go through each one for mutation
                 do{
                 std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
                 int n_mutations = binMut(g_rng);
-                    // attempt n mutations
-                    for (int i=0;i<n_mutations;++i){
-                        incrementMutationCount(1);
-                        // change statement to switch
-                        if (false){
-                            // mutate and write mutation to file
-                            it->ranmut_Gene(LOG,getGeneration());
-                        }
-                        else{
-                            it->ranmut_Gene();
-                        }       
+                // attempt n mutations
+                for (int i=0;i<n_mutations;++i){
+                    incrementMutationCount(1);
+                    // change statement to switch
+                    if (false){
+                        // mutate and write mutation to file
+                        it->ranmut_Gene(LOG,getGeneration());
                     }
-                    ++it;
+                    else{
+                        it->ranmut_Gene();
+                    }       
+                }
+                ++it;
                 }while(it < last);
-            //}
         }
+    }
 
         // if the population is below N
         // randomly draw from progeny to pad
@@ -214,9 +217,8 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
         }
         //normalize by fittest individual to prevent overflow
         if (Population::simType == Input_Type::selection_coefficient){
-            sumFitness_ = 0;
             for (auto& cell : cells_) {
-                sumFitness_ += cell.normalizeFit(fittest);
+                cell.normalizeFit(fittest);
             }
         }
 }
