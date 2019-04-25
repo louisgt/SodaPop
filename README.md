@@ -8,7 +8,7 @@
 
 SodaPop is a forward-time simulator of large asexual populations aimed at studying population structure, dynamics and the distribution of fitness effects without prior assumptions on the landscape. The program integrates biochemical and biophysical properties in a cell-based, object-oriented framework and provides an efficient, open-source toolkit for studying multi-scale scenarios in molecular evolution.
 
-![header](https://user-images.githubusercontent.com/29554043/32801437-0cb5cc14-c94b-11e7-8b22-5687ff245afc.png)
+![header](https://user-images.githubusercontent.com/29554043/56760304-e6537680-6768-11e9-9f40-21010e5b3c93.png)
 
 ## Installation
 
@@ -46,6 +46,10 @@ Make sure your gcc/g++ compiler is up-to-date. Get a newer version [here](https:
 
 Download and install [Cygwin](https://www.cygwin.com/) on your computer. This will allow you to build SodaPop from source and use it as you would on a Unix system.
 
+
+## Issues and bugs
+
+SodaPop has been tested extensively on a variety of machines. We have taken great care to test diverse scenarios and to correct any bugs we could find. With that being said, if you stumble upon bugs, compilation or execution issues, or if you have any questions on the software, please do share those with us, either by [creating an issue](https://help.github.com/en/articles/creating-an-issue) on the project page or by email at louis.gauthier AT umontreal.ca .
 
 ## Contributing
 
