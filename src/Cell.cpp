@@ -451,7 +451,7 @@ double Cell::normalizeFit(double fittest){
         std::cerr << "Population collapse, average fitness is null.\n";
         exit(1);
     }
-    double newfit = fitness()/fittest;
+    double newfit = fitness()*1.0/fittest;
     ch_Fitness(newfit);
     UpdateRates();
     return newfit;

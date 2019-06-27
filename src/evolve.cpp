@@ -185,9 +185,6 @@ int main(int argc, char *argv[])
         currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
     }catch (std::runtime_error &e) {}
 
-    /* MAIN SIMULATION BLOCK, can be put in a method outside main
-    */
-
     const int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
     
     std::cout << "Starting evolution ..." << std::endl;
