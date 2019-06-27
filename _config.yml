@@ -1,7 +1,7 @@
 markdown: kramdown
 title: SodaPop
-tagline: A fast simulator for population dynamics and molecular evolution.
-description: A fast, versatile forward-time simulator for large-scale population dynamics and molecular evolution.
+tagline: A fast simulator for population dynamics and protein evolution.
+description: A fast, flexible forward-time simulator for large-scale population dynamics and protein evolution.
 show_downloads: "true"
 baseurl: "/SodaPop"
 author :
