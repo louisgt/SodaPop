@@ -4,3 +4,4 @@ _site/
 +sodasumm
 out/
 *.o
+.DS_Store
