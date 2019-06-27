@@ -136,7 +136,7 @@ ul {
 
 body { padding: 0; margin: 0; font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; line-height: 1.7; color: #485155; }
 
-a { color: #E01A63; text-decoration: none;font-weight: bold }
+a { color: #4473DD; text-decoration: none;font-weight: bold }
 a:hover { text-decoration: underline; }
 
 .btn { display: inline-block; margin-bottom: 1rem; color: #fff; background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); border-style: solid; border-width: 1px; border-radius: 0.3rem; transition: color 0.2s, background-color 0.2s, border-color 0.2s; }
@@ -173,9 +173,9 @@ a:hover { text-decoration: underline; }
 .main-content h1, .main-content h2 { margin-top: 2rem; margin-bottom: 1rem; font-weight: bold; color: #1c1c1c; }
 .main-content h3, .main-content h4, .main-content h5, .main-content h6 { margin-top: 2rem; margin-bottom: 1rem; font-weight: normal; color: #1c1c1c; }
 .main-content p { margin-bottom: 1em; }
-.main-content code { padding: 2px 4px; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; font-size: 1.2rem; color: #567482; background-color: #f3f6fa; border-radius: 0.3rem; }
+.main-content code { padding: 2px 4px; font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace; font-size: 1.2rem; color: #425963; background-color: #f3f6fa; border-radius: 0.3rem; }
 .main-content pre { padding: 0.8rem; margin-top: 0; margin-bottom: 1rem; font: 1rem Consolas, "Liberation Mono", Menlo, Courier, monospace; color: #485155; word-wrap: normal; background-color: #f3f6fa; border: solid 1px #dce6f0; border-radius: 0.3rem; }
-.main-content pre > code { padding: 0; margin: 0; font-size: 1.1rem; color: #567482; word-break: normal; white-space: pre; background: transparent; border: 0; }
+.main-content pre > code { padding: 0; margin: 0; font-size: 1.1rem; color: #425963; word-break: normal; white-space: pre; background: transparent; border: 0; }
 .main-content .highlight { margin-bottom: 1rem; }
 .main-content .highlight pre { margin-bottom: 0; word-break: normal; }
 .main-content .highlight pre, .main-content pre { padding: 0.8rem; overflow: auto; font-size: 1.2rem; line-height: 1.45; border-radius: 0.3rem; -webkit-overflow-scrolling: touch; }
