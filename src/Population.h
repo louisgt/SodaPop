@@ -38,12 +38,14 @@ public:
 	void incrementMutationCount(int c) {mutationCounter_ += c;}
 
 	void incrementSize(int c) {size_ += c;}
+	void decrimentSize(int c) {size_ -= c;}
+
 
 	void setSize(int s) {size_ = s;}
 
 	void resetSumFitness() {sumFitness_ = 0;}
 
-	double addSumFitness(double);
+	double addSumFitness(double); //this adds only the fitness of one cell
 
 	void reBarcode();
 
@@ -52,6 +54,16 @@ public:
 	static Input_Type simType;
 
 	static bool noMut;
+    
+    //Adrian's added functions
+    double calcTotalFitness(); //calculates the total fitness of all cells in the population
+    void MoranBirth();
+    void randomCellDeath();
+    
+	void sortPopulationByFitness();
+
+    
+    
 
 protected:
 	int size_;

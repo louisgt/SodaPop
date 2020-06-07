@@ -87,6 +87,26 @@ public:
     int Ns() const {return Total_Ns_;}
     void UpdateNsNa();
     
+    /*
+    overloaded relational operators required for sorting 
+    */
+    bool operator< (const Cell &other) const {
+        return fitness_ < other.fitness_;
+    }
+    bool operator> (const Cell &other) const {
+        return fitness_ > other.fitness_;
+    }
+    //Cell equality based only on fitness definitions
+    bool operator== (const Cell &other) const {
+        return fitness_ == other.fitness_;
+    }
+    bool operator<= (const Cell &other) const {
+        return fitness_ <= other.fitness_;
+    }
+    bool operator>= (const Cell &other) const {
+        return fitness_ >= other.fitness_;
+    }
+    
 protected:
     // organism barcode
     std::string barcode_;

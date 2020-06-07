@@ -319,3 +319,95 @@ void Population::reBarcode(){
     assert(k == size_);
     std::cout << "Finished rebarcoding" << std::endl;
 }
+
+//Adrian's added functions
+
+/*
+This function to be performed at the start of, and periodically during, the Moran simulation. This improves the search time for the ODM implementation of the Gillespie algorithm (Cook et al/ JCP 2004)
+*/
+void Population::sortPopulationByFitness(){
+    std::reverse(cells_.begin(), cells_.end());
+}
+
+/*
+This function sums the fitness values of all cells in the population.
+*/
+
+double Population::calcTotalFitness(){
+        resetSumFitness();
+    
+        double f = 0;
+        for (auto& cell : cells_) {
+            f = cell.fitness();
+            addSumFitness(f);
+        }
+        //std::cout << "Total population fitness: " << sumFitness_ << std::endl;
+        return sumFitness_;
+}
+
+/*
+Implement a Moran process
+*/
+void Population::MoranBirth(){
+    auto cell_it = cells_.begin();
+    
+    /*random cell to replicate, a test
+    //unsigned int x = randomNumber()*size_;
+    //cell_it = cell_it + x;
+    */
+    
+    double shot = randomNumber()*sumFitness_;
+    
+    double cummSum = 0;
+    unsigned int i = 0;
+    
+    while(cell_it != cells_.end()){
+        cummSum += cell_it->fitness();
+        if ( cummSum >= shot ) break;
+        
+        cell_it++;
+        i++;
+    }
+    
+    
+    //process cell replication
+    auto curr = cells_.insert(cell_it, *cell_it);
+    incrementSize(1);
+    
+    //potentially mutate daughter 1 (just added cell)
+    //curr->ranmut_Gene();
+    double b = curr->fitness();
+    sumFitness_ +=b;
+    
+    //potentially mutate daughter 2 (original cell)
+    curr++;
+    b = curr->fitness();
+    sumFitness_ -= b;
+    
+    //curr->ranmut_Gene();
+    double bb = curr->fitness();
+    sumFitness_ += bb;
+        
+    //std::cout << "birth cell " << i << " " << b << " " << bb << std::endl;    
+    
+}
+
+
+/*
+Pick a random cell to kill.
+*/
+void Population::randomCellDeath(){
+    auto cell_it = cells_.begin();
+    
+    unsigned int x = randomNumber()*size_;
+    cell_it = cell_it + x;
+    
+    double b = cell_it->fitness();
+    cells_.erase(cell_it);
+    decrimentSize(1);
+    
+    std::cout << "kill cell " << x << std::endl;
+    
+    //remove contribution of killed cell to total population fitness
+    sumFitness_ -=b;
+}

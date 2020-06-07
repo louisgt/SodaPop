@@ -185,13 +185,59 @@ int main(int argc, char *argv[])
         currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
     }catch (std::runtime_error &e) {}
 
-    const int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
+    const int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2; //irrelevant line in Moran?
     
     std::cout << "Starting evolution ..." << std::endl;
     CMDLOG << "Starting evolution ..." << std::endl;
+   
     
-    // // PSEUDO WRIGHT-FISHER PROCESS
-    while (currentGen < maxGen){
+ //----------------
+    // Moran process implementation    
+    double TIME = 0; //This is the "real" time in the Gillespie sense
+    unsigned int birthctr = 0;
+    
+    double currPopFitness = currentPop.calcTotalFitness();
+    
+    while ((currentGen < maxGen) && (Total_Cell_Count > 0)){ //The second condition terminates evolution 
+                                                             //when population goes extinct.
+        
+        printProgress(currentGen*1.0/maxGen);
+
+        currPopFitness = currentPop.getSumFitness();
+        Total_Cell_Count = currentPop.getSize();
+        
+        //exponential distribution of waiting times
+        double tau = -(1/currPopFitness)*log( randomNumber() );
+        TIME += tau;
+        
+        //Choose cell to replicate?
+        currentPop.MoranBirth();
+        birthctr++;
+        
+        //1 generation = N birth events
+        if(birthctr == targetPopSize){
+            currentGen++;
+            birthctr=0;
+        }
+        CMDLOG << "Birth, Popsize, tau: " << birthctr << " " << Total_Cell_Count << " " << tau << std::endl;
+        
+        //Kill random cell when carrying capacity is reached
+        if(Total_Cell_Count >= targetPopSize)
+            currentPop.randomCellDeath();
+ 
+       // save population snapshot every timeStep generations
+        if( (currentGen % timeStep) == 0){
+            try{
+                
+                //--- Test the sorting of the population by fitness
+                currentPop.sortPopulationByFitness();
+                //end test
+                
+                currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
+            }catch (std::runtime_error &e) {}
+         }        
+        
+        /*WF-original
         printProgress(currentGen*1.0/maxGen);
 
         currentPop.divide(targetBuffer, targetPopSize, MUTATIONLOG);
@@ -204,14 +250,16 @@ int main(int argc, char *argv[])
                 
                 //--- Test the sorting of the population by fitness
                 currentPop.sortPopulationByFitness();
-                CMDLOG << "generation, total fitness: " << currentGen << "\t" << currentPop.calcTotalFitness() << std::endl;
                 //end test
                 
                 currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
             }catch (std::runtime_error &e) {}
          }
+         */
      }
-
+    
+//-----------------
+    
     printProgress(currentGen/maxGen);
     std::cout << std::endl;
     MUTATIONLOG.close();
