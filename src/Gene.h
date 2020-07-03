@@ -105,7 +105,8 @@ private:
 
         static std::gamma_distribution<> gamma_;
         static std::normal_distribution<> normal_;  
-        static std::exponential_distribution<> exponential_;      
+
+        static std::exponential_distribution<> exponential_;  
 };
 
 #endif

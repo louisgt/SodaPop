@@ -45,6 +45,8 @@ public:
 
 	double addSumFitness(double);
 
+	void reBarcode();
+
 	static int numberOfGenes;
 
 	static Input_Type simType;

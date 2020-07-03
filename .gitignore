@@ -4,3 +4,5 @@ _site/
 +sodasumm
 out/
 *.o
+.DS_Store
+SodapopUI/SodaPrototype.pro.user

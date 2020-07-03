@@ -4,12 +4,12 @@
 
 SodaPop is set of command-line tools written in the C++ programming language using the C++11 Standard.
 
-If you are not familiar with a command-line interface, we suggest you carefully read the following section. Otherwise, you can skip directly to the [Installation](#installation).
+If you are not familiar with a command-line interface, we suggest you read the following section. Otherwise, you may skip directly to the [Installation](#installation).
 
 ## Using the command-line
 
 The command-line interface is a powerful way to interact with the computer. In its simplest form, the command-line is a space where you type commands for the computer to execute. On Mac OS X, the command-line is an application called Terminal. It is located in the /Applications/Utilities/ folder. 
-The overwhelming majority of command-line programs follow the same syntax. A command is broken down into three basic components:
+The overwhelming majority of command-line programs follow the same syntax. A command can be broken down to three basic components:
 
   •	The utility: also known as the command. In some cases, you can use it without any flag or argument.  
   •	The flags: flags are like options. They allow you to modify the behavior of the utility.   
@@ -21,8 +21,8 @@ Here is a simple command. We will break it down by component.
   ls -l Documents/
 ```  
 
-**ls** is the utility. It lists the content of directories.  
-**-l** is a flag. It indicates that we want more information than is provided by default. In fact, think of the l as short for “long”. Flags are most often preceded by a hypen (‘-‘) and consist of single characters. Some flags can also be specified using a word preceded by a double hyphen (‘--‘). Using one or the other will have the same effect. For example, typing
+**ls** is the utility (think of it as a small program). It lists the content of directories.  
+**-l** is a flag. It indicates that we want more information than what is provided by default. In fact, think of the l as short for “long”. Flags are most often preceded by a hypen (‘-‘) and consist of single characters. Some flags can also be specified using a word preceded by a double hyphen (‘--‘). Using one or the other will have the same effect. For example, typing
 
 ```bash
   man -h
@@ -79,26 +79,31 @@ Finally, you can remove a file using
   rm myfile.txt
 ```  
 
-A nice feature of the terminal is tab autocomplete. Whenever you want to type an argument, say a path or a filename, you may type the first few letters and press TAB. This will list all the files corresponding to that prefix. If there is only one, it will autocomplete the argument for you. Getting familiar with this option will help you get used to the command-line.
+A helpful feature of the terminal is tab autocompletion. Whenever you type an argument, say a path or a filename, you can type the first few letters and press tab. This will list all the files and folders corresponding to that prefix. If there exists only one, it will autocomplete the argument for you. Getting familiar with this feature will help you to navigate quickly through files and folders in the command-line.
 
 <a name="installation"/>
 
 ## Installation
 
-To decompress and extract the contents of the downloaded repository, open a command-line terminal window, change into the directory where the download is located on your computer and run the following command
+Before you proceed with the installation, you may want to move the compressed repository to a folder of your choosing. To decompress and extract the contents of the downloaded SodaPop repository, open a command-line terminal window, navigate to the directory where the download is located on your computer and execute the following command
 
 ```bash
-tar –zxvf [zip file]
+tar –zxvf [name of zip file]
 ```
 
-Before you proceed with the installation, you may wish to move the extracted files to a folder of your choosing. To compile the SodaPop locally, navigate to the program folder and run
+You will find executable binaries for all SodaPop tools in the main folder. However, you may want to build the binaries from source. To compile SodaPop on your machine, navigate to the main folder and run
 
 ```bash
 make
 ```
 
-This will use the makefile to build the binaries **sodapop**, **sodasnap** and **sodasumm**. To install the program to your computer, run the command
+followed by
 
+```bash
+make clean
+```
+
+This will use the makefile to build the binaries **sodapop**, **sodasnap** and **sodasumm**. To install the program to your computer and make it executable globally, run the command
 
 ```bash
 make install
@@ -111,7 +116,7 @@ If you get the following error when compiling
 ```bash
   error: unrecognized command line option "-std=c++11"
 ```  
-it is probable your compiler is out-of-date. You can get a [new version of gcc/g++ here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
+it is likely that your compiler is out-of-date. You can get a [new version of gcc/g++ here](https://gcc.gnu.org/). Anything from gcc 4.7 onwards will work.
 
 # Great! Now we can [get started](Running-a-basic-simulation.md)! 
 

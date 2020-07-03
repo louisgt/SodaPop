@@ -1,0 +1,5 @@
+TODO:
+  Finish Summary utility
+  Actually integrate Sodapop into the program
+  Improve error handling and comparmentalization
+  Debug (ongoing)

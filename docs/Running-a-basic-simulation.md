@@ -8,6 +8,10 @@
 
 <a name="start"/>
 
+## Preparing files for simulation
+
+![gene file example](https://user-images.githubusercontent.com/29554043/60293328-04666000-98ed-11e9-8b4b-125f9d545433.png)
+
 ## Creating a starting population snapshot
 
 Prior to running a simulation, the first thing you should do is create your own population snapshot. In SodaPop, a population is defined by a collection of cells, that are in turned defined by their genes. We will thus start by creating a gene file. A basic gene file looks like this:
