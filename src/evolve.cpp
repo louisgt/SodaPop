@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
     /* general simulation initialization, can be put in a global method
     */
     if (Cell::ff_ == 7) {
-        noMut = true;
+        Population::noMut = true;
         std::cout << "Mutations are not active." << std::endl;
     }
 
@@ -242,10 +242,7 @@ int main(int argc, char *argv[])
         currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
     }catch (std::runtime_error &e) {}
 
-    /* MAIN SIMULATION BLOCK, can be put in a method outside main
-    */
-
-    int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
+    const int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
     
     std::cout << "Starting evolution ..." << std::endl;
     CMDLOG << "Starting evolution ..." << std::endl;

@@ -61,12 +61,13 @@ void Population::initLandscape(int fitArg, std::vector<std::string> matrixVec, s
       case Input_Type::stability:
           InitMatrix();
           Population::numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
+          std::cout << "Gene count: " << numberOfGenes << std::endl;
           Cell::ff_ = fitArg;
           // if DDG matrix is given
           if(matrixVec.size()){
               switch (matrixVec.size()){
                   case 2:
-                      bind_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_binding);
+                      bind_DG = ExtractDDGMatrix(matrixVec.back().c_str(),Matrix_Type::is_binding);
                       std::cout << "-> Average ∆∆G_binding is " << bind_DG << " ..." << std::endl;
                   case 1:
                       fold_DG = ExtractDDGMatrix(matrixVec.front().c_str(),Matrix_Type::is_folding);
@@ -155,8 +156,8 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
         }while(link < last);
 
         if(!Population::noMut){
-            // after filling with children, go through each one for mutation
-                do{
+        // after filling with children, go through each one for mutation
+            do{
                 std::binomial_distribution<> binMut(it->genome_size(), it->mrate());
                 int n_mutations = binMut(g_rng);
                 // attempt n mutations
@@ -184,23 +185,18 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
             newPopulation.incrementSize(1);
         }
 
+        // if the population is above N
+        // shuffle and resize to N
         if (newPopulation.getSize() > targetSize ){
             std::shuffle(newPopulation.cells_.begin(), newPopulation.cells_.end(), g_rng);
             newPopulation.cells_.resize(targetSize);
             newPopulation.setSize(targetSize);
         }
 
-        //alternative to shuffling
-       /* while(v_size > N){
-            int rand_idx = v_size*randomNumber();
-            remove_at(newPopulation.cells_,rand_idx);
-            v_size--;
-        }*/
-
         Total_Cell_Count = newPopulation.getSize();
         assert (Total_Cell_Count == targetSize) ;
         
-        // swap population with initial vector
+        // replace old generation with progeny
         cells_.swap(newPopulation.cells_);
 
         // reset and update sumFitness_
@@ -215,6 +211,7 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
                 fittest = current;
             cell.UpdateNsNa();
         }
+
         //normalize by fittest individual to prevent overflow
         if (Population::simType == Input_Type::selection_coefficient){
             for (auto& cell : cells_) {
@@ -264,13 +261,11 @@ void Population::writePop(std::ofstream& toSnapshot, Encoding_Type encoding){
         case Encoding_Type::by_default: //"normal" output format
         case Encoding_Type::full: 
                 for (const auto& cell : cells_) {
-                    addSumFitness(cell.fitness());
                     cell.dump(toSnapshot,idx++);
                 } 
             break;
         case Encoding_Type::no_sequence: //"short" output format
                 for (const auto& cell : cells_) {
-                    addSumFitness(cell.fitness());
                     cell.dumpShort(toSnapshot);
                 }
             break;
@@ -282,4 +277,44 @@ void Population::writePop(std::ofstream& toSnapshot, Encoding_Type encoding){
 double Population::addSumFitness(double w){
     sumFitness_ += w;
     return sumFitness_;
+}
+
+void Population::reBarcode(){
+    // open stream to read population summary
+    std::ifstream popf("files/start/initial_population_barcoded.dat");
+    if (!popf.is_open()) {
+        std::cerr << "File could not be opened";
+        exit(1);
+    }
+
+    std::shuffle(cells_.begin(), cells_.end(), g_rng);
+
+    int k = 0;
+    int b = 0;
+
+    std::string line;
+    while (!popf.eof()) {
+        getline(popf, line);
+        std::string word;
+        std::istringstream iss(line, std::istringstream:: in );
+        iss >> word;
+    if (word == "C") {
+            iss >> word; //cell count
+            int count = atoi(word.c_str());
+            iss >> word; //cell files
+        iss >> word; // barcode
+        //std::string bc = getBarcode();
+        std::string bc = word.c_str();
+        for (int i = 0; i < count; i++) {
+                //std::cout << cells_.at(i+k).barcode() << std::endl;
+        cells_.at(i+k).ch_barcode(bc);
+            }
+        k += count;
+            b++;
+    }
+
+    }
+    std::cout << "Generated " << b << " barcodes" << std::endl;
+    assert(k == size_);
+    std::cout << "Finished rebarcoding" << std::endl;
 }
