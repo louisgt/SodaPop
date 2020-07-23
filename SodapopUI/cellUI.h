@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QMap>
 #include <QCheckBox>
+#include <QStandardItemModel>
 
 
 namespace Ui {

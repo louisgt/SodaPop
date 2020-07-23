@@ -60,10 +60,13 @@ void geneListUI::on_dirButton_clicked()
 {
     geneFiles = QFileDialog::getOpenFileNames(this,
                                               tr("Select the genes you would like to include"),
-                                              "/home/Documents",
+                                              "/home/",
                                               "Gene files (*.gene)");
     //flushing any previous content
     geneIDs = QStringList();
+    if(geneFiles.isEmpty()){
+        return;
+    }
 
     for(const auto& fileName : geneFiles){
         geneIDs.append(parseGeneFile(fileName));

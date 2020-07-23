@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
+#include <QCheckBox>
 
 
 namespace Ui {
@@ -28,6 +29,7 @@ private slots:
 
 private:
     Ui::summaryUI *ui;
+    QRegExp countRe;
 };
 
 #endif // summaryUI_H

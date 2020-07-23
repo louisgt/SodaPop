@@ -21,6 +21,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -34,6 +35,7 @@ public:
     QLineEdit *geneListPath;
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
+    QTableWidget *tableWidget;
     QWidget *horizontalLayoutWidget_2;
     QHBoxLayout *horizontalLayout;
     QLabel *label;
@@ -71,6 +73,15 @@ public:
         gridLayout = new QGridLayout(gridLayoutWidget);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setContentsMargins(0, 0, 0, 0);
+        tableWidget = new QTableWidget(gridLayoutWidget);
+        if (tableWidget->columnCount() < 1)
+            tableWidget->setColumnCount(1);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        tableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        tableWidget->setObjectName(QStringLiteral("tableWidget"));
+
+        gridLayout->addWidget(tableWidget, 0, 0, 1, 1);
+
         horizontalLayoutWidget_2 = new QWidget(cellUI);
         horizontalLayoutWidget_2->setObjectName(QStringLiteral("horizontalLayoutWidget_2"));
         horizontalLayoutWidget_2->setGeometry(QRect(10, 350, 581, 31));
@@ -120,6 +131,8 @@ public:
         cellUI->setWindowTitle(QApplication::translate("cellUI", "Select the genes to include in the cell's genome", Q_NULLPTR));
         geneListButton->setText(QApplication::translate("cellUI", "Select list of genes", Q_NULLPTR));
         geneListPath->setText(QApplication::translate("cellUI", "Gene list path", Q_NULLPTR));
+        QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
+        ___qtablewidgetitem->setText(QApplication::translate("cellUI", "Genes", Q_NULLPTR));
         label->setText(QApplication::translate("cellUI", "Cell ID", Q_NULLPTR));
         label_2->setText(QApplication::translate("cellUI", "Mutation rate", Q_NULLPTR));
     } // retranslateUi

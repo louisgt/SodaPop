@@ -78,8 +78,11 @@ void geneUI::on_chooseDir_clicked()
 {
     QString directory = QFileDialog::getExistingDirectory(this,
                                                          tr("Select the target directory"),
-                                                         "/home/Documents",
+                                                         "/home/",
                                                          QFileDialog::ShowDirsOnly);
+    if(directory.isNull()){
+        return;
+    }
     ui->dir->setText(directory+"/");
 }
 
@@ -87,7 +90,10 @@ void geneUI::on_pushButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
                                                      tr("Select a FASTA file"),
-                                                     "/home/Documents");
+                                                     "/home/");
+    if(fileName.isNull()){
+        return;
+    }
     ui->lineEdit->setText(fileName);
 
 }

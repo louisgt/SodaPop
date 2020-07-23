@@ -5,6 +5,7 @@
 #include <QProcess>
 #include "ui_mainwindow.h"
 #include <QFileDialog>
+#include <QMap>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -39,7 +40,24 @@ private slots:
 
     void on_geneListButton_clicked();
 
+    void on_pushButton_clicked();
+
+    void on_landscapeA_clicked();
+
+    void on_landscapeB_clicked();
+
+    QStringList buildArgs();
+
+    QStringList getSimType();
+
+    void on_pushButton_released();
+
+    void on_chooseWorkDir_clicked();
+
 private:
+    QProcess process;
     Ui::MainWindow *ui;
+    QMap<QString, QString> funcType;
+
 };
 #endif // MAINWINDOW_H
