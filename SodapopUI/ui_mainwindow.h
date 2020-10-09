@@ -25,6 +25,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStatusBar>
@@ -46,8 +47,8 @@ public:
     QWidget *centralwidget;
     QWidget *verticalLayoutWidget_2;
     QVBoxLayout *verticalLayout_2;
-    QLabel *label_2;
-    QTextBrowser *textBrowser;
+    QLabel *summaryLabel;
+    QTextBrowser *summaryBrowser;
     QWidget *verticalLayoutWidget_3;
     QVBoxLayout *verticalLayout_3;
     QFrame *frame_2;
@@ -76,34 +77,40 @@ public:
     QGroupBox *DFE;
     QWidget *gridLayoutWidget_2;
     QGridLayout *gridLayout_3;
+    QComboBox *distributionType;
     QLabel *label_7;
     QLabel *label_8;
-    QLineEdit *Shape;
-    QComboBox *comboBox_2;
-    QLineEdit *Scale;
+    QLineEdit *shapeEdit;
+    QLineEdit *scaleEdit;
     QGroupBox *fitLandscape;
     QWidget *gridLayoutWidget_3;
     QGridLayout *gridLayout_4;
-    QLineEdit *lineEdit_9;
-    QPushButton *pushButton_5;
-    QPushButton *pushButton_4;
-    QLineEdit *lineEdit_10;
+    QLineEdit *landscapeAEdit;
+    QPushButton *landscapeB;
+    QPushButton *landscapeA;
+    QLineEdit *landscapeBEdit;
     QWidget *horizontalLayoutWidget_2;
     QHBoxLayout *theoryOrExp;
     QRadioButton *theoretical;
     QRadioButton *experimental;
     QComboBox *functionType;
+    QProgressBar *progressBar;
+    QWidget *horizontalLayoutWidget_3;
+    QHBoxLayout *horizontalLayout_2;
+    QPushButton *chooseWorkDir;
+    QLineEdit *workingDir;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuCreate;
     QStatusBar *statusbar;
     QToolBar *toolBar;
+    QButtonGroup *functionTypeGroup;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(800, 600);
+        MainWindow->resize(800, 659);
         actionSummary = new QAction(MainWindow);
         actionSummary->setObjectName(QStringLiteral("actionSummary"));
         actionCell = new QAction(MainWindow);
@@ -118,24 +125,26 @@ public:
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayoutWidget_2 = new QWidget(centralwidget);
         verticalLayoutWidget_2->setObjectName(QStringLiteral("verticalLayoutWidget_2"));
-        verticalLayoutWidget_2->setGeometry(QRect(10, 40, 271, 491));
+        verticalLayoutWidget_2->setGeometry(QRect(10, 70, 271, 491));
         verticalLayout_2 = new QVBoxLayout(verticalLayoutWidget_2);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        label_2 = new QLabel(verticalLayoutWidget_2);
-        label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setAlignment(Qt::AlignCenter);
+        summaryLabel = new QLabel(verticalLayoutWidget_2);
+        summaryLabel->setObjectName(QStringLiteral("summaryLabel"));
+        summaryLabel->setEnabled(false);
+        summaryLabel->setAlignment(Qt::AlignCenter);
 
-        verticalLayout_2->addWidget(label_2);
+        verticalLayout_2->addWidget(summaryLabel);
 
-        textBrowser = new QTextBrowser(verticalLayoutWidget_2);
-        textBrowser->setObjectName(QStringLiteral("textBrowser"));
+        summaryBrowser = new QTextBrowser(verticalLayoutWidget_2);
+        summaryBrowser->setObjectName(QStringLiteral("summaryBrowser"));
+        summaryBrowser->setEnabled(false);
 
-        verticalLayout_2->addWidget(textBrowser);
+        verticalLayout_2->addWidget(summaryBrowser);
 
         verticalLayoutWidget_3 = new QWidget(centralwidget);
         verticalLayoutWidget_3->setObjectName(QStringLiteral("verticalLayoutWidget_3"));
-        verticalLayoutWidget_3->setGeometry(QRect(9, 9, 271, 21));
+        verticalLayoutWidget_3->setGeometry(QRect(9, 39, 271, 21));
         verticalLayout_3 = new QVBoxLayout(verticalLayoutWidget_3);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
         verticalLayout_3->setContentsMargins(0, 0, 0, 0);
@@ -157,7 +166,7 @@ public:
 
         horizontalLayoutWidget = new QWidget(centralwidget);
         horizontalLayoutWidget->setObjectName(QStringLiteral("horizontalLayoutWidget"));
-        horizontalLayoutWidget->setGeometry(QRect(290, 496, 501, 41));
+        horizontalLayoutWidget->setGeometry(QRect(290, 526, 501, 41));
         horizontalLayout = new QHBoxLayout(horizontalLayoutWidget);
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
         horizontalLayout->setContentsMargins(0, 0, 0, 0);
@@ -174,7 +183,7 @@ public:
 
         simParameters = new QGroupBox(centralwidget);
         simParameters->setObjectName(QStringLiteral("simParameters"));
-        simParameters->setGeometry(QRect(289, 9, 501, 241));
+        simParameters->setGeometry(QRect(289, 39, 501, 241));
         gridLayout = new QGridLayout(simParameters);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         geneListButton = new QPushButton(simParameters);
@@ -239,7 +248,7 @@ public:
 
         fitnessFunction = new QGroupBox(centralwidget);
         fitnessFunction->setObjectName(QStringLiteral("fitnessFunction"));
-        fitnessFunction->setGeometry(QRect(289, 249, 501, 241));
+        fitnessFunction->setGeometry(QRect(289, 279, 501, 241));
         gridLayoutWidget = new QWidget(fitnessFunction);
         gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
         gridLayoutWidget->setGeometry(QRect(-1, 89, 501, 151));
@@ -255,6 +264,12 @@ public:
         gridLayout_3 = new QGridLayout(gridLayoutWidget_2);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
         gridLayout_3->setContentsMargins(0, 0, 0, 0);
+        distributionType = new QComboBox(gridLayoutWidget_2);
+        distributionType->setObjectName(QStringLiteral("distributionType"));
+        distributionType->setInsertPolicy(QComboBox::InsertAtBottom);
+
+        gridLayout_3->addWidget(distributionType, 1, 1, 1, 1);
+
         label_7 = new QLabel(gridLayoutWidget_2);
         label_7->setObjectName(QStringLiteral("label_7"));
 
@@ -265,21 +280,15 @@ public:
 
         gridLayout_3->addWidget(label_8, 3, 0, 1, 1);
 
-        Shape = new QLineEdit(gridLayoutWidget_2);
-        Shape->setObjectName(QStringLiteral("Shape"));
+        shapeEdit = new QLineEdit(gridLayoutWidget_2);
+        shapeEdit->setObjectName(QStringLiteral("shapeEdit"));
 
-        gridLayout_3->addWidget(Shape, 2, 1, 1, 1);
+        gridLayout_3->addWidget(shapeEdit, 2, 1, 1, 1);
 
-        comboBox_2 = new QComboBox(gridLayoutWidget_2);
-        comboBox_2->setObjectName(QStringLiteral("comboBox_2"));
-        comboBox_2->setInsertPolicy(QComboBox::InsertAtBottom);
+        scaleEdit = new QLineEdit(gridLayoutWidget_2);
+        scaleEdit->setObjectName(QStringLiteral("scaleEdit"));
 
-        gridLayout_3->addWidget(comboBox_2, 1, 1, 1, 1);
-
-        Scale = new QLineEdit(gridLayoutWidget_2);
-        Scale->setObjectName(QStringLiteral("Scale"));
-
-        gridLayout_3->addWidget(Scale, 3, 1, 1, 1);
+        gridLayout_3->addWidget(scaleEdit, 3, 1, 1, 1);
 
 
         gridLayout_2->addWidget(DFE, 0, 0, 1, 1);
@@ -293,25 +302,25 @@ public:
         gridLayout_4 = new QGridLayout(gridLayoutWidget_3);
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
         gridLayout_4->setContentsMargins(0, 0, 0, 0);
-        lineEdit_9 = new QLineEdit(gridLayoutWidget_3);
-        lineEdit_9->setObjectName(QStringLiteral("lineEdit_9"));
+        landscapeAEdit = new QLineEdit(gridLayoutWidget_3);
+        landscapeAEdit->setObjectName(QStringLiteral("landscapeAEdit"));
 
-        gridLayout_4->addWidget(lineEdit_9, 0, 1, 1, 1);
+        gridLayout_4->addWidget(landscapeAEdit, 0, 1, 1, 1);
 
-        pushButton_5 = new QPushButton(gridLayoutWidget_3);
-        pushButton_5->setObjectName(QStringLiteral("pushButton_5"));
+        landscapeB = new QPushButton(gridLayoutWidget_3);
+        landscapeB->setObjectName(QStringLiteral("landscapeB"));
 
-        gridLayout_4->addWidget(pushButton_5, 1, 0, 1, 1);
+        gridLayout_4->addWidget(landscapeB, 1, 0, 1, 1);
 
-        pushButton_4 = new QPushButton(gridLayoutWidget_3);
-        pushButton_4->setObjectName(QStringLiteral("pushButton_4"));
+        landscapeA = new QPushButton(gridLayoutWidget_3);
+        landscapeA->setObjectName(QStringLiteral("landscapeA"));
 
-        gridLayout_4->addWidget(pushButton_4, 0, 0, 1, 1);
+        gridLayout_4->addWidget(landscapeA, 0, 0, 1, 1);
 
-        lineEdit_10 = new QLineEdit(gridLayoutWidget_3);
-        lineEdit_10->setObjectName(QStringLiteral("lineEdit_10"));
+        landscapeBEdit = new QLineEdit(gridLayoutWidget_3);
+        landscapeBEdit->setObjectName(QStringLiteral("landscapeBEdit"));
 
-        gridLayout_4->addWidget(lineEdit_10, 1, 1, 1, 1);
+        gridLayout_4->addWidget(landscapeBEdit, 1, 1, 1, 1);
 
 
         gridLayout_2->addWidget(fitLandscape, 0, 1, 1, 1);
@@ -323,12 +332,16 @@ public:
         theoryOrExp->setObjectName(QStringLiteral("theoryOrExp"));
         theoryOrExp->setContentsMargins(0, 0, 0, 0);
         theoretical = new QRadioButton(horizontalLayoutWidget_2);
+        functionTypeGroup = new QButtonGroup(MainWindow);
+        functionTypeGroup->setObjectName(QStringLiteral("functionTypeGroup"));
+        functionTypeGroup->addButton(theoretical);
         theoretical->setObjectName(QStringLiteral("theoretical"));
         theoretical->setChecked(true);
 
         theoryOrExp->addWidget(theoretical);
 
         experimental = new QRadioButton(horizontalLayoutWidget_2);
+        functionTypeGroup->addButton(experimental);
         experimental->setObjectName(QStringLiteral("experimental"));
 
         theoryOrExp->addWidget(experimental);
@@ -336,6 +349,26 @@ public:
         functionType = new QComboBox(fitnessFunction);
         functionType->setObjectName(QStringLiteral("functionType"));
         functionType->setGeometry(QRect(0, 60, 501, 25));
+        progressBar = new QProgressBar(centralwidget);
+        progressBar->setObjectName(QStringLiteral("progressBar"));
+        progressBar->setGeometry(QRect(10, 570, 781, 23));
+        progressBar->setValue(0);
+        horizontalLayoutWidget_3 = new QWidget(centralwidget);
+        horizontalLayoutWidget_3->setObjectName(QStringLiteral("horizontalLayoutWidget_3"));
+        horizontalLayoutWidget_3->setGeometry(QRect(10, 0, 781, 31));
+        horizontalLayout_2 = new QHBoxLayout(horizontalLayoutWidget_3);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
+        chooseWorkDir = new QPushButton(horizontalLayoutWidget_3);
+        chooseWorkDir->setObjectName(QStringLiteral("chooseWorkDir"));
+
+        horizontalLayout_2->addWidget(chooseWorkDir);
+
+        workingDir = new QLineEdit(horizontalLayoutWidget_3);
+        workingDir->setObjectName(QStringLiteral("workingDir"));
+
+        horizontalLayout_2->addWidget(workingDir);
+
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
@@ -373,30 +406,33 @@ public:
         actionGene_list->setText(QApplication::translate("MainWindow", "Gene list", Q_NULLPTR));
         actionGene->setText(QApplication::translate("MainWindow", "Gene", Q_NULLPTR));
         actionSnapshot->setText(QApplication::translate("MainWindow", "Snapshot", Q_NULLPTR));
-        label_2->setText(QApplication::translate("MainWindow", "Here's a summary of your population", Q_NULLPTR));
+        summaryLabel->setText(QApplication::translate("MainWindow", "Here's a summary of your population", Q_NULLPTR));
         label->setText(QApplication::translate("MainWindow", "Welcome to Sodapop!", Q_NULLPTR));
         checkBox->setText(QApplication::translate("MainWindow", "Run analysis utilities", Q_NULLPTR));
         pushButton->setText(QApplication::translate("MainWindow", "Run simulation", Q_NULLPTR));
         simParameters->setTitle(QApplication::translate("MainWindow", "Simulation parameters", Q_NULLPTR));
         geneListButton->setText(QApplication::translate("MainWindow", "Load gene list", Q_NULLPTR));
         noGen->setText(QApplication::translate("MainWindow", "Number of generations", Q_NULLPTR));
-        summButton->setText(QApplication::translate("MainWindow", "Load summary", Q_NULLPTR));
+        summButton->setText(QApplication::translate("MainWindow", "Load snapshot", Q_NULLPTR));
         simName->setText(QApplication::translate("MainWindow", "Simulation name", Q_NULLPTR));
         simSize->setText(QApplication::translate("MainWindow", "Simulation size", Q_NULLPTR));
         snapInterval->setText(QApplication::translate("MainWindow", "Snapshot interval", Q_NULLPTR));
+        sizeEdit->setText(QApplication::translate("MainWindow", "1000", Q_NULLPTR));
+        genEdit->setText(QApplication::translate("MainWindow", "10000", Q_NULLPTR));
+        snapEdit->setText(QApplication::translate("MainWindow", "50", Q_NULLPTR));
         fitnessFunction->setTitle(QApplication::translate("MainWindow", "Fitness function", Q_NULLPTR));
         DFE->setTitle(QApplication::translate("MainWindow", "Distribution of fitness effects", Q_NULLPTR));
-        label_7->setText(QApplication::translate("MainWindow", "Shape", Q_NULLPTR));
-        label_8->setText(QApplication::translate("MainWindow", "Scale", Q_NULLPTR));
-        comboBox_2->clear();
-        comboBox_2->insertItems(0, QStringList()
+        distributionType->clear();
+        distributionType->insertItems(0, QStringList()
          << QApplication::translate("MainWindow", "Normal", Q_NULLPTR)
-         << QApplication::translate("MainWindow", "Gaussian", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Gamma", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Exponential", Q_NULLPTR)
         );
+        label_7->setText(QApplication::translate("MainWindow", "Shape", Q_NULLPTR));
+        label_8->setText(QApplication::translate("MainWindow", "Scale", Q_NULLPTR));
         fitLandscape->setTitle(QApplication::translate("MainWindow", "Fitness landscape", Q_NULLPTR));
-        pushButton_5->setText(QApplication::translate("MainWindow", "Load matrix", Q_NULLPTR));
-        pushButton_4->setText(QApplication::translate("MainWindow", "Load matrix", Q_NULLPTR));
+        landscapeB->setText(QApplication::translate("MainWindow", "Load matrix", Q_NULLPTR));
+        landscapeA->setText(QApplication::translate("MainWindow", "Load matrix", Q_NULLPTR));
         theoretical->setText(QApplication::translate("MainWindow", "Theoretical", Q_NULLPTR));
         experimental->setText(QApplication::translate("MainWindow", "Experimental", Q_NULLPTR));
         functionType->clear();
@@ -405,6 +441,7 @@ public:
          << QApplication::translate("MainWindow", "Multiplicative", Q_NULLPTR)
          << QApplication::translate("MainWindow", "Neutral", Q_NULLPTR)
         );
+        chooseWorkDir->setText(QApplication::translate("MainWindow", "Select working directory", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", Q_NULLPTR));
         menuCreate->setTitle(QApplication::translate("MainWindow", "New", Q_NULLPTR));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", Q_NULLPTR));

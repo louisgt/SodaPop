@@ -26,7 +26,7 @@
     <item>
      <widget class="QPushButton" name="cellBrowse">
       <property name="text">
-       <string>Choose directory</string>
+       <string>Choose cells</string>
       </property>
      </widget>
     </item>
@@ -38,9 +38,9 @@
   <widget class="QWidget" name="horizontalLayoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>370</y>
-     <width>661</width>
+     <width>681</width>
      <height>27</height>
     </rect>
    </property>
@@ -64,7 +64,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="gridLayoutWidget">
+  <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
      <x>9</x>
@@ -73,7 +73,27 @@
      <height>311</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout"/>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTableWidget" name="tableWidget">
+      <column>
+       <property name="text">
+        <string>Cell</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Count</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Comment</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
