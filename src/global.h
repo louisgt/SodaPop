@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <vector>
+#include <array>
 #include <stdlib.h>
 #include <iostream>
 #include <string>
