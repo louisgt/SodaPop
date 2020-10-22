@@ -5,6 +5,21 @@
 DESCRIPTION: Converts population summary to a snap file.
 */
 
+
+template<typename Iter, typename RandomGenerator>
+Iter select_randomly(Iter start, Iter end, RandomGenerator& g){
+	std::uniform_int_distribution<> dis(0, std::distance(start, end) - 1);
+	std::advance(start, dis(g));
+	return start;
+}
+
+template<typename Iter>
+Iter select_randomly(Iter start, Iter end) {
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	return select_randomly(start, end, gen);
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         std::cerr << "sodasumm <population summary> [ 0-full | 1-single cell | 2-randomize barcodes | 3-introduce variation]\n";
@@ -15,7 +30,7 @@ int main(int argc, char* argv[]) {
     assert((flag == 0) | (flag == 1) | (flag == 2) | (flag == 3));
 
     char buffer[200];
-    std::vector < Cell > Cell_arr;
+    std::vector <Cell> Cell_arr;
 
     // open stream to read population summary
     std::ifstream popf(argv[1]);
@@ -24,12 +39,33 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    if(flag==3){
-        Gene::initGamma(1.5, 0.0003);
-    }
+    double s(0);
+
+    int blockSize = 100;
+
+    int blockCounter = 0;
 
     double limit = 0.90;
 
+    double mu = 10e-9;
+
+    double genomeSize = 4600000;
+
+    int popSize = 9700000;
+
+    int nMu = mu*genomeSize*popSize;
+
+    std::default_random_engine generator;
+    std::geometric_distribution<int> distribution(0.01);
+
+    if(flag==3){
+        Gene::initExponential(166.6666667);
+        s = Gene::RandomExponential();
+	//blockSize = distribution(generator) + 10;
+    }
+
+    double nf = 1 + s;
+    
     std::string line;
     Cell_arr.reserve(maxPopSize);
     while (!popf.eof()) {
@@ -49,7 +85,10 @@ int main(int argc, char* argv[]) {
             Cell A(temp);
             switch(flag)
             {
-                case 0: A.ch_barcode(getBarcode());         
+                case 0: A.ch_barcode(getBarcode());
+			//s = Gene::RandomExponential();
+			//nf = 1 + s;
+                        //A.ch_Fitness(nf);   
                         for (int i = 0; i < count; i++) {
                             Cell_arr.push_back(A);
                         }
@@ -67,35 +106,26 @@ int main(int argc, char* argv[]) {
                 break;
 
                 case 3: A.ch_barcode(getBarcode());
-                        int nClusters = (count + 10 - 1) / 10;
-                        int remainder = count % 10;
-                        for (int k = 0; k < nClusters - 1; k++) {
-                            //edit fitness here (draw selection coefficient for clusters of 10 cells)
-                            //fetch selection coefficient
-                            double s = Gene::RandomGamma();
-                            if (randomNumber()<limit) s *= -1;
-                            //change fitness accordingly
-                            double nf = A.fitness() + s;
+                        //change fitness accordingly
+                        A.ch_Fitness(nf);
+                        for (int k = 0; k < count; ++k) {
+                            //draw selection coefficient
                             //std::cout << nf << std::endl;
-                            A.ch_Fitness(nf);
-                            for (int i = 0; i < 10; i++) {
-                                Cell_arr.push_back(A);
-                            }
+                            Cell_arr.push_back(A);
+			    blockCounter +=1;
+			    if (blockCounter == blockSize){
+				std::cout << "Changing block... " << std::endl;
+				//reset counter
+                            	blockCounter = 0;
+                            	// new selection coefficient
+                            	s = Gene::RandomExponential();
+			    	blockSize = distribution(generator) + 10;
+				nf = 1 + s;
+                        	A.ch_Fitness(nf);
+				std::cout << "New fitness for block " << nf << std::endl;
+			    }
                         }
-                        if(remainder){
-                            //edit fitness here (draw selection coefficient for clusters of 10 cells)
-                            //fetch selection coefficient
-                            double s = Gene::RandomGamma();
-                            if (randomNumber()<limit) s *= -1;
-                            //change fitness accordingly
-                            double nf = A.fitness() + s;
-                            //std::cout << nf << std::endl;
-                            A.ch_Fitness(nf);
-                            for (int i = 0; i < remainder; i++) {
-                                Cell_arr.push_back(A);
-                            }
-                        }
-                        
+
                 break;
             }
             temp.close();
@@ -103,8 +133,18 @@ int main(int argc, char* argv[]) {
     }
     popf.close();
 
+    //for (int k = 0; k < nMu; ++k) {
+	//s = Gene::RandomExponential();
+	//nf = 1 + s;
+	//(*select_randomly(Cell_arr.begin(), Cell_arr.end())).ch_Fitness(nf);
+    //}
+
     //population snapshot
     int Total_Cell_Count = (int)(Cell_arr.size());
+
+    for (auto& cell : Cell_arr) {
+        std::cout << "Cell fitness " << cell.fitness() << std::endl;
+    }
 
     std::string popname = argv[1];
 
