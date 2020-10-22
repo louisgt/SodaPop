@@ -13,6 +13,22 @@ char buffer[200];
 double matrix[gene_number][res_number][20];
 double matrix_supp[gene_number][res_number][20];
 
+std::random_device rdev;
+std::mt19937 twister(rdev());
+
+using exp_dist = std::exponential_distribution<>;
+using discrete_dist = std::discrete_distribution<std::size_t>;
+
+auto mixgen = std::array<exp_dist, 2>{
+  exp_dist{100}, // mean, stddev of G[0]
+  exp_dist{100}, // mean, stddev of G[1]
+};
+    
+auto genindex = discrete_dist{
+        0.10, // weight of G[0]
+        0.90, // weight of G[1]
+};
+
 /******* GENETIC CODE MAPPINGS *******/
 // these const mappings are hard-coded and populated at compile-time
 
@@ -573,11 +589,11 @@ std::string n3_to_n3(std::string a, std::string b, int i){
   return a;
 }
 
-// generates a random, 15nt barcode
+// generates a random, 16nt barcode
 std::string getBarcode()
 {
-    char seq [16];
-    for (int i = 0; i < 15; ++i){
+    char seq [17];
+    for (int i = 0; i < 16; ++i){
         if (randomNumber()<0.5){
             if (randomNumber()<0.5){
                 seq[i] = 'G';
@@ -591,7 +607,7 @@ std::string getBarcode()
             else seq[i] = 'T';
         }
     }
-    seq[15] = '\0';
+    seq[16] = '\0';
     return std::string(seq);
 }
 
@@ -708,6 +724,14 @@ double Ran_Gaussian(double const mean, double const sigma)
     }while (r2 > 1.0 || r2 == 0); 
     // Box-Muller transform
     return mean + sigma * y * sqrt (-2.0 * log (r2) / r2);
+}
+
+double RandomMixture()
+{
+	auto index = genindex(twister);
+        auto sample = mixgen[index](twister);
+	//if(index) return sample*-1.0;
+	return sample;
 }
 
 // Loads primordial genes in a VectStr

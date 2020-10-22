@@ -45,6 +45,9 @@ public:
 
     void UpdateRates();
 
+    void print_summary_Gene_arr_();
+    void print_summary_Gene_L_();
+
     int ID() const {return ID_;}
     uint32_t parent() const {return parent_;}
     double mrate() const {return c_mrate_;}
@@ -59,6 +62,8 @@ public:
 
     void ch_Fitness(double f){fitness_ = f;}
 
+    void propagateFitness();
+
     // Fitness functions
     void selectFitness();
     double flux() const;
@@ -69,7 +74,6 @@ public:
     double noMut() const;
     double fold() const;
     double growthRate() const;
-    double multiplicative_without_genes_fit_mean() const;
 
     void ranmut_Gene();
     void ranmut_Gene(std::ofstream&, int);
@@ -78,22 +82,6 @@ public:
     void dump(std::ofstream&, int) const;
     void dumpShort(std::ofstream&) const;
     void dumpParent(std::ofstream&) const;
-
-    /**** HGT ****/
-    void select_random_gene();
-    int add_gene(const int &,const int &);
-    int remove_rand_gene(const int &,const int &);
-    void print_summary_Gene_arr_();
-    void print_summary_Gene_L_();
-
-    double get_PevFe() const {return pev_fe;}
-    void set_PevFe(double PevFe) {pev_fe = PevFe;}
-
-    double getSelCoeffCurrentMutation() const;
-    void setSelCoeffCurrentMutation(double selCoeffCurrentMutation);
-    void initialize_cumul_pev_effect();
-    void dumpCellGeneContent(std::ofstream&,int);
-    /**** HGT ****/
 
     void PrintCell(int) const;
     
@@ -119,14 +107,6 @@ protected:
 
     // organismal fitness
     double fitness_;
-
-    /**** HGT ****/
-    //Pangenome evolution event (gain or loss of genes) fitness effect
-    double pev_fe;
-
-     //used to save the selection coefficient of a mutation event
-    double sel_coeff_current_mutation;
-    /**** HGT ****/
 
     //Array of genes
     std::vector <Gene> genomeVec_;

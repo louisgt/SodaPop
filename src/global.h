@@ -21,7 +21,6 @@
 #include <functional>
 #include <iterator>
 #include <sys/stat.h>
-#include <stdexcept>
 
 #include <errno.h>    // errno, ENOENT, EEXIST
 #if defined(_WIN32)
@@ -80,7 +79,7 @@ If the estimated energy is out of this range, the mutation is ignored.
 *****/
 
 const int maxPopSize(1000000);
-const int maxGeneCount(100);
+const int maxGeneCount(1);
 constexpr int PBWidth(70);
 
 constexpr double ddG_low_bound(-10);
@@ -88,7 +87,7 @@ constexpr double ddG_high_bound(99);
 constexpr double maxConcentration(1e15);
 constexpr double kT(0.5922); //defines the energy units
 constexpr double misfoldingCost(1e-4); // misfolding cost, see Geiler-Samerotte et al. 2011
-constexpr double fNS(0.775956284); //fraction of non-synonymous substitutions in a typical protein
+constexpr double fNS(1); //fraction of non-synonymous substitutions in a typical protein
 constexpr double prefactor(16000);
 
 // exponent values are precalculated to be used readily
@@ -101,12 +100,13 @@ extern char buffer[];
 // -> all copies are effectively aggregated
 double const DG_stop = exp(-1*(99)/kT);
 
+
 // for pretty printing of progress
 #define PBstr "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 
 // Create a 3D matrix for fitness landscape
-const int gene_number(100);
-const int res_number(1200);
+const int gene_number(1);
+const int res_number(120);
 
 extern double matrix[gene_number][res_number][20];
 extern double matrix_supp[gene_number][res_number][20];
@@ -157,6 +157,7 @@ std::string getBarcode();
 //double RandomNumber();
 
 double Ran_Gaussian(double const, double const);
+double RandomMixture();
 
 const char AdjacentBP(char, int);
 
