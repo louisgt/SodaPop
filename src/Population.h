@@ -8,20 +8,26 @@ class Population {
 public:
 	Population();
 	Population(int);
+	Population(int, Population&);
 	Population(std::ifstream & ,const std::string &, int, Init_Pop);
 
 	void initMonoclonal(std::ifstream & ,const std::string &, int);
 	void initPolyclonal(std::ifstream & ,const std::string &, int);
+	void initMicrobiota(int, Population&);
 
 	static void initLandscape(int, std::vector<std::string>,std::string,std::string);
+
+	static int getPacketSize(int, Population&);
 
 	void saveSnapshot(std::ofstream&, std::string, int, Encoding_Type);
 	void writeSnapshotHeader(std::ofstream&, Encoding_Type);
 	void writePop(std::ofstream&, Encoding_Type);
 
-	void divide(int, int, std::ofstream&);
+	void divide(int, int, std::ofstream&, bool);
 
-	int getSize() const {return size_;}
+	bool addPacket(int, Population&);
+
+	int getSize() const {return cells_.size();}
 
 	int getMutationCount() const {return mutationCounter_;}
 
@@ -37,15 +43,15 @@ public:
 
 	void incrementMutationCount(int c) {mutationCounter_ += c;}
 
-	void incrementSize(int c) {size_ += c;}
-
-	void setSize(int s) {size_ = s;}
+	void calculateFitness();
 
 	void resetSumFitness() {sumFitness_ = 0;}
 
 	double addSumFitness(double);
 
 	void reBarcode();
+
+	void shuffle(pcg32);
 
 	static int numberOfGenes;
 
@@ -54,7 +60,6 @@ public:
 	static bool noMut;
 
 protected:
-	int size_;
 	double sumFitness_;
 	int mutationCounter_;
 	int generation_;

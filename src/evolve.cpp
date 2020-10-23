@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     int currentGen = 1;
     int maxGen = currentGen + 1;
     Encoding_Type outputEncoding = Encoding_Type::by_default;
-    unsigned int targetPopSize = 1;
+    unsigned int carryingCapacity = 1;
     int timeStep = 1;
 
     bool enableAnalysis = false;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 
         // Get values from args. 
         maxGen = maxArg.getValue();
-        targetPopSize = popArg.getValue();
+        carryingCapacity = popArg.getValue();
         timeStep = dtArg.getValue();
 
         geneListFile = geneArg.getValue();
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         if (seedArg.isSet())
             setRngSeed(seedArg.getValue());
 
-        std::cout << "Begin ... " << std::endl;
+        std::cout << "*** Begin ... " << std::endl;
 
         if (matrixArg.isSet()){
             matrixVec = matrixArg.getValue();
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     */
     if (Cell::ff_ == 7) {
         Population::noMut = true;
-        std::cout << "Mutations are not active." << std::endl;
+        std::cout << "*** Mutations are not active." << std::endl;
     }
 
     createOutputDir(outDir);
@@ -170,60 +170,88 @@ int main(int argc, char *argv[])
         readSnapshotHeader(startFile);
     }catch (std::runtime_error &e) {}
 
-    //std::vector <Cell> Cell_arr;
-    Population currentPop(startFile, genesPath, targetPopSize, createPop);
+    // create the inoculum population with size = to carrying capacity
+    Population inoculumPop(startFile, genesPath, carryingCapacity, createPop);
+
+    // shuffle population to randomize packets
+    inoculumPop.shuffle(g_rng);
+
+    // create the microbiota population with size = to first packet
+    Population microbiotaPop(carryingCapacity, inoculumPop);
 
     /* should be handled by method initializing the population
     */
     startFile.close();
 
-    Total_Cell_Count = currentPop.getSize();
+    Total_Cell_Count = microbiotaPop.getSize();
 
     std::ofstream OUT;
 
     try{
-        currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
+        microbiotaPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
     }catch (std::runtime_error &e) {}
 
     /* MAIN SIMULATION BLOCK, can be put in a method outside main
     */
 
-    const int targetBuffer = targetPopSize < 10000 ? targetPopSize*5 : targetPopSize*2;
+    int currentSize = microbiotaPop.getSize();
+
+    int targetSize = currentSize < 10000 ? currentSize*5 : currentSize*2;
+
+    bool remaining = true;
     
-    std::cout << "Starting evolution ..." << std::endl;
-    CMDLOG << "Starting evolution ..." << std::endl;
+    std::cout << "*** Starting evolution ..." << std::endl;
+    CMDLOG << "*** Starting evolution ..." << std::endl;
     
     // // PSEUDO WRIGHT-FISHER PROCESS
     while (currentGen < maxGen){
-        printProgress(currentGen*1.0/maxGen);
+            // check if inoculum is empty
+            // if TRUE, set flag
 
-        currentPop.divide(targetBuffer, targetPopSize, MUTATIONLOG);
+            printProgress(currentGen*1.0/maxGen);
 
-        // update generation counter
-        ++currentGen;
-        // save population snapshot every timeStep generations
-        if( (currentGen % timeStep) == 0){
-            try{
-                currentPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
-            }catch (std::runtime_error &e) {}
-         }
+            microbiotaPop.divide(targetSize, carryingCapacity, MUTATIONLOG, !remaining);
+
+            // update generation counter
+            ++currentGen;
+
+            // save population snapshot every timeStep generations
+            if( (currentGen % timeStep) == 0){
+                try{
+                    microbiotaPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
+                }catch (std::runtime_error &e) {}
+            }
+
+            // check isEmpty flag
+            if(remaining){
+                // add new packet to microbiotaPop
+                remaining = microbiotaPop.addPacket(carryingCapacity,inoculumPop);
+            }
+            //else{
+            //    break;
+            //    std::cout << "Stopping WF process and saving microbiota." << std::endl;
+            //}
+
+            currentSize = microbiotaPop.getSize();
+            targetSize = currentSize < 10000 ? currentSize*5 : currentSize*2;
+
      }
 
-    //currentPop.reBarcode();
-    //currentPop.saveSnapshot(OUT,outDir,0,outputEncoding);
+    //microbiotaPop.reBarcode();
+    //microbiotaPop.saveSnapshot(OUT,outDir,0,outputEncoding);
 
     printProgress(currentGen/maxGen);
     std::cout << std::endl;
     MUTATIONLOG.close();
-    std::cout << "Done." << std::endl;
+    std::cout << "*** Done." << std::endl;
     CMDLOG << "Done." << std::endl;
-    std::cout << "Total number of mutation events: " << currentPop.getMutationCount() << std::endl;
+    std::cout << "*** Total number of mutation events: " << microbiotaPop.getMutationCount() << std::endl;
     CMDLOG.close();
 
     // if the user toggled analysis, call shell script
     if (enableAnalysis){
         std::string script = "tools/barcodes.sh";
-        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(maxGen)+" "+std::to_string(targetPopSize ) +" "+std::to_string(timeStep)+" "+std::to_string(outputEncoding)+" "+std::to_string(Population::numberOfGenes);
+        std::string command = "/bin/bash "+script+" "+outDir+" "+std::to_string(maxGen)+" "+std::to_string(carryingCapacity) +" "+std::to_string(timeStep)+" "+std::to_string(outputEncoding)+" "+std::to_string(Population::numberOfGenes);
         const char *cmd = command.c_str();
         system(cmd);
     }

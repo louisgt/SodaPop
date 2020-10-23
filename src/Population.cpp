@@ -5,23 +5,29 @@ Input_Type Population::simType = Input_Type::selection_coefficient;
 bool Population::noMut = false;
 
 Population::Population():
-    size_(0),
-    sumFitness_(0)
+    sumFitness_(0),
+    mutationCounter_(0)
 {
 	cells_.reserve(1000);
 }
 
 Population::Population(int targetSize):
-    size_(0),
-    sumFitness_(0)
+    sumFitness_(0),
+    mutationCounter_(0)
 {
-    size_ = 0;
     cells_.reserve(targetSize);
 }
 
+Population::Population(int capacity, Population& inoculum):
+    sumFitness_(0),
+    mutationCounter_(0)
+{
+    initMicrobiota(capacity,inoculum);
+}
+
 Population::Population(std::ifstream& startFile,const std::string & genesPath, int targetSize, Init_Pop popType):
-    size_(0),
-    sumFitness_(0)
+    sumFitness_(0),
+    mutationCounter_(0)
 {
 	if(popType==Init_Pop::from_snapFile){
 		initPolyclonal(startFile, genesPath, targetSize);
@@ -90,7 +96,6 @@ void Population::initMonoclonal(std::ifstream& startFile,const std::string & gen
     //CMDLOG << "Creating a population of " << targetSize   << " cells ..." << std::endl;
     Cell A(startFile, genesPath);
     cells_ = std::vector <Cell>(targetSize , A);
-    size_ = targetSize;
     for (auto& cell : cells_) {
         cell.ch_barcode(getBarcode());
     }
@@ -101,41 +106,64 @@ void Population::initMonoclonal(std::ifstream& startFile,const std::string & gen
     }
 }
 
+void Population::initMicrobiota(int carryingCapacity, Population& inoculum){
+    // from the inoculum population, transfer N cells (packetSize) to microbiota population
+    std::cout << "Creating microbiota from inoculum." << std::endl;
+    
+    addPacket(carryingCapacity, inoculum);
+
+    std::cout << "Done." << std::endl;
+    if (Cell::ff_ == 5){
+        for (auto& cell : cells_) {
+        cell.propagateFitness();
+            cell.UpdateRates();  
+        }
+    }
+}
+
 void Population::initPolyclonal(std::ifstream& startFile,const std::string & genesPath, int targetSize){
 	// ELSE IT MUST BE POPULATED CELL BY CELL FROM SNAP FILE
-    std::cout << "Creating population of size " << targetSize << " from file ..." << std::endl;
     cells_.reserve(targetSize) ;
     int count = 0;
     while (count < Total_Cell_Count && !startFile.eof()){
         cells_.emplace_back(startFile, genesPath);
         ++count;  
     }
-	std::cout << "-> ... Done." << std::endl;
     if (Cell::ff_ == 5){
         for (auto& cell : cells_) {
 	    cell.propagateFitness();
             cell.UpdateRates();  
         }
     }
-    size_ = count;
+    cells_.shrink_to_fit();
+    std::cout << "Created population of size " << cells_.size() << " from file ..." << std::endl;
 }
 
-void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
+// core wright-fisher process
+// targetSize: estimated size of the next generation
+// capacity: maximum carrying capacity of the population
+// these values may or may not be equal
+// for instance, when microbiota is inoculated, the targetSize can be much lower than max capacity
+// max capacity is only effective when a rescaling is applied after replication of the population
+void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool rescale){
     // allocate space for temporary population
-    Population newPopulation(targetBuffer);
+    Population newPopulation(targetSize);
     double relative_fitness(1);
     int n_progeny(0);
+
+    std::cout << "Size of population before WF: " << cells_.size() << std::endl;
+
     for (const auto& cell : cells_) {
 
-	//std::cout << cell.fitness() << std::endl;
+	    //std::cout << cell.fitness() << std::endl;
 
         // fitness of cell j with respect to sum of population fitness
         relative_fitness = cell.fitness()/getSumFitness();
 
-	//std::cout << relative_fitness << std::endl;
+	    //std::cout << relative_fitness << std::endl;
 
         // probability parameter of binomial distribution
-        std::binomial_distribution<> binCell(targetSize, relative_fitness);
+        std::binomial_distribution<> binCell(cells_.size(), relative_fitness);
 
         // number of progeny k is drawn from binomial distribution with N trials and mean w=relative_fitness
         n_progeny = binCell(g_rng);
@@ -161,9 +189,9 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
         }while(link < last);
 
             if(!Population::noMut){
-            // after filling with children, go through each one for mutation
+                // after filling with children, go through each one for mutation
                 do{
-		    // hardcode beneficial mutation rate here
+		            // hardcode beneficial mutation rate here
                     std::binomial_distribution<> binMut(100, 10e-8);
                     int n_mutations = binMut(g_rng);
                         // attempt n mutations
@@ -183,62 +211,80 @@ void Population::divide(int targetBuffer, int targetSize, std::ofstream& LOG){
             }
         }
 
+        std::cout << "Size of new generation: " << newPopulation.getSize() << std::endl;
+
         // if the population is below N
         // randomly draw from progeny to pad
-        while (newPopulation.getSize() < targetSize ){
-            auto cell_it = newPopulation.cells_.begin();
-            newPopulation.cells_.emplace_back(*(cell_it + randomNumber()*newPopulation.getSize()));
-            newPopulation.incrementSize(1);
+        // MICROBIOTA SIMULATION:
+        // * do not rescale population if below N
+        // * let cells grow to carrying capacity with the trickling in of inoculum
+
+        if(rescale){
+            while (newPopulation.getSize() < capacity ){
+                auto cell_it = newPopulation.cells_.begin();
+                newPopulation.cells_.emplace_back(*(cell_it + randomNumber()*newPopulation.getSize()));
+            }
+
+            if (newPopulation.getSize() > capacity ){
+                std::shuffle(newPopulation.cells_.begin(), newPopulation.cells_.end(), g_rng);
+                newPopulation.cells_.resize(capacity);
+            }
+
+            Total_Cell_Count = newPopulation.getSize();
+            assert (Total_Cell_Count == capacity) ;
         }
+          
 
-        if (newPopulation.getSize() > targetSize ){
-            std::shuffle(newPopulation.cells_.begin(), newPopulation.cells_.end(), g_rng);
-            newPopulation.cells_.resize(targetSize);
-            newPopulation.setSize(targetSize);
-        }
-
-        //alternative to shuffling
-       /* while(v_size > N){
-            int rand_idx = v_size*randomNumber();
-            remove_at(newPopulation.cells_,rand_idx);
-            v_size--;
-        }*/
-
-        Total_Cell_Count = newPopulation.getSize();
-        assert (Total_Cell_Count == targetSize) ;
-        
         // swap population with initial vector
         cells_.swap(newPopulation.cells_);
 
-        // reset and update sumFitness_
-        // update Ns and Na for each cell
+        calculateFitness();
+}
 
-        resetSumFitness();
-        double fittest = 0;
-        for (auto& cell : cells_) {
-            double current = cell.fitness();
-            addSumFitness(current);
-            if (current > fittest) 
-                fittest = current;
-            cell.UpdateNsNa();
-        }
+bool Population::addPacket(int carryingCapacity, Population& inoculum){
 
-	//std::cout << "Fittest individual at " << fittest << std::endl;
-	//std::cout << "Sum of fitness " << getSumFitness() << std::endl;	
+    // calculate packetSize from inoculum
+    int packetSize = Population::getPacketSize(carryingCapacity, inoculum);
 
-        //normalize by fittest individual to prevent overflow
-        if (Population::simType == Input_Type::selection_coefficient){
-            //sumFitness_ = 0;
-            for (auto& cell : cells_) {
-                cell.normalizeFit(fittest);
-            }
-        }
+    // reserve space for incoming packet
+    cells_.reserve(packetSize);
+
+    // add packet
+    auto cell_it = *(inoculum.cells_.begin() + randomNumber()*inoculum.getSize());
+
+    std::cout << "-> ... Adding packet of size " << packetSize << " from inoculum." << std::endl;
+    fill_n(packetSize,cell_it);
+
+    std::cout << "-> ... " << getSize() << " cells in microbiota." << std::endl;
+
+    calculateFitness();
+
+    // calculate size of remainder
+    int remainder = inoculum.cells_.size() - packetSize;
+
+    if(remainder <= 0){
+        std::cout << "-> ... Inoculum has been exhausted" << std::endl;
+        remainder = 0;
+
+        // clear vector
+        inoculum.cells_.clear();
+    }
+    else{
+        // resize inoculum by trimming off the added cells
+        inoculum.cells_.resize(remainder);
+        std::cout << "-> ... " << inoculum.getSize() << " cells remaining in inoculum." << std::endl;
+    }
+
+    return remainder > 0;
+}
+
+int Population::getPacketSize(int carryingCapacity, Population& inoculum){
+    return 10000;
 }
 
 void Population::fill_n(int n_progeny, const Cell& c)
 {
     std::fill_n(std::back_inserter(cells_),n_progeny,c);
-    incrementSize(n_progeny);
 }
 
 void Population::saveSnapshot(std::ofstream& toSnapshot, std::string dirName, int currentGen, Encoding_Type encoding){
@@ -289,9 +335,36 @@ void Population::writePop(std::ofstream& toSnapshot, Encoding_Type encoding){
     }
 }
 
+void Population::calculateFitness(){
+    resetSumFitness();
+    double fittest = 0;
+    for (auto& cell : cells_) {
+        double current = cell.fitness();
+        addSumFitness(current);
+        if (current > fittest) 
+                fittest = current;
+        cell.UpdateNsNa();
+    }
+
+    //std::cout << "Fittest individual at " << fittest << std::endl;
+    //std::cout << "Sum of fitness " << getSumFitness() << std::endl;    
+
+    //normalize by fittest individual to prevent overflow
+    if (Population::simType == Input_Type::selection_coefficient){
+        //sumFitness_ = 0;
+        for (auto& cell : cells_) {
+            cell.normalizeFit(fittest);
+        }
+    }
+}
+
 double Population::addSumFitness(double w){
     sumFitness_ += w;
     return sumFitness_;
+}
+
+void Population::shuffle(pcg32 engine){
+    std::shuffle(this->cells_.begin(), this->cells_.end(), engine);
 }
 
 void Population::reBarcode(){
@@ -330,6 +403,6 @@ void Population::reBarcode(){
 
     }
     std::cout << "Generated " << b << " barcodes" << std::endl;
-    assert(k == size_);
+    assert(k == getSize());
     std::cout << "Finished rebarcoding" << std::endl;
 }
