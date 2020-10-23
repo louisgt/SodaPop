@@ -296,7 +296,7 @@ void openMutationLog(std::ofstream& mutlog, std::string outDir){
 }
 
 void openStartingPop(std::string filePath, std::ifstream& fileStream){
-    std::cout << "Opening starting population snapshot ..." << std::endl;
+    std::cout << "-> Opening starting population snapshot ..." << std::endl;
     fileStream = std::ifstream(filePath.c_str(),std::ios::in|std::ios::binary);
     if (fileStream.is_open()){
         // file was opened successfully
@@ -320,7 +320,7 @@ void readSnapshotHeader(std::ifstream& snapshot)
 void createOutputDir(std::string dirName){
     sprintf(buffer,"out/%s/snapshots",dirName.c_str());
     outPath = buffer;
-    std::cout << "Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
+    std::cout << "-> Creating directory " << outPath << " ... " << (makePath(outPath) ? "OK" : "failed") << std::endl;
 }
 
 /******* MAPPING FUNCTIONS *******/
@@ -614,7 +614,7 @@ std::string getBarcode()
 // initializes the 3D matrix for DDG values
 void InitMatrix()
 {
-    std::cout << "Initializing matrix ..." << std::endl;
+    std::cout << "-> Initializing matrix ..." << std::endl;
     for (int i = 0; i != gene_number; ++i)
       for (int j = 0; j != res_number; ++j)
         for (int k = 0; k != 20; ++k){
@@ -742,7 +742,7 @@ int LoadPrimordialGenes(const std::string& genelistfile, const std::string& gene
         std::cerr << "File could not be open: "<< genelistfile <<std::endl;
         exit(2);
     }
-    std::cout << "Loading primordial genes file ..." << std::endl;
+    std::cout << "-> Loading primordial genes file ..." << std::endl;
     int flag_AASeq = 0; 
     int gc = 0;
     while(!genelistIN.eof()){

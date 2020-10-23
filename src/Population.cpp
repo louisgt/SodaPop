@@ -53,7 +53,7 @@ void Population::initLandscape(int fitArg, std::vector<std::string> matrixVec, s
           InitMatrix();
           Population::numberOfGenes = LoadPrimordialGenes(geneListFile,genesPath);
 
-          std::cout << "Gene count: " << numberOfGenes << std::endl;
+          std::cout << "-> Gene count: " << numberOfGenes << std::endl;
 
           if(matrixVec.size()==1)
               ExtractDMSMatrix(matrixVec.front().c_str());
@@ -108,11 +108,10 @@ void Population::initMonoclonal(std::ifstream& startFile,const std::string & gen
 
 void Population::initMicrobiota(int carryingCapacity, Population& inoculum){
     // from the inoculum population, transfer N cells (packetSize) to microbiota population
-    std::cout << "Creating microbiota from inoculum." << std::endl;
+    std::cout << "-> Creating microbiota from inoculum." << std::endl;
     
     addPacket(carryingCapacity, inoculum);
 
-    std::cout << "Done." << std::endl;
     if (Cell::ff_ == 5){
         for (auto& cell : cells_) {
         cell.propagateFitness();
@@ -136,7 +135,7 @@ void Population::initPolyclonal(std::ifstream& startFile,const std::string & gen
         }
     }
     cells_.shrink_to_fit();
-    std::cout << "Created population of size " << cells_.size() << " from file ..." << std::endl;
+    std::cout << "-> Created population of size " << cells_.size() << " from file ..." << std::endl;
 }
 
 // core wright-fisher process
@@ -151,7 +150,7 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
     double relative_fitness(1);
     int n_progeny(0);
 
-    std::cout << "Size of population before WF: " << cells_.size() << std::endl;
+    std::cout << "*** Size of population before WF: " << cells_.size() << std::endl;
 
     for (const auto& cell : cells_) {
 
@@ -211,7 +210,7 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
             }
         }
 
-        std::cout << "Size of new generation: " << newPopulation.getSize() << std::endl;
+        std::cout << "*** Size of new generation: " << newPopulation.getSize() << std::endl;
 
         // if the population is below N
         // randomly draw from progeny to pad
@@ -233,8 +232,12 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
             Total_Cell_Count = newPopulation.getSize();
             assert (Total_Cell_Count == capacity) ;
         }
-          
+        else
+        {
+            Total_Cell_Count = newPopulation.getSize();
+        }
 
+          
         // swap population with initial vector
         cells_.swap(newPopulation.cells_);
 
