@@ -19,11 +19,11 @@ Population::Population(int targetSize):
     cells_.reserve(targetSize);
 }
 
-Population::Population(int capacity, Population& inoculum):
+Population::Population(Population& inoculum):
     sumFitness_(0),
     mutationCounter_(0)
 {
-    initMicrobiota(capacity,inoculum);
+    initMicrobiota(inoculum);
 }
 
 Population::Population(std::ifstream& startFile,const std::string & genesPath, int targetSize, Init_Pop popType):
@@ -107,11 +107,11 @@ void Population::initMonoclonal(std::ifstream& startFile,const std::string & gen
     }
 }
 
-void Population::initMicrobiota(int carryingCapacity, Population& inoculum){
+void Population::initMicrobiota(Population& inoculum){
     // from the inoculum population, transfer N cells (packetSize) to microbiota population
     std::cout << "-> Creating microbiota from inoculum." << std::endl;
     
-    addPacket(carryingCapacity, inoculum);
+    addPacket(inoculum);
 
     if (Cell::ff_ == 5){
         for (auto& cell : cells_) {
@@ -245,39 +245,44 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
         calculateFitness();
 }
 
-bool Population::addPacket(int carryingCapacity, Population& inoculum){
+bool Population::addPacket(Population& inoculum){
 
     // calculate packetSize from inoculum
     int packetSize = Population::RandomExponential();
 
-    // reserve space for incoming packet
-    cells_.reserve(packetSize);
+    std::cout << "-> ... Adding packet of size ";
 
-    // add packet
-    auto cell_it = *(inoculum.cells_.begin() + randomNumber()*inoculum.getSize());
+    // calculate size of remainder and adjust to fit
+    int remainder = inoculum.cells_.size() - packetSize;
 
-    std::cout << "-> ... Adding packet of size " << packetSize << " from inoculum." << std::endl;
-    fill_n(packetSize,cell_it);
+    if(remainder <= 0){
+        std::cout << inoculum.cells_.size() << " from inoculum." << std::endl;
+        cells_.insert(cells_.end(), 
+                std::make_move_iterator(inoculum.cells_.begin()), 
+                std::make_move_iterator(inoculum.cells_.end()));
+
+        // clear vector
+        inoculum.cells_.clear();
+
+        std::cout << "-> ... Inoculum has been exhausted" << std::endl;
+
+        remainder = 0;
+    }
+    else{
+        std::cout << packetSize << " from inoculum." << std::endl;
+
+        cells_.insert(cells_.end(), 
+                std::make_move_iterator(inoculum.cells_.end() - packetSize), 
+                std::make_move_iterator(inoculum.cells_.end()));
+
+        inoculum.cells_.erase(inoculum.cells_.end() - packetSize, inoculum.cells_.end());
+
+        std::cout << "-> ... " << inoculum.getSize() << " cells remaining in inoculum." << std::endl;
+    }
 
     std::cout << "-> ... " << getSize() << " cells in microbiota." << std::endl;
 
     calculateFitness();
-
-    // calculate size of remainder
-    int remainder = inoculum.cells_.size() - packetSize;
-
-    if(remainder <= 0){
-        std::cout << "-> ... Inoculum has been exhausted" << std::endl;
-        remainder = 0;
-
-        // clear vector
-        inoculum.cells_.clear();
-    }
-    else{
-        // resize inoculum by trimming off the added cells
-        inoculum.cells_.resize(remainder);
-        std::cout << "-> ... " << inoculum.getSize() << " cells remaining in inoculum." << std::endl;
-    }
 
     return remainder > 0;
 }

@@ -8,12 +8,12 @@ class Population {
 public:
 	Population();
 	Population(int);
-	Population(int, Population&);
+	Population(Population&);
 	Population(std::ifstream & ,const std::string &, int, Init_Pop);
 
 	void initMonoclonal(std::ifstream & ,const std::string &, int);
 	void initPolyclonal(std::ifstream & ,const std::string &, int);
-	void initMicrobiota(int, Population&);
+	void initMicrobiota(Population&);
 
 	static void initLandscape(int, std::vector<std::string>,std::string,std::string);
 
@@ -26,7 +26,7 @@ public:
 
 	void divide(int, int, std::ofstream&, bool);
 
-	bool addPacket(int, Population&);
+	bool addPacket(Population&);
 
 	int getSize() const {return cells_.size();}
 

@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
     Population::initExponential(lambda);
 
     // create the microbiota population with size = to first packet
-    Population microbiotaPop(carryingCapacity, inoculumPop);
+    Population microbiotaPop(inoculumPop);
 
     /* should be handled by method initializing the population
     */
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
             // check isEmpty flag
             if(remaining){
                 // add new packet to microbiotaPop
-                remaining = microbiotaPop.addPacket(carryingCapacity,inoculumPop);
+                remaining = microbiotaPop.addPacket(inoculumPop);
             }
             //else{
             //    break;

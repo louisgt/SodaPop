@@ -29,9 +29,9 @@ theme_Publication = function(base_size=20,base_family="Helvetica"){
     ))
 }
 
-fixgen = 672
-dt = 6
-step = 5
+fixgen = 20
+dt = 1
+step = 4
 
 lower_bound = 0.0001
 upper_bound = 0.0005
@@ -58,5 +58,5 @@ c = 125, l = 72,
 h.start = 0, direction = 1)(n)[order(sample(1:n, n))]
 
 g = ggplot() + geom_area(aes(x=factor(variable),y=value,group=ID),data=tf,fill="#CCCCCC") + geom_area(aes(x=factor(variable),y=value,group=ID,fill=ID),data=grouped_tf) + scale_x_discrete(limits=0:fixgen, breaks = seq(0,fixgen,step)) + theme_Publication() + scale_fill_manual(values = cols,guide=FALSE) + xlab("Generations") + ylab("Barcode fraction") + ylim(c(0,1))
-ggsave(g,filename = "Documents/PROJECTS/mousebarcoding/SodaPop/out/14_DAYS_NEUTRAL//graph/geom_area.png",dpi=300,width = 10,height = 8)
+ggsave(g,filename = "Documents/PROJECTS/SodaPop/out/TEST_DEV/graph/area.png",dpi=300,width = 10,height = 8)
 
