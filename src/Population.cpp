@@ -3,6 +3,7 @@
 int Population::numberOfGenes = 0;
 Input_Type Population::simType = Input_Type::selection_coefficient;
 bool Population::noMut = false;
+std::exponential_distribution<> Population::packet_exponential_ = std::exponential_distribution<>(1.0);
 
 Population::Population():
     sumFitness_(0),
@@ -247,7 +248,7 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
 bool Population::addPacket(int carryingCapacity, Population& inoculum){
 
     // calculate packetSize from inoculum
-    int packetSize = Population::getPacketSize(carryingCapacity, inoculum);
+    int packetSize = Population::RandomExponential();
 
     // reserve space for incoming packet
     cells_.reserve(packetSize);
@@ -281,8 +282,14 @@ bool Population::addPacket(int carryingCapacity, Population& inoculum){
     return remainder > 0;
 }
 
-int Population::getPacketSize(int carryingCapacity, Population& inoculum){
-    return 10000;
+void Population::initExponential(double lambda)
+{
+    Population::packet_exponential_.param(std::exponential_distribution<>::param_type(lambda));
+}
+
+int Population::RandomExponential()
+{
+    return Population::packet_exponential_(g_rng);
 }
 
 void Population::fill_n(int n_progeny, const Cell& c)

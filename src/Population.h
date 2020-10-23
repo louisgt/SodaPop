@@ -17,7 +17,8 @@ public:
 
 	static void initLandscape(int, std::vector<std::string>,std::string,std::string);
 
-	static int getPacketSize(int, Population&);
+	static void initExponential(double);
+	static int RandomExponential();
 
 	void saveSnapshot(std::ofstream&, std::string, int, Encoding_Type);
 	void writeSnapshotHeader(std::ofstream&, Encoding_Type);
@@ -58,6 +59,8 @@ public:
 	static Input_Type simType;
 
 	static bool noMut;
+
+	static std::exponential_distribution<> packet_exponential_;
 
 protected:
 	double sumFitness_;

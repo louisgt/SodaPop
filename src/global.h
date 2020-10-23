@@ -83,6 +83,9 @@ const int maxPopSize(1000000);
 const int maxGeneCount(1);
 constexpr int PBWidth(70);
 
+//constexpr double packetRate(6.92e-7);
+constexpr int transitLength(6);
+
 constexpr double ddG_low_bound(-10);
 constexpr double ddG_high_bound(99);
 constexpr double maxConcentration(1e15);

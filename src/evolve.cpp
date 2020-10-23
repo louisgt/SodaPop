@@ -176,6 +176,11 @@ int main(int argc, char *argv[])
     // shuffle population to randomize packets
     inoculumPop.shuffle(g_rng);
 
+    double lambda = floor(inoculumPop.getSize()/transitLength);
+    lambda = 1.0/lambda;
+
+    Population::initExponential(lambda);
+
     // create the microbiota population with size = to first packet
     Population microbiotaPop(carryingCapacity, inoculumPop);
 
@@ -217,7 +222,6 @@ int main(int argc, char *argv[])
 
             // save population snapshot every timeStep generations
             if( (currentGen % timeStep) == 0){
-                std::cout << "Looping: current gen " << currentGen << " and pop size " << microbiotaPop.getSize() << std::endl;
                 try{
                     microbiotaPop.saveSnapshot(OUT,outDir,currentGen,outputEncoding);
                 }catch (std::runtime_error &e) {}
