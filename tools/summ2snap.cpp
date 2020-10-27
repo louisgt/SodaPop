@@ -47,19 +47,21 @@ int main(int argc, char* argv[]) {
 
     double limit = 0.90;
 
-    double mu = 10e-9;
+    double mu = 5e-5;
 
     double genomeSize = 4600000;
 
-    int popSize = 9700000;
+    int popSize = 10000000;
 
-    int nMu = mu*genomeSize*popSize;
+    int nMu = mu*popSize;
+
+    std::cout << "nMu is " << nMu << std::endl;
 
     std::default_random_engine generator;
     std::geometric_distribution<int> distribution(0.01);
 
-    if(flag==3){
-        Gene::initExponential(166.6666667);
+    if(flag==0){
+        Gene::initExponential(100);
         s = Gene::RandomExponential();
 	//blockSize = distribution(generator) + 10;
     }
@@ -133,18 +135,20 @@ int main(int argc, char* argv[]) {
     }
     popf.close();
 
-    //for (int k = 0; k < nMu; ++k) {
-	//s = Gene::RandomExponential();
-	//nf = 1 + s;
-	//(*select_randomly(Cell_arr.begin(), Cell_arr.end())).ch_Fitness(nf);
-    //}
+    //randomly select cells for beneficial mutations
+    for (int k = 0; k < nMu; ++k) {
+	s = Gene::RandomExponential();
+	nf = 1 + s;
+	(*select_randomly(Cell_arr.begin(), Cell_arr.end())).ch_Fitness(nf);
+    }
+
+    for (auto& cell : Cell_arr) {
+	cell.propagateFitness();
+        cell.UpdateRates(); 
+    }
 
     //population snapshot
     int Total_Cell_Count = (int)(Cell_arr.size());
-
-    for (auto& cell : Cell_arr) {
-        std::cout << "Cell fitness " << cell.fitness() << std::endl;
-    }
 
     std::string popname = argv[1];
 

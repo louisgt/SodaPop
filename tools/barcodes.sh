@@ -62,35 +62,16 @@ for filename in $FILES
 do
 	y=${filename%%.txt.gz}
 	if [ "$ENCODING" -eq "1" ]; then
-		gunzip -c $filename | awk 'NR>3 {print $0}' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
+		gunzip -c $filename | awk 'NR>3 {print $0}' - | cut -f1 | sort | uniq -c | awk -F' ' '{t = $1; $1 = $2; $2 = t; print; }' > barcodes/${y##*/}.unique # > barcodes/${y##*/}.barcodes
 		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
 		gunzip -c $filename | awk 'NR>3 {print $0}' - | awk -v N=$3 -v C=$COL '{sum += $C} END {printf "%.9f\n",sum/N}' - >> avg_fitness.txt
 
 	else
-		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort > barcodes/${y##*/}.barcodes
+		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | cut -f1 | sort | uniq -c | awk -F' ' '{t = $1; $1 = $2; $2 = t; print; }' > barcodes/${y##*/}.unique # > barcodes/${y##*/}.barcodes
 		#### SUM POPULATION FITNESS FOR EACH TIME POINT AND DIVIDE BY POP SIZE
 		gunzip -c $filename | awk 'NR>2 {print $0}' - | awk -v N=$FACTOR 'NR%N==2' - | awk -v N=$3 -v C=$COL '{sum += $C} END {printf "%.9f\n",sum/N}' - >> avg_fitness.txt
 
 	fi
-done
-
-echo Parsing unique barcodes...
-
-#### PARSE UNIQUE BARCODES
-FILES=barcodes/*.barcodes
-for filename in $FILES
-do
-	y=${filename%%.barcodes}
-	uniq -c $filename | awk -F' ' '{t = $1; $1 = $2; $2 = t; print; }' > barcodes/${y##*/}.unique
-
-	#### BREAK AT FIXATION POINT IF IT OCCURS
-	if ! $(read -r && read -r)
-	then
-		#### OUTPUT FIXATION GENERATION TO FILE
-	  	echo Fixation at ${y##*/} > fixation.txt
-	  	echo Fixation at ${y##*/}
-	  	#break
-	fi < barcodes/${y##*/}.unique
 done
 
 cat barcodes/$OUT.gen0000000001.snap.unique > barcodes/start.txt
@@ -114,7 +95,7 @@ done
 cat barcodes/series$i.txt | cut -d " " -f 1,3- > ALL_generations.txt
 
 #remove compressed binary snapshots
-rm -f snapshots/*.snap.gz
+#rm -f snapshots/*.snap.gz
 
 cd $HOME
 

@@ -64,6 +64,7 @@ public:
 
 protected:
 	double sumFitness_;
+	double meanFitness_;
 	int mutationCounter_;
 	int generation_;
 	std::vector<Cell> cells_;

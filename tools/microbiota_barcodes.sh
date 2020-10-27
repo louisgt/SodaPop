@@ -19,3 +19,8 @@ do
 done
 
 cat barcodes/series$i.txt | cut -d " " -f 1,3- > ALL_generations.txt
+
+
+
+### paste with seed table
+join -t' ' -e 0 -a 1 -1 1 -2 1 -o 2.2 barcodes/series_seed.txt barcodes/start.txt | paste -d' ' barcodes/series_seed.txt - > barcodes/series1.txt

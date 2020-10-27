@@ -7,6 +7,7 @@ std::exponential_distribution<> Population::packet_exponential_ = std::exponenti
 
 Population::Population():
     sumFitness_(0),
+    meanFitness_(0),
     mutationCounter_(0)
 {
 	cells_.reserve(1000);
@@ -14,6 +15,7 @@ Population::Population():
 
 Population::Population(int targetSize):
     sumFitness_(0),
+    meanFitness_(0),
     mutationCounter_(0)
 {
     cells_.reserve(targetSize);
@@ -21,6 +23,7 @@ Population::Population(int targetSize):
 
 Population::Population(Population& inoculum):
     sumFitness_(0),
+    meanFitness_(0),
     mutationCounter_(0)
 {
     initMicrobiota(inoculum);
@@ -28,6 +31,7 @@ Population::Population(Population& inoculum):
 
 Population::Population(std::ifstream& startFile,const std::string & genesPath, int targetSize, Init_Pop popType):
     sumFitness_(0),
+    meanFitness_(0),
     mutationCounter_(0)
 {
 	if(popType==Init_Pop::from_snapFile){
@@ -115,8 +119,8 @@ void Population::initMicrobiota(Population& inoculum){
 
     if (Cell::ff_ == 5){
         for (auto& cell : cells_) {
-        cell.propagateFitness();
-            cell.UpdateRates();  
+            cell.propagateFitness();
+            cell.UpdateRates();
         }
     }
 }
@@ -155,12 +159,8 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
 
     for (const auto& cell : cells_) {
 
-	    //std::cout << cell.fitness() << std::endl;
-
         // fitness of cell j with respect to sum of population fitness
         relative_fitness = cell.fitness()/getSumFitness();
-
-	    //std::cout << relative_fitness << std::endl;
 
         // probability parameter of binomial distribution
         std::binomial_distribution<> binCell(cells_.size(), relative_fitness);
@@ -176,8 +176,6 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
 
         // iterator to end position of fill
         auto last = it + n_progeny;
-
-        //cell_it->setParent(cell_it - cells_.begin());
         
         newPopulation.fill_n(n_progeny,cell);
 
@@ -188,27 +186,27 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
             ++link;
         }while(link < last);
 
-            if(!Population::noMut){
+            //if(!Population::noMut){
                 // after filling with children, go through each one for mutation
-                do{
+            //    do{
 		            // hardcode beneficial mutation rate here
-                    std::binomial_distribution<> binMut(100, 10e-8);
-                    int n_mutations = binMut(g_rng);
+            //        std::binomial_distribution<> binMut(100, 10e-8);
+            //        int n_mutations = binMut(g_rng);
                         // attempt n mutations
-                        for (int i=0;i<n_mutations;++i){
-                            incrementMutationCount(1);
+            //            for (int i=0;i<n_mutations;++i){
+            //                incrementMutationCount(1);
                             // change statement to switch
-                            if (false){
+            //                if (false){
                                 // mutate and write mutation to file
-                                it->ranmut_Gene(LOG,getGeneration());
-                            }
-                            else{
-                                it->ranmut_Gene();
-                            }       
-                        }
-                        ++it;
-                }while(it < last);
-            }
+            //                    it->ranmut_Gene(LOG,getGeneration());
+            //                }
+            //                else{
+            //                    it->ranmut_Gene();
+            //                }       
+            //            }
+            //            ++it;
+            //    }while(it < last);
+            //}
         }
 
         std::cout << "*** Size of new generation: " << newPopulation.getSize() << std::endl;
@@ -361,14 +359,15 @@ void Population::calculateFitness(){
         cell.UpdateNsNa();
     }
 
-    //std::cout << "Fittest individual at " << fittest << std::endl;
-    //std::cout << "Sum of fitness " << getSumFitness() << std::endl;    
+    meanFitness_ = sumFitness_ / cells_.size() * 1.0;
+
+    std::cout << "Fittest individual at " << fittest << std::endl;
+    std::cout << "Mean fitness " << meanFitness_ << std::endl;    
 
     //normalize by fittest individual to prevent overflow
     if (Population::simType == Input_Type::selection_coefficient){
-        //sumFitness_ = 0;
         for (auto& cell : cells_) {
-            cell.normalizeFit(fittest);
+            cell.normalizeFit(meanFitness_);
         }
     }
 }

@@ -1,7 +1,7 @@
 #include "Cell.h"
 
 // By default the fitness function is set to neutral
-int Cell::ff_ = 6;
+int Cell::ff_ = 5;
 bool Cell::useDist_ = false;
 bool Cell::fromS_ = false;
 
@@ -333,18 +333,13 @@ double Cell::growthRate() const
 
 void Cell::UpdateRates()
 {
-    //std::cout << fitness_ << std::endl;
-    //genomeVec_.front().ch_f(fitness());
     fitness_ = (this->*fit)();
-    //std::cout << fitness_ << std::endl;
 }
 
 void Cell::propagateFitness()
 {	
-    //std::cout << genomeVec_.front().f() << std::endl;
-    //ch_Fitness(genomeVec_.front().f());
-    genomeVec_.front().ch_f(1);
-    
+    // set sole gene fitness equal to organismal fitness
+    genomeVec_.front().ch_f(fitness_);  
 }
 
 void Cell::ranmut_Gene(std::ofstream& log,int ctr)
@@ -457,12 +452,12 @@ void Cell::ranmut_Gene()
     UpdateRates();
 }
 
-double Cell::normalizeFit(double fittest){
+double Cell::normalizeFit(double normalizer){
     if (fittest <= 0) {
-        std::cerr << "Population collapse, average fitness is null.\n";
+        std::cerr << "Population collapse, mean fitness is null.\n";
         exit(1);
     }
-    double newfit = fitness()*1.0/fittest;
+    double newfit = fitness()*1.0/normalizer;
     genomeVec_.front().ch_f(newfit);
     UpdateRates();
     return newfit;
