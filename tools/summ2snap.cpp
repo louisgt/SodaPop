@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 
     double genomeSize = 4600000;
 
-    int popSize = 10000000;
+    int popSize = 100000;
 
     int nMu = mu*popSize;
 
@@ -88,8 +88,8 @@ int main(int argc, char* argv[]) {
             switch(flag)
             {
                 case 0: A.ch_barcode(getBarcode());
-			//s = Gene::RandomExponential();
-			//nf = 1 + s;
+			             //s = Gene::RandomExponential();
+			             //nf = 1 + s;
                         //A.ch_Fitness(nf);   
                         for (int i = 0; i < count; i++) {
                             Cell_arr.push_back(A);
@@ -113,19 +113,19 @@ int main(int argc, char* argv[]) {
                         for (int k = 0; k < count; ++k) {
                             //draw selection coefficient
                             //std::cout << nf << std::endl;
-                            Cell_arr.push_back(A);
-			    blockCounter +=1;
-			    if (blockCounter == blockSize){
-				std::cout << "Changing block... " << std::endl;
-				//reset counter
+                             Cell_arr.push_back(A);
+			                 blockCounter +=1;
+			                 if (blockCounter == blockSize){
+				                std::cout << "Changing block... " << std::endl;
+				                //reset counter
                             	blockCounter = 0;
                             	// new selection coefficient
                             	s = Gene::RandomExponential();
-			    	blockSize = distribution(generator) + 10;
-				nf = 1 + s;
-                        	A.ch_Fitness(nf);
-				std::cout << "New fitness for block " << nf << std::endl;
-			    }
+			    	            blockSize = distribution(generator) + 10;
+				                nf = 1 + s;
+                        	    A.ch_Fitness(nf);
+				                std::cout << "New fitness for block " << nf << std::endl;
+			                 }
                         }
 
                 break;
@@ -137,13 +137,14 @@ int main(int argc, char* argv[]) {
 
     //randomly select cells for beneficial mutations
     for (int k = 0; k < nMu; ++k) {
-	s = Gene::RandomExponential();
-	nf = 1 + s;
-	(*select_randomly(Cell_arr.begin(), Cell_arr.end())).ch_Fitness(nf);
+	   s = Gene::RandomExponential();
+	   nf = 1 + s;
+       std::cout << "Randomly choosing cell to mutate with coefficient " << s << std::endl;
+	   (*select_randomly(Cell_arr.begin(), Cell_arr.end())).ch_Fitness(nf);
     }
 
     for (auto& cell : Cell_arr) {
-	cell.propagateFitness();
+	    cell.propagateFitness();
         cell.UpdateRates(); 
     }
 

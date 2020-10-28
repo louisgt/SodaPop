@@ -453,11 +453,11 @@ void Cell::ranmut_Gene()
 }
 
 double Cell::normalizeFit(double normalizer){
-    if (fittest <= 0) {
+    if (normalizer <= 0) {
         std::cerr << "Population collapse, mean fitness is null.\n";
         exit(1);
     }
-    double newfit = fitness()*1.0/normalizer;
+    double newfit = fitness()/normalizer;
     genomeVec_.front().ch_f(newfit);
     UpdateRates();
     return newfit;

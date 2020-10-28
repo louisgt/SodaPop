@@ -135,7 +135,7 @@ void Population::initPolyclonal(std::ifstream& startFile,const std::string & gen
     }
     if (Cell::ff_ == 5){
         for (auto& cell : cells_) {
-	    cell.propagateFitness();
+	        cell.propagateFitness();
             cell.UpdateRates();  
         }
     }
@@ -154,8 +154,6 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
     Population newPopulation(targetSize);
     double relative_fitness(1);
     int n_progeny(0);
-
-    std::cout << "*** Size of population before WF: " << cells_.size() << std::endl;
 
     for (const auto& cell : cells_) {
 
@@ -186,30 +184,28 @@ void Population::divide(int targetSize, int capacity, std::ofstream& LOG, bool r
             ++link;
         }while(link < last);
 
-            //if(!Population::noMut){
-                // after filling with children, go through each one for mutation
-            //    do{
-		            // hardcode beneficial mutation rate here
-            //        std::binomial_distribution<> binMut(100, 10e-8);
-            //        int n_mutations = binMut(g_rng);
-                        // attempt n mutations
-            //            for (int i=0;i<n_mutations;++i){
-            //                incrementMutationCount(1);
-                            // change statement to switch
-            //                if (false){
-                                // mutate and write mutation to file
-            //                    it->ranmut_Gene(LOG,getGeneration());
-            //                }
-            //                else{
-            //                    it->ranmut_Gene();
-            //                }       
-            //            }
-            //            ++it;
-            //    }while(it < last);
-            //}
-        }
-
-        std::cout << "*** Size of new generation: " << newPopulation.getSize() << std::endl;
+        // if(!Population::noMut){
+        //         // after filling with children, go through each one for mutation
+        //     do{
+		      //       // hardcode beneficial mutation rate here
+        //             std::binomial_distribution<> binMut(100, 10e-8);
+        //             int n_mutations = binMut(g_rng);
+        //                 // attempt n mutations
+        //                 for (int i=0;i<n_mutations;++i){
+        //                     incrementMutationCount(1);
+        //                     // change statement to switch
+        //                     if (false){
+        //                         // mutate and write mutation to file
+        //                         it->ranmut_Gene(LOG,getGeneration());
+        //                     }
+        //                     else{
+        //                         it->ranmut_Gene();
+        //                     }       
+        //                 }
+        //                 ++it;
+        //         }while(it < last);
+        // }
+    }
 
         // if the population is below N
         // randomly draw from progeny to pad
@@ -351,25 +347,32 @@ void Population::writePop(std::ofstream& toSnapshot, Encoding_Type encoding){
 void Population::calculateFitness(){
     resetSumFitness();
     double fittest = 0;
+    std::string fit_barcode = "";
     for (auto& cell : cells_) {
         double current = cell.fitness();
+        std::string barcode = cell.barcode();
         addSumFitness(current);
-        if (current > fittest) 
-                fittest = current;
+        if (current > fittest){
+            fittest = current;
+            fit_barcode = barcode;
+        }
         cell.UpdateNsNa();
     }
 
-    meanFitness_ = sumFitness_ / cells_.size() * 1.0;
+    double dMean = meanFitness_;
+    meanFitness_ = sumFitness_ / cells_.size();
+    dMean = meanFitness_ - dMean;
 
-    std::cout << "Fittest individual at " << fittest << std::endl;
-    std::cout << "Mean fitness " << meanFitness_ << std::endl;    
+    std::cout << "Fittest individual at " << std::setprecision(9) << fittest << " with barcode " << fit_barcode << std::endl;
+    std::cout << "Mean fitness " << std::setprecision(9) << meanFitness_ << std::endl;
+    //std::cout << "Change in mean fitness " << dMean << std::endl;
 
     //normalize by fittest individual to prevent overflow
-    if (Population::simType == Input_Type::selection_coefficient){
-        for (auto& cell : cells_) {
-            cell.normalizeFit(meanFitness_);
-        }
-    }
+    // if (Population::simType == Input_Type::selection_coefficient){
+    //     for (auto& cell : cells_) {
+    //         cell.normalizeFit(meanFitness_);
+    //     }
+    // }
 }
 
 double Population::addSumFitness(double w){

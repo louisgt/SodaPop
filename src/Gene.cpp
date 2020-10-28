@@ -263,8 +263,8 @@ double Gene::Mutate_Select_Dist(int i, int j)
     //non-synonymous mutation
     if (randomNumber() <= fNS){
         double s = RandomNormal();
-	//double s = RandomMixture();
-	//std::cout << "Mutation of effect size " << s << std::endl;
+	    //double s = RandomMixture();
+	    std::cout << "Mutation of effect size " << s << std::endl;
         double wf = 1 + s;
         f_ *= wf;
         Na_ += 1;

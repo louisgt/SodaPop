@@ -29,9 +29,9 @@ theme_Publication = function(base_size=20,base_family="Helvetica"){
     ))
 }
 
-fixgen = 20
-dt = 1
-step = 4
+fixgen = 250
+dt = 10
+step = 50
 
 lower_bound = 0.0001
 upper_bound = 0.0005
